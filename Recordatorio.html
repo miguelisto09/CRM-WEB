@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recordatorio de Tareas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #4b0082; /* Purple background */
+            color: #fff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #9370db 3px solid; 
+        }
+        header a {
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            list-style: none;
+        }
+        header li {
+            float: left;
+            display: inline;
+            padding: 0 20px 0 20px;
+        }
+        header #branding {
+            float: left;
+        }
+        header #branding h1 {
+            margin: 0;
+        }
+        header nav {
+            float: right;
+            margin-top: 10px;
+        }
+        header #datetime {
+            clear: both;
+            margin-top: 10px;
+            text-align: left;
+            margin-bottom: 10px; /* Add more space below the clock */
+        }
+        .task-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        .task-table th, .task-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .task-table th {
+            background-color: #e6e6fa; 
+        }
+        .task-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #4b0082; 
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+            margin: 5px; 
+        }
+        .btn:hover {background-color: #6a0dad} /* Darker purple on hover */
+        .btn:active {
+            background-color: #6a0dad;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .main-content {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping to fit content */
+            justify-content: space-between;
+        }
+        .task-table-container {
+            width: 100%;
+        }
+        .task-details {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .task-details-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+        }
+        .task-details .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .task-details .close:hover,
+        .task-details .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .comment-box {
+            margin-top: 20px;
+        }
+        .comment-box textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .comment-box button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #4b0082; /* Purple background */
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+            margin: 5px; /* Add margin to avoid overlap */
+        }
+        .comment-box button:hover {background-color: #6a0dad} /* Darker purple on hover */
+        .comment-box button:active {
+            background-color: #6a0dad;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+        .task-category {
+            flex: 1 1 30%; /* Adjust width to fit horizontally */
+            margin: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .task-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 14px; /* Smaller font size */
+        }
+        .task-item:hover {
+            background-color: #f1f1f1;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 1000px; /* Larger chart size */
+            margin: auto;
+        }
+        .task-title {
+            font-size: 12px; /* Smaller font size for task titles */
+            cursor: pointer;
+        }
+        .task-details-popup {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px; 
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        .task-category-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .task-category {
+            flex: 1;
+            margin: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 15px; /* Rounded corners */
+            min-width: 150px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for a card-like effect */
+        }
+        .task-category h3 {
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .task-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 10px; 
+            display: flex;
+            flex-direction: column; /* Organize content vertically */
+        }
+        .task-item:hover {
+            background-color: #f1f1f1;
+        }
+        .task-item p {
+            margin: 5px 0;
+        }
+        .task-item .description {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .task-item .read-more {
+            color: #4b0082;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .create-task-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #4b0082; 
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+            margin: 20px 0; 
+        }
+        .create-task-btn:hover {background-color: #6a0dad} /* Darker purple on hover */
+        .create-task-btn:active {
+            background-color: #6a0dad;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><span class="highlight">Manejador</span> de Tareas</h1>
+                <div id="datetime"></div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="Tareas.html">Tareas</a></li>
+                    <li><a href="#">Empleados</a></li>
+                    <li><a href="Configuracion.html">Configuración</a></li> <!-- Updated link -->
+                    <li><a href="Recordatorio.html">Recordatorios</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container main-content">
+        <button class="create-task-btn" onclick="openCreateTaskModal()">Crear Nueva Tarea</button>
+        <div class="task-category-container" id="taskCategories">
+            <!-- Task categories will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <div id="taskDetails" class="task-details">
+        <div class="task-details-content">
+            <span class="close" onclick="document.getElementById('taskDetails').style.display='none'">&times;</span>
+            <h2 id="taskTitle"></h2>
+            <p><strong>Descripción:</strong> <span id="taskDescription"></span></p>
+            <p><strong>Asignado a:</strong> <span id="taskAssignedTo"></span></p>
+            <p><strong>Prioridad:</strong> <span id="taskPriority"></span></p>
+            <p><strong>Estado:</strong> <span id="taskStatus"></span></p>
+            <p><strong>Fecha de Vencimiento:</strong> <span id="taskDueDate"></span></p>
+            <div class="comment-box">
+                <h3>Comentarios</h3>
+                <div id="taskComments"></div>
+                <textarea id="newComment" placeholder="Añadir un comentario..."></textarea>
+                <button onclick="addComment()">Añadir Comentario</button>
+            </div>
+            <button class="btn" style="background-color: green;" onclick="completeTask(currentTaskIndex)">Completar Tarea</button>
+            <button class="btn" style="background-color: red;" onclick="cancelTask()">Cancelar Tarea</button>
+            <button class="btn" style="background-color: blue;" onclick="editTask(currentTaskIndex)">Editar Tarea</button>
+        </div>
+    </div>
+
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('taskModal').style.display='none'">&times;</span>
+            <h2>Editar Tarea</h2>
+            <form id="editTaskForm">
+                <label for="editTitle">Título</label>
+                <input type="text" id="editTitle" name="editTitle" required><br><br>
+                <label for="editDescription">Descripción</label>
+                <textarea id="editDescription" name="editDescription" required></textarea><br><br>
+                <label for="editAssignedTo">Asignado a</label>
+                <input type="text" id="editAssignedTo" name="editAssignedTo" required><br><br>
+                <label for="editPriority">Prioridad</label>
+                <select id="editPriority" name="editPriority">
+                    <option value="low">Baja</option>
+                    <option value="medium">Media</option>
+                    <option value="high">Alta</option>
+                    <option value="critical">Crítica</option>
+                    <option value="urgent">Urgente</option>
+                    <option value="veryLow">Muy Baja</option>
+                </select><br><br>
+                <label for="editStatus">Estado</label>
+                <select id="editStatus" name="editStatus">
+                    <option value="pending">Pendiente</option>
+                    <option value="inProgress">En Progreso</option>
+                    <option value="completed">Completada</option>
+                    <option value="cancelled">Cancelada</option>
+                    <option value="onHold">En Espera</option>
+                    <option value="deferred">Diferida</option>
+                </select><br><br>
+                <label for="editDueDate">Fecha de Vencimiento</label>
+                <input type="date" id="editDueDate" name="editDueDate" required><br><br>
+                <button type="submit" class="btn">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="createTaskModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('createTaskModal').style.display='none'">&times;</span>
+            <h2>Crear Nueva Tarea</h2>
+            <form id="createTaskForm">
+                <label for="createTitle">Título</label>
+                <input type="text" id="createTitle" name="createTitle" required><br><br>
+                <label for="createDescription">Descripción</label>
+                <textarea id="createDescription" name="createDescription" required></textarea><br><br>
+                <label for="createAssignedTo">Asignado a</label>
+                <input type="text" id="createAssignedTo" name="createAssignedTo" required><br><br>
+                <label for="createPriority">Prioridad</label>
+                <select id="createPriority" name="createPriority">
+                    <option value="low">Baja</option>
+                    <option value="medium">Media</option>
+                    <option value="high">Alta</option>
+                    <option value="critical">Crítica</option>
+                    <option value="urgent">Urgente</option>
+                    <option value="veryLow">Muy Baja</option>
+                </select><br><br>
+                <label for="createStatus">Estado</label>
+                <select id="createStatus" name="createStatus">
+                    <option value="pending">Pendiente</option>
+                    <option value="inProgress">En Progreso</option>
+                    <option value="completed">Completada</option>
+                    <option value="cancelled">Cancelada</option>
+                    <option value="onHold">En Espera</option>
+                    <option value="deferred">Diferida</option>
+                </select><br><br>
+                <label for="createDueDate">Fecha de Vencimiento</label>
+                <input type="date" id="createDueDate" name="createDueDate" required><br><br>
+                <button type="submit" class="btn">Crear Tarea</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var taskDetails = document.getElementById('taskDetails');
+        var taskModal = document.getElementById('taskModal');
+        var createTaskModal = document.getElementById('createTaskModal');
+        var editTaskForm = document.getElementById('editTaskForm');
+        var createTaskForm = document.getElementById('createTaskForm');
+        var currentTaskIndex = null;
+        var tasks = [
+            // Example tasks
+            { title: "Tarea 1", description: "Descripción de la tarea 1", dueDate: "2023-10-10", priority: "Alta", assignedTo: "Empleado 1", status: "Pendiente", comments: [] },
+            { title: "Tarea 2", description: "Descripción de la tarea 2", dueDate: "2023-10-12", priority: "Media", assignedTo: "Empleado 2", status: "En Progreso", comments: [] },
+            // Add more tasks as needed
+        ];
+
+        function viewTaskDetails(index) {
+            currentTaskIndex = index;
+            var task = tasks[index];
+            document.getElementById('taskTitle').innerText = task.title;
+            document.getElementById('taskDescription').innerText = task.description;
+            document.getElementById('taskAssignedTo').innerText = task.assignedTo;
+            document.getElementById('taskPriority').innerText = task.priority;
+            document.getElementById('taskStatus').innerText = task.status;
+            document.getElementById('taskDueDate').innerText = task.dueDate;
+            document.getElementById('taskComments').innerHTML = task.comments.map(comment => `<p>${comment}</p>`).join('');
+            taskDetails.style.display = 'block';
+        }
+
+        function addComment() {
+            var comment = document.getElementById('newComment').value;
+            if (comment) {
+                tasks[currentTaskIndex].comments.push(comment);
+                document.getElementById('newComment').value = '';
+                viewTaskDetails(currentTaskIndex);
+            }
+        }
+
+        function completeTask(index) {
+            tasks[index].status = 'Completada';
+            updateTaskCategories();
+            taskDetails.style.display = 'none';
+        }
+
+        function cancelTask() {
+            taskDetails.style.display = 'none';
+        }
+
+        function editTask(index) {
+            currentTaskIndex = index;
+            var task = tasks[index];
+            document.getElementById('editTitle').value = task.title;
+            document.getElementById('editDescription').value = task.description;
+            document.getElementById('editAssignedTo').value = task.assignedTo;
+            document.getElementById('editPriority').value = task.priority;
+            document.getElementById('editStatus').value = task.status;
+            document.getElementById('editDueDate').value = task.dueDate;
+            taskModal.style.display = 'block';
+        }
+
+        editTaskForm.onsubmit = function(event) {
+            event.preventDefault();
+            var task = tasks[currentTaskIndex];
+            task.title = editTaskForm.editTitle.value;
+            task.description = editTaskForm.editDescription.value;
+            task.assignedTo = editTaskForm.editAssignedTo.value;
+            task.priority = editTaskForm.editPriority.value;
+            task.status = editTaskForm.editStatus.value;
+            task.dueDate = editTaskForm.editDueDate.value;
+            taskModal.style.display = 'none';
+            updateTaskCategories();
+            viewTaskDetails(currentTaskIndex); // Update task details view
+        }
+
+        createTaskForm.onsubmit = function(event) {
+            event.preventDefault();
+            var newTask = {
+                title: createTaskForm.createTitle.value,
+                description: createTaskForm.createDescription.value,
+                assignedTo: createTaskForm.createAssignedTo.value,
+                priority: createTaskForm.createPriority.value,
+                status: createTaskForm.createStatus.value,
+                dueDate: createTaskForm.createDueDate.value,
+                comments: []
+            };
+            tasks.push(newTask);
+            createTaskModal.style.display = 'none';
+            updateTaskCategories();
+        }
+
+        function openCreateTaskModal() {
+            createTaskModal.style.display = 'block';
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('datetime').innerText = now.toLocaleString();
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        function updateTaskCategories() {
+            var now = new Date();
+            var tasksByDueDate = {
+                "Atrasadas": tasks.filter(task => new Date(task.dueDate) < now && task.status !== 'Completada'),
+                "Para Hoy": tasks.filter(task => new Date(task.dueDate).toDateString() === now.toDateString() && task.status !== 'Completada'),
+                "Para Esta Semana": tasks.filter(task => {
+                    var dueDate = new Date(task.dueDate);
+                    var weekFromNow = new Date();
+                    weekFromNow.setDate(now.getDate() + 7);
+                    return dueDate > now && dueDate <= weekFromNow && task.status !== 'Completada';
+                }),
+                "Para la Próxima Semana": tasks.filter(task => {
+                    var dueDate = new Date(task.dueDate);
+                    var weekFromNow = new Date();
+                    weekFromNow.setDate(now.getDate() + 7);
+                    var twoWeeksFromNow = new Date();
+                    twoWeeksFromNow.setDate(now.getDate() + 14);
+                    return dueDate > weekFromNow && dueDate <= twoWeeksFromNow && task.status !== 'Completada';
+                }),
+                "Dentro de Dos Semanas o Más": tasks.filter(task => {
+                    var dueDate = new Date(task.dueDate);
+                    var twoWeeksFromNow = new Date();
+                    twoWeeksFromNow.setDate(now.getDate() + 14);
+                    return dueDate > twoWeeksFromNow && task.status !== 'Completada';
+                }),
+                "Sin Fecha Límite": tasks.filter(task => !task.dueDate && task.status !== 'Completada')
+            };
+
+            var taskCategories = document.getElementById('taskCategories');
+            taskCategories.innerHTML = '';
+
+            for (var category in tasksByDueDate) {
+                var categoryDiv = document.createElement('div');
+                categoryDiv.className = 'task-category';
+                categoryDiv.innerHTML = `<h3>${category}</h3>`;
+                tasksByDueDate[category].forEach((task, index) => {
+                    var taskDiv = document.createElement('div');
+                    taskDiv.className = 'task-item';
+                    taskDiv.innerHTML = `
+                        <p><strong>${task.title}</strong></p>
+                        <p>${task.description}</p>
+                        <p><em>Vence: ${task.dueDate}</em></p>
+                    `;
+                    taskDiv.onclick = function() {
+                        viewTaskDetails(index);
+                    };
+                    categoryDiv.appendChild(taskDiv);
+                });
+                taskCategories.appendChild(categoryDiv);
+            }
+        }
+
+        updateTaskCategories();
+    </script>
+</body>
+</html>
