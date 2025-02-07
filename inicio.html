@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Dashboard</title>
     <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
     <div class="sidebar">
-        <h2>Menú</h2>
+        <h2>Bienvenido usuario</h2>
         <ul>
-            <li><a href="#">Inicio</a></li>
-            <li><a href="#">Clientes</a></li>
-            <li><a href="#">Tareas</a></li>
-            <li><a href="#">Recordatorios</a></li>
+            <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
+            <li><a href="Tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
+            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
+            <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
+            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
+            <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
         </ul>
     </div>
 
@@ -21,19 +24,20 @@
         <div class="header">
             <h1>Resumen General</h1>
             <div class="quick-actions">
-                <button>+ Nuevo Cliente</button>
-                <button>+ Nueva Tarea</button>
-                <button>+ Nuevo Recordatorio</button>
-            </div>
+                <button onclick="location.href='Registrarempleado.html'">+ Nuevo Empleado</button>
+                <button onclick="location.href='Tareas.html'">+ Nueva Tarea</button>
+                <button onclick="location.href='Recordatorio.html'">+ Nuevo Recordatorio</button>
+
+        </div>
         </div>
 
         <div class="widgets">
             <div class="widget">
-                <h3>Clientes Recientes</h3>
-                <div class="list-item">Cliente 1</div>
-                <div class="list-item">Cliente 2</div>
-                <div class="list-item">Cliente 3</div>
-                <div class="list-item">Cliente 4</div>
+                <h3>Próximos cumpleaños</h3>
+                <div class="list-item">Cumpleaño 1</div>
+                <div class="list-item">Cumpleaño 2</div>
+                <div class="list-item">Cumpleaño 3</div>
+                <div class="list-item">Cumpleaño 4</div>
             </div>
 
             <div class="widget">
@@ -44,18 +48,11 @@
                 <div class="list-item">Recordatorio 4</div>
             </div>
             <div class="widget">
-                <h3>Tarea</h3>
+                <h3>Tareas pendientes</h3>
                 <div class="list-item">Tarea 1</div>
                 <div class="list-item">Tarea 2</div>
                 <div class="list-item">Tarea 3</div>
                 <div class="list-item">Tarea 4</div>
-            </div>
-            <div class="widget">
-                <h3>Venta</h3>
-                <div class="list-item">Venta 1</div>
-                <div class="list-item">Venta 2</div>
-                <div class="list-item">Venta 3</div>
-                <div class="list-item">Venta 4</div>
             </div>
         </div>
     </div>
