@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Regístrate</title>
+</head>
+<body>
+    <style>
+         body {
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; 
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+         }
+            form {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                width: 300px;
+            }
+            form h2 {
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            .input-group {
+                margin-bottom: 15px;
+                position: relative;
+            }
+            .input-group input {
+                width: 80%;
+                padding: 10px;
+                padding-left: 40px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+            .input-group i {
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #888;
+            }
+           
+            form button {
+                width: 100%;
+                padding: 10px;
+                background-color: #34495e;
+                border: none;
+                border-radius: 4px;
+                color: #fff;
+                font-size: 16px;
+            }
+            .register-link {
+                display: block;
+                text-align: center;
+                margin-top: 10px;
+                color: #34495e;
+            }
+           
+    </style>
+    <form>
+        <h2>Regístrate</h2>
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" placeholder="Nombre de Usuario">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" placeholder="Contraseña">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" placeholder="Confirmar Contraseña">
+        </div>
+    <div class="input-group">
+        <i class="fas fa-user"></i>
+        <input type="text" placeholder="Rol" list="Rol">
+        <datalist id="Rol">
+        <option value="Administrador">  
+        <option value="Empleado">
+        <option value="Supervisor">
+    </datalist>
+
+    </div>
+        <button>Registrarse</button>
+        <a href="login.html" class="register-link">Ya tengo una cuenta</a>
+    </form>
+</body>
+</html>

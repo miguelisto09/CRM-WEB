@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control del Gestor de Tareas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #4b0082; /* Purple background */
+            color: #fff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #9370db 3px solid; /* Light purple border */
+        }
+        header a {
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            list-style: none;
+        }
+        header li {
+            float: left;
+            display: inline;
+            padding: 0 20px 0 20px;
+        }
+        header #branding {
+            float: left;
+        }
+        header #branding h1 {
+            margin: 0;
+        }
+        header nav {
+            float: right;
+            margin-top: 10px;
+        }
+        .task-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        .task-table th, .task-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .task-table th {
+            background-color: #e6e6fa; /* Light purple background */
+        }
+        .task-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #4b0082; /* Purple background */
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+            margin: 5px; /* Add margin to avoid overlap */
+        }
+        .btn:hover {background-color: #6a0dad} /* Darker purple on hover */
+        .btn:active {
+            background-color: #6a0dad;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+        }
+        .task-table-container {
+            width: 70%;
+            margin-right: 20px; /* Add margin to separate from sidebar */
+        }
+        .sidebar {
+            width: 28%;
+            float: right;
+            background: #f4f4f4;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 20px; /* Add margin to separate from main content */
+        }
+        .sidebar h3 {
+            margin-top: 0;
+            margin-bottom: 20px; /* Add margin to separate from other elements */
+        }
+        .task-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            margin-bottom: 10px; /* Add margin to separate task items */
+        }
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        .task-item:hover {
+            background-color: #f1f1f1;
+        }
+        .task-details {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .task-details-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+        }
+        .task-details .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .task-details .close:hover,
+        .task-details .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .comment-box {
+            margin-top: 20px;
+        }
+        .comment-box textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .comment-box button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #4b0082; /* Purple background */
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+            margin: 5px; /* Add margin to avoid overlap */
+        }
+        .comment-box button:hover {background-color: #6a0dad} /* Darker purple on hover */
+        .comment-box button:active {
+            background-color: #6a0dad;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+        .file-upload {
+            margin-top: 20px;
+        }
+        .file-upload input[type="file"] {
+            display: none;
+        }
+        .file-upload label {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #4b0082; /* Purple background */
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+            margin: 5px; /* Add margin to avoid overlap */
+        }
+        .file-upload label:hover {background-color: #6a0dad} /* Darker purple on hover */
+        .file-upload label:active {
+            background-color: #6a0dad;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+        .chart-container {
+            width: 100%;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><span class="highlight">Manejador</span> de Tareas</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#">Tareas</a></li>
+                    <li><a href="Recordatorio.html">Recordatorios</a></li> <!-- New menu item -->
+                    <li><a href="#">Empleados</a></li>
+                    <li><a href="Configuracion.html">Configuración</a></li> <!-- Updated link -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container main-content">
+        <div class="task-table-container">
+            <button class="btn" onclick="document.getElementById('taskModal').style.display='block'">Crear Tarea</button>
+            <table class="task-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Asignado a</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Fecha de Vencimiento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="taskTableBody">
+                    <!-- Task rows will go here -->
+                </tbody>
+            </table>
+            <div class="chart-container">
+                <canvas id="taskChart"></canvas>
+            </div>
+        </div>
+        <div class="sidebar">
+            <h3>Tareas Recientes</h3>
+            <div id="recentTasks">
+                <!-- Recent tasks will be displayed here -->
+            </div>
+            <h3>Tareas Pendientes</h3>
+            <div id="pendingTasks">
+                <!-- Pending tasks will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('taskModal').style.display='none'">&times;</span>
+            <h2>Crear Nueva Tarea</h2>
+            <form id="taskForm">
+                <label for="title">Título</label>
+                <input type="text" id="title" name="title" required><br><br>
+                <label for="description">Descripción</label>
+                <textarea id="description" name="description" required></textarea><br><br>
+                <label for="assignedTo">Asignado a</label>
+                <input type="text" id="assignedTo" name="assignedTo" required><br><br>
+                <label for="priority">Prioridad</label>
+                <select id="priority" name="priority">
+                    <option value="low">Baja</option>
+                    <option value="medium">Media</option>
+                    <option value="high">Alta</option>
+                    <option value="critical">Crítica</option>
+                    <option value="urgent">Urgente</option> <!-- New option -->
+                    <option value="veryLow">Muy Baja</option> <!-- New option -->
+                </select><br><br>
+                <label for="status">Estado</label>
+                <select id="status" name="status">
+                    <option value="pending">Pendiente</option>
+                    <option value="inProgress">En Progreso</option>
+                    <option value="completed">Completada</option>
+                    <option value="cancelled">Cancelada</option>
+                    <option value="onHold">En Espera</option> <!-- New option -->
+                    <option value="deferred">Diferida</option> <!-- New option -->
+                </select><br><br>
+                <label for="dueDate">Fecha de Vencimiento</label>
+                <input type="date" id="dueDate" name="dueDate" required><br><br>
+                <div class="file-upload">
+                    <label for="taskFiles">Subir Documentos</label>
+                    <input type="file" id="taskFiles" name="taskFiles" multiple>
+                </div>
+                <button type="submit" class="btn">Guardar Tarea</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="taskDetails" class="task-details">
+        <div class="task-details-content">
+            <span class="close" onclick="document.getElementById('taskDetails').style.display='none'">&times;</span>
+            <h2 id="taskTitle"></h2>
+            <p><strong>Descripción:</strong> <span id="taskDescription"></span></p>
+            <p><strong>Asignado a:</strong> <span id="taskAssignedTo"></span></p>
+            <p><strong>Prioridad:</strong> <span id="taskPriority"></span></p>
+            <p><strong>Estado:</strong> <span id="taskStatus"></span></p>
+            <p><strong>Fecha de Vencimiento:</strong> <span id="taskDueDate"></span></p>
+            <div class="comment-box">
+                <h3>Comentarios</h3>
+                <div id="taskComments"></div>
+                <textarea id="newComment" placeholder="Añadir un comentario..."></textarea>
+                <button onclick="addComment()">Añadir Comentario</button>
+            </div>
+            <div class="file-upload">
+                <label for="taskFilesDetails">Subir Documentos</label>
+                <input type="file" id="taskFilesDetails" name="taskFilesDetails" multiple>
+            </div>
+            <button class="btn" style="background-color: green;" onclick="completeTask(currentTaskIndex)">Completar Tarea</button>
+            <button class="btn" style="background-color: red;" onclick="cancelTask()">Cancelar Tarea</button>
+            <button class="btn" style="background-color: blue;" onclick="editTask(currentTaskIndex)">Editar Tarea</button>
+        </div>
+    </div>
+
+    <script>
+        var modal = document.getElementById('taskModal');
+        var taskForm = document.getElementById('taskForm');
+        var taskTableBody = document.getElementById('taskTableBody');
+        var recentTasks = document.getElementById('recentTasks');
+        var pendingTasks = document.getElementById('pendingTasks');
+        var taskDetails = document.getElementById('taskDetails');
+        var currentTaskIndex = null;
+        var tasks = [];
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+            if (event.target == taskDetails) {
+                taskDetails.style.display = "none";
+            }
+        }
+
+        taskForm.onsubmit = function(event) {
+            event.preventDefault();
+            var dueDate = new Date(taskForm.dueDate.value);
+            var now = new Date();
+            now.setHours(0, 0, 0, 0); // Set time to 00:00:00 for comparison
+            if (dueDate < now) {
+                alert("La fecha de vencimiento no puede ser menor a la fecha actual.");
+                return;
+            }
+            var task = {
+                title: taskForm.title.value,
+                description: taskForm.description.value,
+                assignedTo: taskForm.assignedTo.value,
+                priority: taskForm.priority.value,
+                status: taskForm.status.value,
+                dueDate: taskForm.dueDate.value,
+                comments: [],
+                files: Array.from(taskForm.taskFiles.files)
+            };
+            tasks.push(task);
+            updateTaskTable();
+            updateSidebar();
+            updateChart();
+            modal.style.display = "none";
+            taskForm.reset();
+        }
+
+        function updateTaskTable() {
+            taskTableBody.innerHTML = '';
+            tasks.forEach(function(task, index) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${task.title}</td>
+                    <td>${task.description}</td>
+                    <td>${task.assignedTo}</td>
+                    <td>${task.priority}</td>
+                    <td>${task.status}</td>
+                    <td>${task.dueDate}</td>
+                    <td>
+                        <button class="btn" style="background-color: red;" onclick="deleteTask(event, ${index})">Eliminar</button>
+                    </td>
+                `;
+                row.onclick = function(event) {
+                    if (!event.target.matches('.btn')) {
+                        viewTaskDetails(index);
+                    }
+                };
+                taskTableBody.appendChild(row);
+            });
+        }
+
+        function deleteTask(event, index) {
+            event.stopPropagation();
+            tasks.splice(index, 1);
+            updateTaskTable();
+            updateSidebar();
+            updateChart();
+        }
+
+        function updateSidebar() {
+            recentTasks.innerHTML = '';
+            pendingTasks.innerHTML = '';
+            tasks.slice(-5).forEach(function(task, index) {
+                var item = document.createElement('div');
+                item.className = 'task-item';
+                item.innerText = task.title;
+                item.onclick = function() { viewTaskDetails(index); };
+                recentTasks.appendChild(item);
+            });
+            tasks.filter(task => task.status === 'pending').forEach(function(task, index) {
+                var item = document.createElement('div');
+                item.className = 'task-item';
+                item.innerText = task.title;
+                item.onclick = function() { viewTaskDetails(index); };
+                pendingTasks.appendChild(item);
+            });
+        }
+
+        function viewTaskDetails(index) {
+            currentTaskIndex = index;
+            var task = tasks[index];
+            document.getElementById('taskTitle').innerText = task.title;
+            document.getElementById('taskDescription').innerText = task.description;
+            document.getElementById('taskAssignedTo').innerText = task.assignedTo;
+            document.getElementById('taskPriority').innerText = task.priority;
+            document.getElementById('taskStatus').innerText = task.status;
+            document.getElementById('taskDueDate').innerText = task.dueDate;
+            document.getElementById('taskComments').innerHTML = task.comments.map(comment => `<p>${comment}</p>`).join('');
+            taskDetails.style.display = 'block';
+        }
+
+        function addComment() {
+            var comment = document.getElementById('newComment').value;
+            if (comment) {
+                tasks[currentTaskIndex].comments.push(comment);
+                document.getElementById('newComment').value = '';
+                viewTaskDetails(currentTaskIndex);
+            }
+        }
+
+        function completeTask(index) {
+            tasks[index].status = 'completed';
+            updateTaskTable();
+            updateSidebar();
+            taskDetails.style.display = 'none';
+        }
+
+        function cancelTask() {
+            taskDetails.style.display = 'none';
+        }
+
+        function editTask(index) {
+            var task = tasks[index];
+            document.getElementById('title').value = task.title;
+            document.getElementById('description').value = task.description;
+            document.getElementById('assignedTo').value = task.assignedTo;
+            document.getElementById('priority').value = task.priority;
+            document.getElementById('status').value = task.status;
+            document.getElementById('dueDate').value = task.dueDate;
+            document.getElementById('taskModal').style.display = 'block';
+            deleteTask({ stopPropagation: () => {} }, index);
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('datetime').innerText = now.toLocaleString();
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+        updateTaskTable();
+
+        function updateChart() {
+            var ctx = document.getElementById('taskChart').getContext('2d');
+            var dueDates = tasks.map(task => task.dueDate);
+            var taskCounts = dueDates.reduce((acc, date) => {
+                acc[date] = (acc[date] || 0) + 1;
+                return acc;
+            }, {});
+            var labels = Object.keys(taskCounts);
+            var data = Object.values(taskCounts);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Tareas por Fecha de Vencimiento',
+                        data: data,
+                        borderColor: 'rgba(75, 0, 130, 1)',
+                        backgroundColor: 'rgba(75, 0, 130, 0.2)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

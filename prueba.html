@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manejador de Tareas</title>
+</head>
+<body>
+    <h1>Lista de Tareas</h1>
+    <ul id="lista-tareas"></ul>
+
+    <script>
+        fetch('http://localhost:4000/tareas')
+            .then(response => response.json())
+            .then(data => {
+                const lista = document.getElementById('lista-tareas');
+                data.forEach(tarea => {
+                    const item = document.createElement('li');
+                    item.textContent = `📌 ${tarea.nombre_tarea} - ${tarea.estado}`;
+                    lista.appendChild(item);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+</body>
+</html>
