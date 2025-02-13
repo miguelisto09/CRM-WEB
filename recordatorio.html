@@ -18,26 +18,26 @@
             overflow: hidden;
         }
         header {
-            background: #4b0082; /* Purple background */
+            background: #34495e; 
             color: #fff;
             padding-top: 30px;
             min-height: 70px;
-            border-bottom: #9370db 3px solid; 
+            border-bottom: #3498db 3px solid; 
+            font-family: Franklin Gothic Medium;
         }
         header a {
             color: #fff;
             text-decoration: none;
-            text-transform: uppercase;
             font-size: 16px;
         }
         header ul {
-            padding: 0;
             list-style: none;
+            padding: 0;
+            text-align: right;
         }
         header li {
-            float: left;
             display: inline;
-            padding: 0 20px 0 20px;
+            margin: 0 10px;
         }
         header #branding {
             float: left;
@@ -80,15 +80,15 @@
             text-decoration: none;
             outline: none;
             color: #fff;
-            background-color: #4b0082; 
+            background-color: #34495e; 
             border: none;
             border-radius: 15px;
             box-shadow: 0 9px #999;
             margin: 5px; 
         }
-        .btn:hover {background-color: #6a0dad} /* Darker purple on hover */
+        .btn:hover {background-color: #34495e} /* Darker purple on hover */
         .btn:active {
-            background-color: #6a0dad;
+            background-color: #34495e;
             box-shadow: 0 5px #666;
             transform: translateY(4px);
         }
@@ -184,15 +184,15 @@
             text-decoration: none;
             outline: none;
             color: #fff;
-            background-color: #4b0082; /* Purple background */
+            background-color: #34495e; /* Purple background */
             border: none;
             border-radius: 15px;
             box-shadow: 0 9px #999;
             margin: 5px; /* Add margin to avoid overlap */
         }
-        .comment-box button:hover {background-color: #6a0dad} /* Darker purple on hover */
+        .comment-box button:hover {background-color: #34495e} /* Darker purple on hover */
         .comment-box button:active {
-            background-color: #6a0dad;
+            background-color: #34495e;
             box-shadow: 0 5px #666;
             transform: translateY(4px);
         }
@@ -288,7 +288,7 @@
             text-overflow: ellipsis;
         }
         .task-item .read-more {
-            color: #4b0082;
+            color: #34495e;
             cursor: pointer;
             text-decoration: underline;
         }
@@ -301,15 +301,15 @@
             text-decoration: none;
             outline: none;
             color: #fff;
-            background-color: #4b0082; 
+            background-color: #34495e; 
             border: none;
             border-radius: 15px;
             box-shadow: 0 9px #999;
             margin: 20px 0; 
         }
-        .create-task-btn:hover {background-color: #6a0dad} /* Darker purple on hover */
+        .create-task-btn:hover {background-color: #34495e} /* Darker purple on hover */
         .create-task-btn:active {
-            background-color: #6a0dad;
+            background-color: #34495e;
             box-shadow: 0 5px #666;
             transform: translateY(4px);
         }
@@ -324,11 +324,13 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="#">Inicio</a></li>
-                    <li><a href="Tareas.html">Tareas</a></li>
-                    <li><a href="#">Empleados</a></li>
-                    <li><a href="Configuracion.html">Configuración</a></li> <!-- Updated link -->
-                    <li><a href="Recordatorio.html">Recordatorios</a></li>
+                    <ul>
+                        <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
+                        <li><a href="Tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
+                        <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
+                        <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
+                        <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
+                        </ul>
                 </ul>
             </nav>
         </div>

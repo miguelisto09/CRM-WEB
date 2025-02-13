@@ -244,17 +244,17 @@
     <script>
         async function cargarEmpleados() {
             try {
-                const response = await fetch('http://localhost:4000/empleado');
+                const response = await fetch('http://localhost:4000/empleado'); 
                 const empleados = await response.json();
                 const tabla = document.getElementById('tabla-empleados');
-                tabla.innerHTML = '';
+                tabla.innerHTML = ''; 
 
                 empleados.forEach(emp => {
                     const fila = document.createElement('tr');
                     fila.innerHTML = `
                         <td>${emp.nombre}</td>
                         <td>${emp.apellido}</td>
-                        <td>${emp.fecha_nacimiento}</td>
+                        <td>${new Date(emp.fecha_nacimiento).toISOString().split('T')[0]}</td>
                         <td>${emp.correo_electronico || 'N/A'}</td>
                         <td>${emp.cedula || 'N/A'}</td>
                         <td>${emp.telefono || 'N/A'}</td>
@@ -275,19 +275,20 @@
         }
 
         async function eliminarEmpleado(id) {
-            if (confirm('¿Estás seguro de eliminar este empleado?')) {
-                try {
-                    await fetch(`http://localhost:4000/empleado/${id}`, { method: 'DELETE' });
-                    cargarEmpleados(); 
-                } catch (error) {
-                    console.error('Error al eliminar empleado:', error);
-                }
-            }
+    if (confirm('¿Estás seguro de eliminar este empleado?')) {
+        try {
+            await fetch(`http://localhost:4000/empleado/${id}`, { method: 'DELETE' });
+            cargarEmpleados();
+        } catch (error) {
+            console.error('Error al eliminar empleado:', error);
         }
+    }
+}
 
         function editarEmpleado(id) {
-            alert('Función de edición en desarrollo para ID ' + id);
-        }
+    window.location.href = `editarEmpleado.html?id=${id}`;
+}
+
 
         document.addEventListener('DOMContentLoaded', cargarEmpleados);
     </script>

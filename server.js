@@ -3,13 +3,12 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-dotenv.config(); // Cargar variables de entorno desde .env
+dotenv.config(); 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Crear un pool de conexiones para mejorar la escalabilidad
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
@@ -20,7 +19,6 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-// Verificar conexión a la base de datos
 pool.getConnection((err, connection) => {
   if (err) {
     console.error('❌ Error en la conexión a MySQL:', err.message);
@@ -30,7 +28,6 @@ pool.getConnection((err, connection) => {
   }
 });
 
-// Obtener todos los empleados
 app.get('/empleado', (req, res) => {
   pool.query('SELECT * FROM empleado', (err, results) => {
     if (err) {
@@ -40,7 +37,6 @@ app.get('/empleado', (req, res) => {
   });
 });
 
-// Obtener un empleado por ID
 app.get('/empleado/:id', (req, res) => {
   const { id } = req.params;
   pool.query('SELECT * FROM empleado WHERE id_empleado = ?', [id], (err, results) => {
@@ -54,7 +50,6 @@ app.get('/empleado/:id', (req, res) => {
   });
 });
 
-// Crear un nuevo empleado
 app.post('/empleado', (req, res) => {
   const { nombre, apellido, correo_electronico } = req.body;
   if (!nombre || !apellido || !correo_electronico) {
@@ -69,7 +64,6 @@ app.post('/empleado', (req, res) => {
   });
 });
 
-// Actualizar un empleado por ID
 app.put('/empleado/:id', (req, res) => {
   const { id } = req.params;
   if (Object.keys(req.body).length === 0) {
@@ -87,7 +81,6 @@ app.put('/empleado/:id', (req, res) => {
   });
 });
 
-// Eliminar un empleado por ID
 app.delete('/empleado/:id', (req, res) => {
   const { id } = req.params;
   pool.query('DELETE FROM empleado WHERE id_empleado = ?', [id], (err, result) => {
@@ -101,7 +94,28 @@ app.delete('/empleado/:id', (req, res) => {
   });
 });
 
-// Configuración del puerto
+app.get('/tareas', (req, res) => {
+    const sql = `
+        SELECT 
+            t.id_tarea, 
+            t.nombre_tarea, 
+            t.descripcion, 
+            e.nombre AS nombre_encargado,  
+            t.prioridad, 
+            t.estado, 
+            t.fecha_limite
+        FROM tarea t
+        LEFT JOIN empleado e ON t.persona_asignada = e.id_empleado;
+    `;
+
+    pool.query(sql, (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+        }
+        res.json(results);
+    });
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);

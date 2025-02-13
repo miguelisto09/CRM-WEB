@@ -4,86 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuración del Manejador de Tareas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="estilo.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-            overflow: hidden;
-        }
-        header {
-            background: #4b0082;
-            color: #fff;
-            padding-top: 30px;
-            min-height: 70px;
-            border-bottom: #9370db 3px solid;
-        }
-        header a {
-            color: #fff;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-size: 16px;
-        }
-        header ul {
-            padding: 0;
-            list-style: none;
-        }
-        header li {
-            float: left;
-            display: inline;
-            padding: 0 20px 0 20px;
-        }
-        header #branding {
-            float: left;
-        }
-        header #branding h1 {
-            margin: 0;
-        }
-        header nav {
-            float: right;
-            margin-top: 10px;
-        }
-        .sidebar {
-            width: 20%;
-            float: left;
-            background: #f4f4f4;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-top: 20px;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            margin-bottom: 10px;
-        }
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #4b0082;
-            font-size: 16px;
-        }
-        .sidebar ul li a:hover {
-            text-decoration: underline;
-        }
-        .main-content {
-            width: 75%;
-            float: right;
-            margin-top: 20px;
-        }
         .config-section {
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 10px;
             padding: 20px;
-            margin: 10px;
-            width: 100%;
+            margin: 20px 0;
         }
         .config-section h2 {
             border-bottom: 1px solid #ddd;
@@ -104,253 +33,327 @@
         .config-section .checkbox-group {
             display: flex;
             align-items: center;
+            margin-bottom: 20px;
         }
         .config-section .checkbox-group input {
             width: auto;
             margin-right: 10px;
         }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            outline: none;
-            color: #fff;
-            background-color: #4b0082;
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 9px #999;
-            margin: 5px;
+        .config-buttons {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
         }
-        .btn:hover {background-color: #6a0dad}
-        .btn:active {
-            background-color: #6a0dad;
-            box-shadow: 0 5px #666;
-            transform: translateY(4px);
+        .config-buttons .btn {
+            flex: 1 1 48%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: transparent;
+            color: #333;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+        .config-buttons .btn:hover {
+            background-color: #f4f4f4;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .config-sidebar {
+            width: 20%;
+            float: left;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+        .config-sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .config-sidebar ul li {
+            margin-bottom: 10px;
+        }
+        .config-sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .config-sidebar ul li a:hover {
+            background-color: #ddd;
+        }
+        .config-content {
+            width: 75%;
+            float: right;
+            padding: 20px;
+        }
+        .config-section {
+            display: none;
+        }
+        .config-section.active {
+            display: block;
+        }
+        .config-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .config-sidebar {
+            width: 20%;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+        .config-content {
+            width: 75%;
+            padding: 20px;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('.config-sidebar ul li a');
+            const sections = document.querySelectorAll('.config-section');
+
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+
+                    sections.forEach(section => section.classList.remove('active'));
+                    target.classList.add('active');
+                });
+            });
+
+            // Activate the first section by default
+            if (sections.length > 0) {
+                sections[0].classList.add('active');
+            }
+        });
+    </script>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div id="branding">
-                <h1><span class="highlight">Manejador</span> de Tareas</h1>
-            </div>
-            <nav>
+    <div class="sidebar">
+        <h2>Bienvenido usuario</h2>
+        <ul>
+            <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
+            <li><a href="tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
+            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
+            <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
+            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
+            <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Configuración del Manejador de Tareas</h1>
+        </div>
+
+        <div class="config-container">
+            <div class="config-sidebar">
                 <ul>
-                    <li><a href="#">Inicio</a></li>
-                    <li><a href="Tareas.html">Tareas</a></li>
-                    <li><a href="Recordatorio.html">Recordatorios</a></li>
-                    <li><a href="#">Empleados</a></li>
-                    <li><a href="Configuracion.html">Configuración</a></li> <!-- Updated link -->
+                    <li><a href="#general">Configuración General</a></li>
+                    <li><a href="#users">Configuración de Usuarios y Permisos</a></li>
+                    <li><a href="#tasks">Configuración de Tareas</a></li>
+                    <li><a href="#notifications">Configuración de Notificaciones</a></li>
+                    <li><a href="#reports">Configuración de Reportes</a></li>
+                    <li><a href="#integrations">Integraciones</a></li>
+                    <li><a href="#security">Seguridad y Privacidad</a></li>
+                    <li><a href="#interface">Configuración de la Interfaz</a></li>
+                    <li><a href="#backup">Configuración de Copias de Seguridad</a></li>
                 </ul>
-            </nav>
-        </div>
-    </header>
+            </div>
 
-    <div class="container">
-        <div class="sidebar">
-            <h3>Configuración</h3>
-            <ul>
-                <li><a href="#general">Configuración General</a></li>
-                <li><a href="#users">Usuarios y Permisos</a></li>
-                <li><a href="#tasks">Configuración de Tareas</a></li>
-                <li><a href="#notifications">Notificaciones</a></li>
-                <li><a href="#reports">Reportes</a></li>
-                <li><a href="#integrations">Integraciones</a></li>
-                <li><a href="#security">Seguridad y Privacidad</a></li>
-                <li><a href="#interface">Interfaz</a></li>
-                <li><a href="#backup">Copias de Seguridad</a></li>
-            </ul>
-        </div>
-        <div class="main-content">
-            <div id="general" class="config-section">
-                <h2>1. Configuración General</h2>
-                <label for="language">Idioma</label>
-                <select id="language">
-                    <option value="es">Español</option>
-                    <option value="en">Inglés</option>
-                </select>
-                <label for="timezone">Zona horaria</label>
-                <select id="timezone">
-                    <option value="gmt-5">GMT-5</option>
-                    <option value="gmt-6">GMT-6</option>
-                </select>
-                <label for="datetimeFormat">Formato de fecha y hora</label>
-                <select id="datetimeFormat">
-                    <option value="dd/mm/yyyy">DD/MM/AAAA</option>
-                    <option value="mm/dd/yyyy">MM/DD/AAAA</option>
-                </select>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="notifications">
-                    <label for="notifications">Notificaciones</label>
+            <div class="config-content">
+                <div id="general" class="config-section">
+                    <h2>1. Configuración General</h2>
+                    <label for="language">Idioma</label>
+                    <select id="language">
+                        <option value="es">Español</option>
+                        <option value="en">Inglés</option>
+                    </select>
+                    <label for="timezone">Zona horaria</label>
+                    <select id="timezone">
+                        <option value="gmt-5">GMT-5</option>
+                        <option value="gmt-6">GMT-6</option>
+                    </select>
+                    <label for="datetimeFormat">Formato de fecha y hora</label>
+                    <select id="datetimeFormat">
+                        <option value="dd/mm/yyyy">DD/MM/AAAA</option>
+                        <option value="mm/dd/yyyy">MM/DD/AAAA</option>
+                    </select>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="notifications">
+                        <label for="notifications">Notificaciones</label>
+                    </div>
+                    <label for="theme">Tema</label>
+                    <select id="theme">
+                        <option value="light">Modo claro</option>
+                        <option value="dark">Modo oscuro</option>
+                    </select>
                 </div>
-                <label for="theme">Tema</label>
-                <select id="theme">
-                    <option value="light">Modo claro</option>
-                    <option value="""dark">Modo oscuro</optio
-                </select>
-            </div>
 
-            <div id="users" class="config-section">
-                <h2>2. Configuración de Usuarios y Permisos</h2>
-                <button class="btn">Agregar Usuario</button>
-                <button class="btn">Modificar Usuario</button>
-                <button class="btn">Eliminar Usuario</button>
-                <label for="roles">Roles y permisos</label>
-                <select id="roles">
-                    <option value="admin">Administrador</option>
-                    <option value="supervisor">Supervisor</option>
-                    <option value="employee">Empleado</option>
-                </select>
-                <label for="password">Cambio de contraseña</label>
-                <input type="password" id="password">
-                <label for="authOptions">Opciones de autenticación</label>
-                <select id="authOptions">
-                    <option value="password">Contraseña</option>
-                    <option value="2fa">Autenticación en dos pasos</option>
-                    <option value="google">Inicio de sesión con Google</option>
-                    <option value="microsoft">Inicio de sesión con Microsoft</option>
-                </select>
-            </div>
-
-            <div id="tasks" class="config-section">
-                <h2>3. Configuración de Tareas</h2>
-                <label for="taskTypes">Tipos de tareas</label>
-                <input type="text" id="taskTypes" placeholder="Urgente, Normal, Baja prioridad">
-                <label for="taskStates">Estados de tarea personalizados</label>
-                <input type="text" id="taskStates" placeholder="Pendiente, En progreso, Completada, Cancelada">
-                <div class="checkbox-group">
-                    <input type="checkbox" id="timeLimit">
-                    <label for="timeLimit">Habilitar límite de tiempo por tarea</label>
+                <div id="users" class="config-section">
+                    <h2>2. Configuración de Usuarios y Permisos</h2>
+                    <button class="btn">Agregar Usuario</button>
+                    <button class="btn">Modificar Usuario</button>
+                    <button class="btn">Eliminar Usuario</button>
+                    <label for="roles">Roles y permisos</label>
+                    <select id="roles">
+                        <option value="admin">Administrador</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="employee">Empleado</option>
+                    </select>
+                    <label for="password">Cambio de contraseña</label>
+                    <input type="password" id="password">
+                    <label for="authOptions">Opciones de autenticación</label>
+                    <select id="authOptions">
+                        <option value="password">Contraseña</option>
+                        <option value="2fa">Autenticación en dos pasos</option>
+                        <option value="google">Inicio de sesión con Google</option>
+                        <option value="microsoft">Inicio de sesión con Microsoft</option>
+                    </select>
                 </div>
-                <label for="taskAssignment">Asignación automática de tareas</label>
-                <select id="taskAssignment">
-                    <option value="algorithm">Algoritmo de distribución</option>
-                    <option value="manual">Manual</option>
-                </select>
-                <label for="taskTemplates">Plantillas de tareas recurrentes</label>
-                <textarea id="taskTemplates" placeholder="Definir plantillas..."></textarea>
-            </div>
 
-            <div id="notifications" class="config-section">
-                <h2>4. Configuración de Notificaciones</h2>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="emailNotifications">
-                    <label for="emailNotifications">Notificaciones por email</label>
+                <div id="tasks" class="config-section">
+                    <h2>3. Configuración de Tareas</h2>
+                    <label for="taskTypes">Tipos de tareas</label>
+                    <input type="text" id="taskTypes" placeholder="Urgente, Normal, Baja prioridad">
+                    <label for="taskStates">Estados de tarea personalizados</label>
+                    <input type="text" id="taskStates" placeholder="Pendiente, En progreso, Completada, Cancelada">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="timeLimit">
+                        <label for="timeLimit">Habilitar límite de tiempo por tarea</label>
+                    </div>
+                    <label for="taskAssignment">Asignación automática de tareas</label>
+                    <select id="taskAssignment">
+                        <option value="algorithm">Algoritmo de distribución</option>
+                        <option value="manual">Manual</option>
+                    </select>
+                    <label for="taskTemplates">Plantillas de tareas recurrentes</label>
+                    <textarea id="taskTemplates" placeholder="Definir plantillas..."></textarea>
                 </div>
-                <label for="appNotifications">Notificaciones en la app</label>
-                <select id="appNotifications">
-                    <option value="sound">Sonido</option>
-                    <option value="banner">Banner</option>
-                    <option value="popup">Emergente</option>
-                </select>
-                <label for="notificationFrequency">Frecuencia de notificaciones</label>
-                <select id="notificationFrequency">
-                    <option value="immediate">Inmediato</option>
-                    <option value="30min">Cada 30 min</option>
-                    <option value="hourly">Cada hora</option>
-                    <option value="daily">Diario</option>
-                </select>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="urgentNotifications">
-                    <label for="urgentNotifications">Notificaciones para tareas urgentes</label>
+
+                <div id="notifications" class="config-section">
+                    <h2>4. Configuración de Notificaciones</h2>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="emailNotifications">
+                        <label for="emailNotifications">Notificaciones por email</label>
+                    </div>
+                    <label for="appNotifications">Notificaciones en la app</label>
+                    <select id="appNotifications">
+                        <option value="sound">Sonido</option>
+                        <option value="banner">Banner</option>
+                        <option value="popup">Emergente</option>
+                    </select>
+                    <label for="notificationFrequency">Frecuencia de notificaciones</label>
+                    <select id="notificationFrequency">
+                        <option value="immediate">Inmediato</option>
+                        <option value="30min">Cada 30 min</option>
+                        <option value="hourly">Cada hora</option>
+                        <option value="daily">Diario</option>
+                    </select>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="urgentNotifications">
+                        <label for="urgentNotifications">Notificaciones para tareas urgentes</label>
+                    </div>
                 </div>
-            </div>
 
-            <div id="reports" class="config-section">
-                <h2>5. Configuración de Reportes</h2>
-                <label for="reportFormat">Formato de reportes</label>
-                <select id="reportFormat">
-                    <option value="pdf">PDF</option>
-                    <option value="excel">Excel</option>
-                    <option value="csv">CSV</option>
-                </select>
-                <label for="reportFrequency">Frecuencia de generación de reportes</label>
-                <select id="reportFrequency">
-                    <option value="daily">Diario</option>
-                    <option value="weekly">Semanal</option>
-                    <option value="monthly">Mensual</option>
-                </select>
-                <label for="reportFilters">Filtros por usuario, departamento o estado de tarea</label>
-                <textarea id="reportFilters" placeholder="Definir filtros..."></textarea>
-            </div>
+                <div id="reports" class="config-section">
+                    <h2>5. Configuración de Reportes</h2>
+                    <label for="reportFormat">Formato de reportes</label>
+                    <select id="reportFormat">
+                        <option value="pdf">PDF</option>
+                        <option value="excel">Excel</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                    <label for="reportFrequency">Frecuencia de generación de reportes</label>
+                    <select id="reportFrequency">
+                        <option value="daily">Diario</option>
+                        <option value="weekly">Semanal</option>
+                        <option value="monthly">Mensual</option>
+                    </select>
+                    <label for="reportFilters">Filtros por usuario, departamento o estado de tarea</label>
+                    <textarea id="reportFilters" placeholder="Definir filtros..."></textarea>
+                </div>
 
-            <div id="integrations" class="config-section">
-                <h2>6. Integraciones</h2>
-                <label for="emailIntegration">Integración con correo corporativo</label>
-                <select id="emailIntegration">
-                    <option value="outlook">Outlook</option>
-                    <option value="gmail">Gmail</option>
-                </select>
-                <label for="toolsIntegration">Integración con herramientas externas</label>
-                <select id="toolsIntegration">
-                    <option value="trello">Trello</option>
-                    <option value="asana">Asana</option>
-                    <option value="slack">Slack</option>
-                    <option value="teams">Microsoft Teams</option>
-                </select>
-                <label for="apiIntegration">API y Webhooks</label>
-                <textarea id="apiIntegration" placeholder="Configuración avanzada..."></textarea>
-            </div>
+                <div id="integrations" class="config-section">
+                    <h2>6. Integraciones</h2>
+                    <label for="emailIntegration">Integración con correo corporativo</label>
+                    <select id="emailIntegration">
+                        <option value="outlook">Outlook</option>
+                        <option value="gmail">Gmail</option>
+                    </select>
+                    <label for="toolsIntegration">Integración con herramientas externas</label>
+                    <select id="toolsIntegration">
+                        <option value="trello">Trello</option>
+                        <option value="asana">Asana</option>
+                        <option value="slack">Slack</option>
+                        <option value="teams">Microsoft Teams</option>
+                    </select>
+                    <label for="apiIntegration">API y Webhooks</label>
+                    <textarea id="apiIntegration" placeholder="Configuración avanzada..."></textarea>
+                </div>
 
-            <div id="security" class="config-section">
-                <h2>7. Seguridad y Privacidad</h2>
-                <label for="accessPolicy">Política de acceso</label>
-                <select id="accessPolicy">
-                    <option value="timeout">Tiempo de inactividad antes de cierre de sesión</option>
-                </select>
-                <label for="changeHistory">Historial de cambios en tareas</label>
-                <textarea id="changeHistory" placeholder="Registro de auditoría..."></textarea>
-                <label for="deviceAccess">Acceso desde dispositivos específicos</label>
-                <textarea id="deviceAccess" placeholder="Lista de IPs permitidas..."></textarea>
-                <label for="dataBackup">Respaldo y recuperación de datos</label>
-                <textarea id="dataBackup" placeholder="Opciones de respaldo..."></textarea>
-            </div>
+                <div id="security" class="config-section">
+                    <h2>7. Seguridad y Privacidad</h2>
+                    <label for="accessPolicy">Política de acceso</label>
+                    <select id="accessPolicy">
+                        <option value="timeout">Tiempo de inactividad antes de cierre de sesión</option>
+                    </select>
+                    <label for="changeHistory">Historial de cambios en tareas</label>
+                    <textarea id="changeHistory" placeholder="Registro de auditoría..."></textarea>
+                    <label for="deviceAccess">Acceso desde dispositivos específicos</label>
+                    <textarea id="deviceAccess" placeholder="Lista de IPs permitidas..."></textarea>
+                    <label for="dataBackup">Respaldo y recuperación de datos</label>
+                    <textarea id="dataBackup" placeholder="Opciones de respaldo..."></textarea>
+                </div>
 
-            <div id="interface" class="config-section">
-                <h2>8. Configuración de la Interfaz</h2>
-                <label for="fontSize">Tamaño de fuentes y accesibilidad</label>
-                <select id="fontSize">
-                    <option value="small">Pequeño</option>
-                    <option value="medium">Mediano</option>
-                    <option value="large">Grande</option>
-                </select>
-                <label for="iconCustomization">Personalización de iconos y colores</label>
-                <textarea id="iconCustomization" placeholder="Definir personalización..."></textarea>
-                <label for="interfaceMode">Modo de interfaz</label>
-                <select id="interfaceMode">
-                    <option value="compact">Compacto</option>
-                    <option value="expanded">Expandido</option>
-                </select>
-            </div>
+                <div id="interface" class="config-section">
+                    <h2>8. Configuración de la Interfaz</h2>
+                    <label for="fontSize">Tamaño de fuentes y accesibilidad</label>
+                    <select id="fontSize">
+                        <option value="small">Pequeño</option>
+                        <option value="medium">Mediano</option>
+                        <option value="large">Grande</option>
+                    </select>
+                    <label for="iconCustomization">Personalización de iconos y colores</label>
+                    <textarea id="iconCustomization" placeholder="Definir personalización..."></textarea>
+                    <label for="interfaceMode">Modo de interfaz</label>
+                    <select id="interfaceMode">
+                        <option value="compact">Compacto</option>
+                        <option value="expanded">Expandido</option>
+                    </select>
+                </div>
 
-            <div id="backup" class="config-section">
-                <h2>9. Configuración de Copias de Seguridad</h2>
-                <label for="backupFrequency">Frecuencia de respaldos</label>
-                <select id="backupFrequency">
-                    <option value="daily">Automático diario</option>
-                    <option value="weekly">Automático semanal</option>
-                    <option value="monthly">Automático mensual</option>
-                </select>
-                <label for="backupLocation">Ubicación del respaldo</label>
-                <select id="backupLocation">
-                    <option value="cloud">Nube</option>
-                    <option value="local">Local</option>
-                    <option value="externalServer">Servidor externo</option>
-                </select>
-                <label for="restoreOptions">Opciones de restauración</label>
-                <textarea id="restoreOptions" placeholder="Lista de copias disponibles con opción de restaurar..."></textarea>
-            </div>
+                <div id="backup" class="config-section">
+                    <h2>9. Configuración de Copias de Seguridad</h2>
+                    <label for="backupFrequency">Frecuencia de respaldos</label>
+                    <select id="backupFrequency">
+                        <option value="daily">Automático diario</option>
+                        <option value="weekly">Automático semanal</option>
+                        <option value="monthly">Automático mensual</option>
+                    </select>
+                    <label for="backupLocation">Ubicación del respaldo</label>
+                    <select id="backupLocation">
+                        <option value="cloud">Nube</option>
+                        <option value="local">Local</option>
+                        <option value="externalServer">Servidor externo</option>
+                    </select>
+                    <label for="restoreOptions">Opciones de restauración</label>
+                    <textarea id="restoreOptions" placeholder="Lista de copias disponibles con opción de restaurar..."></textarea>
+                </div>
 
-            <div class="config-section">
-                <button class="btn" style="background-color: green;">✔ Guardar cambios</button>
-                <button class="btn" style="background-color: red;">❌ Cancelar</button>
-                <button class="btn" style="background-color: orange;">🔄 Restaurar valores predeterminados</button>
-                <button class="btn" style="background-color: blue;">📥 Importar configuración</button>
-                <button class="btn" style="background-color: purple;">📤 Exportar configuración</button>
+                <div class="config-buttons">
+                    <button class="btn"><i class="fas fa-save"></i> Guardar cambios</button>
+                    <button class="btn"><i class="fas fa-remove"></i> Cancelar  </i></button>
+                    <button class="btn"><i class="fas fa-refresh"></i> Restaurar valores predeterminados</button>
+                    <button class="btn"><i class="fas fa-upload"></i> Importar configuración</button>
+                    <button class="btn"><i class="fas fa-download"></i> Exportar configuración</button>
+                </div>
             </div>
         </div>
     </div>

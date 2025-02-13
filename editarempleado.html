@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Empleado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <style>
+        body {
+            font-family: 'Franklin Gothic Medium'; 
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #34495e;
+            color: white;
+            padding: 10px;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 500px;
+            margin: auto;
+            margin-top: 20px;;
+        }
+        form h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            background-color: #34495e;
+        }
+        div {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select, textarea {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #34495e;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+        }
+        button + button {
+            margin-top: 10px;
+            background-color: #34495e;   
+        }
+        button:hover {
+            cursor: pointer;
+        }
+        button + button:hover {
+            cursor: pointer;
+            background-color: red;
+        }
+    </style>
+    <form id="form-editar-empleado">
+        <header>
+            <h2>Editar Empleado</h2>
+        </header>
+        <input type="hidden" id="id_empleado">
+
+        <div>
+            <label>Nombre:</label>
+            <input type="text" id="nombre" required>
+        </div>
+
+        <div>
+            <label>Apellido:</label>
+            <input type="text" id="apellido" required>
+        </div>
+
+        <div>
+            <label>Fecha de Nacimiento:</label>
+            <input type="date" id="fecha_nacimiento" required>
+        </div>
+
+        <div>
+            <label>Correo Electrónico:</label>
+            <input type="email" id="correo_electronico">
+        </div>
+
+        <div>
+            <label>Cédula:</label>
+            <input type="text" id="cedula">
+        </div>
+
+        <div>
+            <label>Teléfono:</label>
+            <input type="tel" id="telefono">
+        </div>
+
+        <div>
+            <label>Dirección:</label>
+            <input type="text" id="direccion">
+        </div>
+
+        <div>
+            <label>Cargo:</label>
+            <input type="text" id="cargo">
+        </div>
+
+        <div>
+            <label>Estado:</label>
+            <select id="estado">
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Notas:</label>
+            <textarea id="notas"></textarea>
+        </div>
+
+        <button type="submit">Guardar Cambios</button>
+        <button type="button" onclick="window.history.back()">Cancelar</button>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get("id");
+
+            if (!id) {
+                alert("ID de empleado no encontrado.");
+                window.history.back();
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:4000/empleado/${id}`);
+                const empleado = await response.json();
+
+                document.getElementById("id_empleado").value = empleado.id_empleado;
+                document.getElementById("nombre").value = empleado.nombre || "";
+                document.getElementById("apellido").value = empleado.apellido || "";
+                if (empleado.fecha_nacimiento) {
+            const fecha = new Date(empleado.fecha_nacimiento);
+            const fechaFormateada = fecha.toISOString().split("T")[0]; 
+            document.getElementById("fecha_nacimiento").value = fechaFormateada;
+        }
+                document.getElementById("correo_electronico").value = empleado.correo_electronico || "";
+                document.getElementById("cedula").value = empleado.cedula || "";
+                document.getElementById("telefono").value = empleado.telefono || "";
+                document.getElementById("direccion").value = empleado.direccion || "";
+                document.getElementById("cargo").value = empleado.cargo || "";
+                document.getElementById("estado").value = empleado.estado || "Activo";
+                document.getElementById("notas").value = empleado.notas || "";
+            } catch (error) {
+                console.error("Error al cargar datos:", error);
+            }
+        });
+
+        document.getElementById("form-editar-empleado").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const id = document.getElementById("id_empleado").value;
+
+            const empleado = {
+                nombre: document.getElementById("nombre").value,
+                apellido: document.getElementById("apellido").value,
+                fecha_nacimiento: document.getElementById("fecha_nacimiento").value,
+                correo_electronico: document.getElementById("correo_electronico").value,
+                cedula: document.getElementById("cedula").value,
+                telefono: document.getElementById("telefono").value,
+                direccion: document.getElementById("direccion").value,
+                cargo: document.getElementById("cargo").value,
+                estado: document.getElementById("estado").value,
+                notas: document.getElementById("notas").value
+            };
+
+            try {
+                const response = await fetch(`http://localhost:4000/empleado/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(empleado)
+                });
+
+                if (response.ok) {
+                    alert("Empleado actualizado con éxito.");
+                    window.location.href = "Registrarempleado.html";
+                } else {
+                    alert("Error al actualizar empleado.");
+                }
+            } catch (error) {
+                console.error("Error en la actualización:", error);
+            }
+        });
+    </script>
+</body>
+</html>
