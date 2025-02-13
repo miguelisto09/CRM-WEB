@@ -237,25 +237,60 @@
                 <td>Acciones</td>
             </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>Marianny</td>
-                    <td>Paulino</td>
-                    <td>19/08/2007</td>
-                    <td>marianny121902@gmail.com</td>
-                    <td>402-0979667-7</td>
-                    <td>829-460-5401</td>
-                    <td>Estancia Nueva</td>
-                    <td>Desarrollador</td>
-                    <td>Activo</td>
-                    <td>...</td>
-                    <td>
-                        <button>Editar</button>
-                        <button>Eliminar</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+            <tbody id="tabla-empleados"></tbody>
+            </table>
+    </div>
+                
+    <script>
+        async function cargarEmpleados() {
+            try {
+                const response = await fetch('http://localhost:4000/empleado');
+                const empleados = await response.json();
+                const tabla = document.getElementById('tabla-empleados');
+                tabla.innerHTML = '';
+
+                empleados.forEach(emp => {
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${emp.nombre}</td>
+                        <td>${emp.apellido}</td>
+                        <td>${emp.fecha_nacimiento}</td>
+                        <td>${emp.correo_electronico || 'N/A'}</td>
+                        <td>${emp.cedula || 'N/A'}</td>
+                        <td>${emp.telefono || 'N/A'}</td>
+                        <td>${emp.direccion || 'N/A'}</td>
+                        <td>${emp.cargo || 'N/A'}</td>
+                        <td>${emp.estado || 'N/A'}</td>
+                        <td>${emp.notas || 'N/A'}</td>
+                        <td>
+                            <button onclick="editarEmpleado(${emp.id_empleado})">Editar</button>
+                            <button onclick="eliminarEmpleado(${emp.id_empleado})">Eliminar</button>
+                        </td>
+                    `;
+                    tabla.appendChild(fila);
+                });
+            } catch (error) {
+                console.error('Error al cargar empleados:', error);
+            }
+        }
+
+        async function eliminarEmpleado(id) {
+            if (confirm('¿Estás seguro de eliminar este empleado?')) {
+                try {
+                    await fetch(`http://localhost:4000/empleado/${id}`, { method: 'DELETE' });
+                    cargarEmpleados(); 
+                } catch (error) {
+                    console.error('Error al eliminar empleado:', error);
+                }
+            }
+        }
+
+        function editarEmpleado(id) {
+            alert('Función de edición en desarrollo para ID ' + id);
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarEmpleados);
+    </script>
     </body>
     
 </html>
