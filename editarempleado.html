@@ -117,6 +117,10 @@
         </div>
 
         <div>
+            <label>Salario:</label>
+            <input type="number" id="salario">
+            </div>
+        <div>
             <label>Estado:</label>
             <select id="estado">
                 <option value="Activo">Activo</option>
@@ -161,6 +165,7 @@
                 document.getElementById("telefono").value = empleado.telefono || "";
                 document.getElementById("direccion").value = empleado.direccion || "";
                 document.getElementById("cargo").value = empleado.cargo || "";
+                document.getElementById("salario").value = empleado.salario || "";
                 document.getElementById("estado").value = empleado.estado || "Activo";
                 document.getElementById("notas").value = empleado.notas || "";
             } catch (error) {
@@ -171,8 +176,7 @@
         document.getElementById("form-editar-empleado").addEventListener("submit", async (e) => {
             e.preventDefault();
             const id = document.getElementById("id_empleado").value;
-
-            const empleado = {
+             const empleado = {
                 nombre: document.getElementById("nombre").value,
                 apellido: document.getElementById("apellido").value,
                 fecha_nacimiento: document.getElementById("fecha_nacimiento").value,
@@ -181,6 +185,7 @@
                 telefono: document.getElementById("telefono").value,
                 direccion: document.getElementById("direccion").value,
                 cargo: document.getElementById("cargo").value,
+                salario: document.getElementById("salario").value,
                 estado: document.getElementById("estado").value,
                 notas: document.getElementById("notas").value
             };

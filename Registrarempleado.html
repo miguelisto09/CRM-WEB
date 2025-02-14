@@ -48,48 +48,7 @@
         header a:hover {
             text-decoration: underline;
         }
-        form {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            width: 400px;
-            margin: auto;
-            margin-top: 20px;;
-        }
-        form h2 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .input-group {
-            margin-bottom: 15px;
-            position: relative;        
-        }
-        .input-group input {
-            width: 80%;
-            padding: 10px;
-            padding-left: 40px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .input-group i {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #888;
-            align-self: center;
-                
-        }
-        form button {
-            width: 100%;
-            padding: 10px;
-            background-color: #34495e;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 16px;
-        }
+        
         .register-link {
             display: block;
             text-align: center;
@@ -179,42 +138,17 @@
         align-items: center;
         margin-bottom: 10px;
     }
+    .Registro {
+        padding: 10px;
+        background-color: #34495e;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-size: 16px;
+        margin: 20px;
+    }
     </style>
-    <form> 
-        <h2>Registrar empleados</h2>
-        <div class="input-group">
-            <input type="text" placeholder="Nombre">
-        </div>
-        <div class="input-group">
-            <input type="text" placeholder="Apellido">
-        </div>
-        <div class="input-group">
-            <input type="date" placeholder="Fecha de nacimiento">
-        </div>
-        <div class="input-group">
-            <input type="text" placeholder="Correo electrónico">
-        </div>
-        <div class="input-group">
-            <input type="text" placeholder="Cédula">        
-        </div>
-        <div class="input-group">
-            <input type="text" placeholder="Teléfono">
-        </div>
-        <div class="input-group">
-            <input type="text" placeholder="Dirección">
-        </div>
-        <div class="input-group">
-            <input type="text" placeholder="Cargo">
-        </div>
-        <div class="input-group">
-            <input type="text" placeholder="Estado">
-        </div>
-        <div class="input-group">
-            <input type="text" placeholder="Nota">
-        </div>
-
-        <button>Registrar</button>
-    </form>
+<button class="Registro" onclick="registrarEmpleado()">+ Nuevo empleado</button>
     <div class="Verempleados">
         <table>
             <div class="alinear">
@@ -232,6 +166,7 @@
                 <td>Teléfono</td>
                 <td>Dirección</td>
                 <td>Cargo</td>
+                <td>Salario</td>
                 <td>Estado</td>
                 <td>Nota</td>
                 <td>Acciones</td>
@@ -260,6 +195,7 @@
                         <td>${emp.telefono || 'N/A'}</td>
                         <td>${emp.direccion || 'N/A'}</td>
                         <td>${emp.cargo || 'N/A'}</td>
+                        <td>${emp.salario || 'N/A'}</td>
                         <td>${emp.estado || 'N/A'}</td>
                         <td>${emp.notas || 'N/A'}</td>
                         <td>
@@ -288,9 +224,11 @@
         function editarEmpleado(id) {
     window.location.href = `editarEmpleado.html?id=${id}`;
 }
-
-
+function registrarEmpleado() {
+    window.location.href = `registrarempleadoo.html`;
+}
         document.addEventListener('DOMContentLoaded', cargarEmpleados);
+        
     </script>
     </body>
     

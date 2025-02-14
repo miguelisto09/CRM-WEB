@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Empleados</title>
+</head>
+<body>
+    <style> 
+    header {
+        background-color: #34495e;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        width: 400px;
+        margin: auto;
+    }
+    .input-group {
+        margin-bottom: 15px;
+        margin: 10px;
+    }
+    .input-group input, .input-group select {
+        width: 90%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    form button {
+        width: 100%;
+        padding: 10px;
+        background-color: #34495e;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 16px;
+    }
+    button:hover {
+        cursor: pointer;
+    }
+    button + button {
+        margin-top: 10px;
+        background-color: red;   
+    }
+    </style>
+
+    <form id="form-registrar-empleado"> 
+        <header>
+            <h2>Registrar empleados</h2>
+        </header>
+        <div class="input-group">
+            <label>Nombre:</label>
+            <input type="text" id="nombre" required>
+        </div>
+        <div class="input-group">
+            <label>Apellido:</label>
+            <input type="text" id="apellido" required>
+        </div>
+        <div class="input-group">
+            <label>Fecha de Nacimiento:</label>
+            <input type="date" id="fecha_nacimiento" required>
+        </div>
+        <div class="input-group">
+            <label>Correo Electrónico:</label>
+            <input type="email" id="correo_electronico" required>
+        </div>
+        <div class="input-group">
+            <label>Cédula:</label>
+            <input type="text" id="cedula">        
+        </div>
+        <div class="input-group">
+            <label>Teléfono:</label>
+            <input type="tel" id="telefono">
+        </div>
+        <div class="input-group">
+            <label>Dirección:</label>
+            <input type="text" id="direccion">
+        </div>
+        <div class="input-group">
+            <label>Cargo:</label>
+            <input type="text" id="cargo">
+        </div>
+        <div class="input-group">
+            <label>Salario:</label>
+            <input type="number" id="salario">
+        </div>
+        <div class="input-group">
+            <label>Estado:</label>
+            <select id="estado">
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Notas:</label>
+            <input type="text" id="notas">
+        </div>
+
+        <button type="submit">Registrar</button>
+        <button type="button" onclick="window.history.back()">Cancelar</button>
+    </form>
+
+    <script>
+        document.getElementById("form-registrar-empleado").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const empleado = {
+                nombre: document.getElementById("nombre").value,
+                apellido: document.getElementById("apellido").value,
+                fecha_nacimiento: document.getElementById("fecha_nacimiento").value,
+                correo_electronico: document.getElementById("correo_electronico").value,
+                cedula: document.getElementById("cedula").value,
+                telefono: document.getElementById("telefono").value,
+                direccion: document.getElementById("direccion").value,
+                cargo: document.getElementById("cargo").value,
+                salario: document.getElementById("salario").value,
+                estado: document.getElementById("estado").value,
+                notas: document.getElementById("notas").value
+            };
+
+            try {
+                const response = await fetch("http://localhost:4000/empleado", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(empleado)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Error desconocido");
+                }
+
+                alert("✅ Empleado registrado con éxito.");
+                window.location.href = "Registrarempleado.html"; 
+
+            } catch (error) {
+                console.error("❌ Error en el registro:", error);
+                alert("❌ Error al registrar empleado: " + error.message);
+            }
+        });
+        
+    </script>
+</body>
+</html>

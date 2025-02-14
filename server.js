@@ -115,6 +115,46 @@ app.get('/tareas', (req, res) => {
         res.json(results);
     });
 });
+app.get('/empleado/buscar', (req, res) => {
+    const { termino } = req.query; 
+
+    if (!termino) {
+        return res.status(400).json({ error: "Debe proporcionar un término de búsqueda." });
+    }
+
+    const query = `
+        SELECT * FROM empleado 
+        WHERE nombre LIKE ? OR apellido LIKE ?;
+    `;
+
+    const searchTerm = `%${termino}%`;
+
+    pool.query(query, [searchTerm, searchTerm], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+        }
+        res.json(results);
+    });
+});
+app.get('/empleado/cumpleanos', (req, res) => {
+  const fechaActual = new Date();
+  const proximoMes = (fechaActual.getMonth() + 1) % 12;
+  const fechaInicio = new Date(fechaActual.getFullYear(), proximoMes, 1);
+  const fechaFin = new Date(fechaActual.getFullYear(), proximoMes + 1, 0);
+
+  const query = `
+    SELECT nombre, apellido, fecha_nacimiento FROM empleado
+    WHERE MONTH(fecha_nacimiento) = ? AND DAY(fecha_nacimiento) BETWEEN ? AND ?
+  `;
+  
+  pool.query(query, [proximoMes + 1, fechaInicio.getDate(), fechaFin.getDate()], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al obtener los cumpleaños', details: err.message });
+    }
+    res.json(results);
+  });
+});
+
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
