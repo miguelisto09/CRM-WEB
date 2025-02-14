@@ -6,332 +6,288 @@
     <title>Recordatorio de Tareas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-            overflow: hidden;
-        }
-        header {
-            background: #4b0082; /* Purple background */
-            color: #fff;
-            padding-top: 30px;
-            min-height: 70px;
-            border-bottom: #9370db 3px solid; 
-        }
-        header a {
-            color: #fff;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-size: 16px;
-        }
-        header ul {
-            padding: 0;
-            list-style: none;
-        }
-        header li {
-            float: left;
-            display: inline;
-            padding: 0 20px 0 20px;
-        }
-        header #branding {
-            float: left;
-        }
-        header #branding h1 {
-            margin: 0;
-        }
-        header nav {
-            float: right;
-            margin-top: 10px;
-        }
-        header #datetime {
-            clear: both;
-            margin-top: 10px;
-            text-align: left;
-            margin-bottom: 10px; /* Add more space below the clock */
-        }
-        .task-table {
-            width: 100%;
-            margin: 20px 0;
-            border-collapse: collapse;
-        }
-        .task-table th, .task-table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        .task-table th {
-            background-color: #e6e6fa; 
-        }
-        .task-table tr:hover {
-            background-color: #f1f1f1;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            outline: none;
-            color: #fff;
-            background-color: #4b0082; 
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 9px #999;
-            margin: 5px; 
-        }
-        .btn:hover {background-color: #6a0dad} /* Darker purple on hover */
-        .btn:active {
-            background-color: #6a0dad;
-            box-shadow: 0 5px #666;
-            transform: translateY(4px);
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            border-radius: 10px;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .main-content {
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping to fit content */
-            justify-content: space-between;
-        }
-        .task-table-container {
-            width: 100%;
-        }
-        .task-details {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
-        }
-        .task-details-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            border-radius: 10px;
-        }
-        .task-details .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .task-details .close:hover,
-        .task-details .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .comment-box {
-            margin-top: 20px;
-        }
-        .comment-box textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        .comment-box button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            outline: none;
-            color: #fff;
-            background-color: #4b0082; /* Purple background */
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 9px #999;
-            margin: 5px; /* Add margin to avoid overlap */
-        }
-        .comment-box button:hover {background-color: #6a0dad} /* Darker purple on hover */
-        .comment-box button:active {
-            background-color: #6a0dad;
-            box-shadow: 0 5px #666;
-            transform: translateY(4px);
-        }
-        .task-category {
-            flex: 1 1 30%; /* Adjust width to fit horizontally */
-            margin: 10px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .task-item {
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 10px 0;
-            cursor: pointer;
-            font-size: 14px; /* Smaller font size */
-        }
-        .task-item:hover {
-            background-color: #f1f1f1;
-        }
-        .chart-container {
-            width: 100%;
-            max-width: 1000px; /* Larger chart size */
-            margin: auto;
-        }
-        .task-title {
-            font-size: 12px; /* Smaller font size for task titles */
-            cursor: pointer;
-        }
-        .task-details-popup {
-            display: none;
-            position: absolute;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px; 
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-        }
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
-        }
-        .task-category-container {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-        .task-category {
-            flex: 1;
-            margin: 10px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 15px; /* Rounded corners */
-            min-width: 150px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for a card-like effect */
-        }
-        .task-category h3 {
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        .task-item {
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 10px 0;
-            cursor: pointer;
-            font-size: 14px;
-            border-radius: 10px; 
-            display: flex;
-            flex-direction: column; /* Organize content vertically */
-        }
-        .task-item:hover {
-            background-color: #f1f1f1;
-        }
-        .task-item p {
-            margin: 5px 0;
-        }
-        .task-item .description {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .task-item .read-more {
-            color: #4b0082;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-        .create-task-btn {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            outline: none;
-            color: #fff;
-            background-color: #4b0082; 
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 9px #999;
-            margin: 20px 0; 
-        }
-        .create-task-btn:hover {background-color: #6a0dad} /* Darker purple on hover */
-        .create-task-btn:active {
-            background-color: #6a0dad;
-            box-shadow: 0 5px #666;
-            transform: translateY(4px);
-        }
+      
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 290px;
+    background-color: #2c3e50;
+    color: white;
+    height: 100vh;
+    position: fixed;
+    padding: 20px;
+    text-align: center;
+}
+
+.sidebar h2 {
+    margin: 0;
+    font-size: 28px;
+    text-align: center;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #34495e;
+}
+
+.Cerrarsesion {
+    position: fixed;
+    bottom: 0;
+    align-items: center;
+     text-align: center;
+    width: 250px;
+    padding: 10px;
+    background-color: #2c3e50;
+    color: white;
+    text-decoration: none;
+    border-radius: 0 0 5px 5px;
+    transition: background-color 0.1s;
+}
+
+.main-content {
+    margin-left: 300px;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    border-radius: 10px;
+    position: relative;
+}
+
+.task-details {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.task-details-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    border-radius: 10px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.task-category-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.task-item {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.task-item:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.comment-box textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.file-upload label {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.file-upload label:hover {
+    background-color: #0056b3;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    color: var(--text-dark);
+    font-size: 2rem;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.priority-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.low { background-color: #4CAF50; }
+.medium { background-color: #FFC107; }
+.high { background-color: #F44336; }
+.critical { background-color: #9C27B0; }
+.urgent { background-color: #E91E63; }
+.veryLow { background-color: #2196F3; }
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .container {
+        width: 95%;
+    }
+    
+    .header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .task-category-container {
+        grid-template-columns: 1fr;
+    }
+}
     </style>
 </head>
 <body>
     <header>
-        <div class="container">
+        <div class="sidebar">
             <div id="branding">
-                <h1><span class="highlight">Manejador</span> de Tareas</h1>
+                <h2>Bienvenido usuario</h2>
                 <div id="datetime"></div>
             </div>
             <nav>
                 <ul>
-                    <li><a href="inicio.html">Inicio</a></li>
-                    <li><a href="Tareas.html">Tareas</a></li>
-                    <li><a href="Registrarempleado.html">Empleados</a></li>
-                    <li><a href="Configuracion.html">Configuración</a></li> <!-- Updated link -->
-                    <li><a href="Recordatorio.html">Recordatorios</a></li>
+                    <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
+                    <li><a href="Tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
+                    <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
+                    <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
+                    <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
+                </ul>
+                <ul>
+                    <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
                 </ul>
             </nav>
         </div>
+
+       
     </header>
 
     <div class="container main-content">
