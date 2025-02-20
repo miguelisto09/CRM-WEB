@@ -30,7 +30,6 @@ pool.getConnection((err, connection) => {
   }
 });
 
-// Obtener todos los empleados
 app.get('/empleado', (req, res) => {
   pool.query('SELECT * FROM empleado', (err, results) => {
     if (err) {
@@ -40,7 +39,6 @@ app.get('/empleado', (req, res) => {
   });
 });
 
-// Obtener un empleado por ID
 app.get('/empleado/:id', (req, res) => {
   const { id } = req.params;
   pool.query('SELECT * FROM empleado WHERE id_empleado = ?', [id], (err, results) => {
@@ -54,7 +52,6 @@ app.get('/empleado/:id', (req, res) => {
   });
 });
 
-// Crear un nuevo empleado
 app.post('/empleado', (req, res) => {
   const { nombre, apellido, correo_electronico } = req.body;
   if (!nombre || !apellido || !correo_electronico) {
@@ -69,7 +66,6 @@ app.post('/empleado', (req, res) => {
   });
 });
 
-// Actualizar un empleado por ID
 app.put('/empleado/:id', (req, res) => {
   const { id } = req.params;
   if (Object.keys(req.body).length === 0) {
@@ -87,7 +83,6 @@ app.put('/empleado/:id', (req, res) => {
   });
 });
 
-// Eliminar un empleado por ID
 app.delete('/empleado/:id', (req, res) => {
   const { id } = req.params;
   pool.query('DELETE FROM empleado WHERE id_empleado = ?', [id], (err, result) => {
