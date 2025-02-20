@@ -71,7 +71,7 @@
             background-color: #fefefe;
             margin: 5% auto;
             padding: 20px;
-            border: 1px solid #888;
+            border: 1px solid #007bff;
             width: 80%;
             border-radius: 10px;
         }
@@ -245,6 +245,26 @@
             width: 100%;
             margin: 20px 0;
         }
+        tbody {
+            font-family: 'Franklin Gothic Medium Cond';
+        }
+        table tbody td button {
+            padding: 10px;
+            background-color: #2c3e50;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+            margin: 5px;
+            width: 70px;
+        }
+        table tbody td button:hover {
+            background-color: #34495e;
+        }
+        table tbody td button + button:hover {
+            background-color: #c0392b;
+        }
+       
     </style>
 </head>
 <body>
@@ -367,8 +387,8 @@
                         <td>${tarea.estado || 'N/A'}</td>
                         <td>${new Date(tarea.fecha_limite).toISOString().split('T')[0]}</td>
                         <td>
-                            <button onclick="editarEmpleado(${tarea.id_tarea})">Editar</button>
-                            <button onclick="eliminarEmpleado(${tarea.id_tarea})">Eliminar</button>
+                            <button onclick="editartarea(${tarea.id_tarea})">Editar</button>
+                            <button onclick="eliminartarea(${tarea.id_tarea})">Eliminar</button>
                         </td>
                     `;
                     tabla.appendChild(fila);
@@ -377,9 +397,13 @@
                 console.error('Error al cargar tareas:', error);
             }
         }
+        function editartarea(id) {
+    window.location.href = `editartarea.html?id=${id}`;
+ }
         document.addEventListener('DOMContentLoaded', cargartarea);
     </script>
 
+<!--
     <script>
         
         var modal = document.getElementById('taskModal');
@@ -570,6 +594,6 @@
                 }
             });
         }
-    </script>
+    </script>-->
 </body>
 </html>

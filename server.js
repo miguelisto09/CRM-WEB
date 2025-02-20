@@ -115,43 +115,25 @@ app.get('/tareas', (req, res) => {
         res.json(results);
     });
 });
-app.get('/empleado/buscar', (req, res) => {
-    const { termino } = req.query; 
+app.put('/tarea/:id', (req, res) => {
+  const { id } = req.params;
+  if (isNaN(id)) {
+      return res.status(400).json({ error: 'ID inválido' });
+  }
+  if (Object.keys(req.body).length === 0) {
+      return res.status(400).json({ error: 'Debe proporcionar al menos un campo para actualizar' });
+  }
+  const query = 'UPDATE tarea SET ? WHERE id_tarea = ?';
 
-    if (!termino) {
-        return res.status(400).json({ error: "Debe proporcionar un término de búsqueda." });
-    }
-
-    const query = `
-        SELECT * FROM empleado 
-        WHERE nombre LIKE ? OR apellido LIKE ?;
-    `;
-
-    const searchTerm = `%${termino}%`;
-
-    pool.query(query, [searchTerm, searchTerm], (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error en la consulta', details: err.message });
-        }
-        res.json(results);
-    });
-});
-app.get('/empleado/cumpleanos', (req, res) => {
-  const fechaActual = new Date();
-  const proximoMes = (fechaActual.getMonth() + 1) % 12;
-  const fechaInicio = new Date(fechaActual.getFullYear(), proximoMes, 1);
-  const fechaFin = new Date(fechaActual.getFullYear(), proximoMes + 1, 0);
-
-  const query = `
-    SELECT nombre, apellido, fecha_nacimiento FROM empleado
-    WHERE MONTH(fecha_nacimiento) = ? AND DAY(fecha_nacimiento) BETWEEN ? AND ?
-  `;
-  
-  pool.query(query, [proximoMes + 1, fechaInicio.getDate(), fechaFin.getDate()], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al obtener los cumpleaños', details: err.message });
-    }
-    res.json(results);
+  pool.query(query, [req.body, id], (err, result) => {
+      if (err) {
+          console.error("❌ Error al actualizar tarea:", err);
+          return res.status(500).json({ error: 'Error al actualizar tarea', details: err.message });
+      }
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ error: 'Tarea no encontrada' });
+      }
+      res.json({ message: 'Tarea actualizada correctamente' });
   });
 });
 

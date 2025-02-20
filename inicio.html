@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -11,11 +11,11 @@
     <div class="sidebar">
         <h2>Bienvenido usuario</h2>
         <ul>
-            <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
-            <li><a href="Tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
-            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
-            <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
-            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
+            <li><a href="inicio.html"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="Tareas.html"><i class="fas fa-tasks"></i> Tareas</a></li>
+            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> Empleados</a></li>
+            <li><a href="Configuracion.html"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> Recordatorios</a></li>
             <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
         </ul>
     </div>
@@ -27,16 +27,16 @@
                 <button onclick="location.href='registrarempleadoo.html'">+ Nuevo Empleado</button>
                 <button onclick="location.href='Tareas.html'">+ Nueva Tarea</button>
                 <button onclick="location.href='Recordatorio.html'">+ Nuevo Recordatorio</button>
-
-        </div>
+            </div>
         </div>
 
         <div class="widgets">
             <div class="widget cumpleanos">
                 <h3>Próximos cumpleaños</h3>
-                <div class="list-item">Cargando...</div>
-              </div>
-    
+                <div id="lista-cumpleanos">
+                    <p>Cargando...</p>
+                </div>
+            </div>
 
             <div class="widget">
                 <h3>Recordatorios</h3>
@@ -45,6 +45,7 @@
                 <div class="list-item">Recordatorio 3</div>
                 <div class="list-item">Recordatorio 4</div>
             </div>
+
             <div class="widget">
                 <h3>Tareas pendientes</h3>
                 <div class="list-item">Tarea 1</div>
@@ -52,29 +53,38 @@
                 <div class="list-item">Tarea 3</div>
                 <div class="list-item">Tarea 4</div>
             </div>
-            <script>
-                async function cargarCumpleanos() {
-                  try {
-                    const response = await fetch('http://localhost:4000/empleado/cumpleanos');
-                    const cumpleanos = await response.json();
-                    const listaCumpleanos = document.querySelector('.widget.cumpleanos .list-item');
-                    listaCumpleanos.innerHTML = '';
-              
-                    cumpleanos.forEach(emp => {
-                      const cumple = document.createElement('div');
-                      cumple.classList.add('list-item');
-                      cumple.innerHTML = `${emp.nombre} ${emp.apellido} - Cumpleaños: ${new Date(emp.fecha_nacimiento).toLocaleDateString()}`;
-                      listaCumpleanos.appendChild(cumple);
-                    });
-                  } catch (error) {
-                    console.error('Error al cargar los cumpleaños:', error);
-                  }
-                }
-              
-                document.addEventListener('DOMContentLoaded', cargarCumpleanos);
-              </script>
-              
         </div>
     </div>
+    <script>
+        async function cargarCumpleanos() {
+            try {
+                const response = await fetch('http://localhost:4000/empleado/cumpleanos');
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                const cumpleanos = await response.json();
+                const lista = document.getElementById('lista-cumpleanos');
+                lista.innerHTML = '';
+
+                if (cumpleanos.length === 0) {
+                    lista.innerHTML = '<p>No hay empleados con cumpleaños próximos.</p>';
+                    return;
+                }
+
+                cumpleanos.forEach(emp => {
+                    const fecha = new Date(emp.fecha_nacimiento).toLocaleDateString();
+                    const item = document.createElement('div');
+                    item.classList.add('list-item');
+                    item.innerHTML = `<i class="fas fa-birthday-cake"></i> ${emp.nombre} ${emp.apellido} - ${fecha}`;
+                    lista.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error al cargar los cumpleaños:', error);
+                document.getElementById('lista-cumpleanos').innerHTML = '<p>Error al obtener datos.</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarCumpleanos);
+    </script>
 </body>
 </html>
