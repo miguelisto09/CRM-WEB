@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar tarea</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <style>
+        body {
+            font-family: 'Franklin Gothic Medium'; 
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        header {
+            background-color: #34495e;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 500px;
+        }
+        div {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select, textarea {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #34495e;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+        }
+        button + button {
+            margin-top: 10px;
+            background-color: red;
+        }
+        button:hover {
+            cursor: pointer;
+        }
+        button + button:hover {
+            background-color: darkred;
+        }
+    </style>
+
+    <form id="form-editar-tarea">
+        <header>
+            <h2>Editar tarea</h2>
+        </header>
+        <input type="hidden" id="id_tarea">
+
+        <div>
+            <label>Nombre:</label>
+            <input type="text" id="nombre" required>
+        </div>
+
+        <div>
+            <label>Descripción:</label>
+            <input type="text" id="descripcion" required>
+        </div>
+        
+        <div>
+            <label>Prioridad:</label>
+            <input type="text" id="prioridad" required>
+        </div>
+
+        <div>
+            <label>Fecha límite:</label>
+            <input type="date" id="fecha_limite" required>
+        </div>
+
+        <div>
+            <label>Estado:</label>
+            <select id="estado">
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Persona asignada:</label>
+            <input type="text" id="persona_asignada">
+        </div>
+
+        <button type="submit">Guardar Cambios</button>
+        <button type="button" onclick="window.history.back()">Cancelar</button>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get("id");
+
+            if (!id || isNaN(id)) {
+                alert("ID de tarea inválido.");
+                window.history.back();
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:4000/tarea/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error("Error al obtener los datos.");
+                }
+
+                const tarea = await response.json();
+
+                if (!tarea || Object.keys(tarea).length === 0) {
+                    throw new Error("Tarea no encontrada.");
+                }
+                document.getElementById("id_tarea").value = tarea.id_tarea || "";
+                document.getElementById("nombre").value = tarea.nombre_tarea || "";
+                document.getElementById("descripcion").value = tarea.descripcion || "";
+                document.getElementById("prioridad").value = tarea.prioridad || "";
+                
+                if (tarea.fecha_limite) {
+                    const fecha = new Date(tarea.fecha_limite);
+                    document.getElementById("fecha_limite").value = fecha.toISOString().split("T")[0]; 
+                }
+
+                document.getElementById("estado").value = tarea.estado || "";
+                document.getElementById("persona_asignada").value = tarea.persona_asignada || "";
+
+            } catch (error) {
+                console.error("Error al cargar datos:", error);
+                alert("No se pudo obtener la tarea.");
+            }
+        });
+
+        document.getElementById("form-editar-tarea").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const id = document.getElementById("id_tarea").value;
+
+            const tarea = {
+                nombre_tarea: document.getElementById("nombre").value,
+                descripcion: document.getElementById("descripcion").value,
+                prioridad: document.getElementById("prioridad").value,
+                fecha_limite: document.getElementById("fecha_limite").value,
+                estado: document.getElementById("estado").value,
+                persona_asignada: document.getElementById("persona_asignada").value
+            };
+
+            try {
+                const response = await fetch(`http://localhost:4000/tareas/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(tarea)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Error al actualizar la tarea.");
+                }
+
+                alert("Tarea actualizada con éxito.");
+                window.location.href = "tareas.html";
+
+            } catch (error) {
+                console.error("Error en la actualización:", error);
+                alert("No se pudo actualizar la tarea.");
+            }
+        });
+    </script>
+</body>
+</html>
