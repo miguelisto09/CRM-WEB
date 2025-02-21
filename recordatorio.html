@@ -508,6 +508,96 @@
             taskModal.style.display = 'block';
         }
 
+        function fetchTasks() {
+    fetch('/tareas')
+        .then(response => response.json())
+        .then(data => {
+            const now = new Date();
+            const tasksByDueDate = {
+                "Atrasadas": [],
+                "Para Hoy": [],
+                "Para Esta Semana": [],
+                "Para la Próxima Semana": [],
+                "Dentro de Dos Semanas o Más": [],
+                "Sin Fecha Límite": []
+            };
+
+            data.forEach(task => {
+                const dueDate = new Date(task.fecha_limite);
+                if (!task.fecha_limite) {
+                    tasksByDueDate["Sin Fecha Límite"].push(task);
+                } else if (dueDate < now) {
+                    tasksByDueDate["Atrasadas"].push(task);
+                } else if (dueDate.toDateString() === now.toDateString()) {
+                    tasksByDueDate["Para Hoy"].push(task);
+                } else {
+                    const weekFromNow = new Date();
+                    weekFromNow.setDate(now.getDate() + 7);
+                    if (dueDate <= weekFromNow) {
+                        tasksByDueDate["Para Esta Semana"].push(task);
+                    } else {
+                        const twoWeeksFromNow = new Date();
+                        twoWeeksFromNow.setDate(now.getDate() + 14);
+                        if (dueDate <= twoWeeksFromNow) {
+                            tasksByDueDate["Para la Próxima Semana"].push(task);
+                        } else {
+                            tasksByDueDate["Dentro de Dos Semanas o Más"].push(task);
+                        }
+                    }
+                }
+            });
+
+            const taskCategories = document.getElementById('taskCategories');
+            taskCategories.innerHTML = '';
+
+            for (const category in tasksByDueDate) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'task-category';
+                categoryDiv.innerHTML = `<h3>${category}</h3>`;
+
+                tasksByDueDate[category].forEach(task => {
+                    const taskDiv = document.createElement('div');
+                    taskDiv.className = 'task-item';
+                    taskDiv.innerHTML = `
+                        <p><strong>${task.nombre_tarea}</strong></p>
+                        <p>${task.descripcion}</p>
+                        <p><em>Vence: ${task.fecha_limite}</em></p>
+                    `;
+                    taskDiv.onclick = function() {
+                        viewTaskDetails(task.id_tarea);
+                    };
+                    categoryDiv.appendChild(taskDiv);
+                });
+
+                taskCategories.appendChild(categoryDiv);
+            }
+        })
+        .catch(error => console.error('Error fetching tasks:', error));
+}
+
+// Llamar a fetchTasks cuando la página se cargue
+document.addEventListener('DOMContentLoaded', fetchTasks);
+
+function viewTaskDetails(taskId) {
+  fetch(`/tarea/${taskId}`)
+    .then(response => response.json())
+    .then(task => {
+      document.getElementById('taskTitle').innerText = task.nombre_tarea;
+      document.getElementById('taskDescription').innerText = task.descripcion;
+      document.getElementById('taskAssignedTo').innerText = task.nombre_encargado || 'No asignado';
+      document.getElementById('taskPriority').innerText = task.prioridad;
+      document.getElementById('taskStatus').innerText = task.estado;
+      document.getElementById('taskDueDate').innerText = task.fecha_limite;
+      document.getElementById('taskComments').innerHTML = task.comments ? task.comments.map(comment => `<p>${comment}</p>`).join('') : '';
+      taskDetails.style.display = 'block';
+    })
+    .catch(error => console.error('Error fetching task details:', error));
+}
+
+
+// Llamar a fetchTasks cuando la página se cargue
+document.addEventListener('DOMContentLoaded', fetchTasks);
+
         editTaskForm.onsubmit = function(event) {
             event.preventDefault();
             var task = tasks[currentTaskIndex];

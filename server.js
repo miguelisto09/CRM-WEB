@@ -97,26 +97,97 @@ app.delete('/empleado/:id', (req, res) => {
 });
 
 app.get('/tareas', (req, res) => {
-    const sql = `
-        SELECT 
-            t.id_tarea, 
-            t.nombre_tarea, 
-            t.descripcion, 
-            e.nombre AS nombre_encargado,  
-            t.prioridad, 
-            t.estado, 
-            t.fecha_limite
-        FROM tarea t
-        LEFT JOIN empleado e ON t.persona_asignada = e.id_empleado;
-    `;
+  const sql = `
+      SELECT 
+          t.id_tarea, 
+          t.nombre_tarea, 
+          t.descripcion, 
+          e.nombre AS nombre_encargado, 
+          t.prioridad, 
+          t.estado, 
+          t.fecha_limite 
+      FROM 
+          tarea t 
+      LEFT JOIN 
+          empleado e 
+      ON 
+          t.persona_asignada = e.id_empleado;
+  `;
 
-    pool.query(sql, (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error en la consulta', details: err.message });
-        }
-        res.json(results);
-    });
+  pool.query(sql, (err, results) => {
+      if (err) {
+          return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+      }
+      res.json(results);
+  });
 });
+
+
+app.get('/tareas/clasificadas', (req, res) => {
+  const now = new Date();
+  const weekFromNow = new Date();
+  weekFromNow.setDate(now.getDate() + 7);
+  const twoWeeksFromNow = new Date();
+  twoWeeksFromNow.setDate(now.getDate() + 14);
+
+  const sql = `
+    SELECT 
+        t.id_tarea, 
+        t.nombre_tarea, 
+        t.descripcion, 
+        e.nombre AS nombre_encargado,  
+        t.prioridad, 
+        t.estado, 
+        t.fecha_limite,
+        CASE
+            WHEN t.fecha_limite < ? THEN 'Atrasadas'
+            WHEN t.fecha_limite = ? THEN 'Para Hoy'
+            WHEN t.fecha_limite > ? AND t.fecha_limite <= ? THEN 'Para Esta Semana'
+            WHEN t.fecha_limite > ? AND t.fecha_limite <= ? THEN 'Para la Próxima Semana'
+            WHEN t.fecha_limite > ? THEN 'Dentro de Dos Semanas o Más'
+            ELSE 'Sin Fecha Límite'
+        END AS categoria
+    FROM tarea t
+    LEFT JOIN empleado e ON t.persona_asignada = e.id_empleado
+    WHERE t.estado != 'Completada';
+  `;
+
+  pool.query(sql, [now, now, now, weekFromNow, weekFromNow, twoWeeksFromNow, twoWeeksFromNow], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.get('/tarea/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `
+    SELECT 
+        t.id_tarea, 
+        t.nombre_tarea, 
+        t.descripcion, 
+        e.nombre AS nombre_encargado,  
+        t.prioridad, 
+        t.estado, 
+        t.fecha_limite
+    FROM tarea t
+    LEFT JOIN empleado e ON t.persona_asignada = e.id_empleado
+    WHERE t.id_tarea = ?;
+  `;
+
+  pool.query(sql, [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Tarea no encontrada' });
+    }
+    res.json(results[0]);
+  });
+});
+
+
 app.put('/tarea/:id', (req, res) => {
   const { id } = req.params;
   if (isNaN(id)) {
