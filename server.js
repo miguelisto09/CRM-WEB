@@ -94,7 +94,7 @@ app.delete('/empleado/:id', (req, res) => {
   });
 });
 
-app.get('/tareas', (req, res) => {
+app.get('/tarea', (req, res) => {
     const sql = `
         SELECT 
             t.id_tarea, 
@@ -115,6 +115,20 @@ app.get('/tareas', (req, res) => {
         res.json(results);
     });
 });
+
+app.get('/tarea/:id', (req, res) => {
+  const { id } = req.params;
+  pool.query('SELECT * FROM tarea WHERE id_tarea = ?', [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Tarea no encontrada' });
+    }
+    res.json(results[0]);
+  });
+});
+
 app.put('/tarea/:id', (req, res) => {
   const { id } = req.params;
   if (isNaN(id)) {
@@ -134,6 +148,31 @@ app.put('/tarea/:id', (req, res) => {
           return res.status(404).json({ error: 'Tarea no encontrada' });
       }
       res.json({ message: 'Tarea actualizada correctamente' });
+  });
+});
+app.delete('/tarea/:id', (req, res) => {
+  const { id } = req.params;
+  pool.query('DELETE FROM tarea WHERE id_tarea = ?', [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al eliminar tarea', details: err.message });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Tarea no encontrada' });
+    }
+    res.json({ message: 'Tarea eliminada correctamente' });
+  });
+});
+app.post('/tarea', (req, res) => {
+  const { Nombre_tarea, Prioridad, Persona_asignada } = req.body;
+  if (!Nombre_tarea || !Prioridad || !Persona_asignada) {
+    return res.status(400).json({ error: 'Los campos nombre, prioridad y persona asignada son obligatorios' });
+  }
+  
+  pool.query('INSERT INTO tarea SET ?', req.body, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al insertar tarea', details: err.message });
+    }
+    res.status(201).json({ id: result.insertId, ...req.body });
   });
 });
 
