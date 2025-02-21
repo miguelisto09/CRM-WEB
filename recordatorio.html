@@ -6,264 +6,328 @@
     <title>Recordatorio de Tareas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-      
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        body {
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
 
-body {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-}
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
 
-.container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
-}
+        .sidebar {
+            width: 290px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding: 20px;
+            text-align: center;
+        }
 
-.sidebar {
-    width: 290px;
-    background-color: #2c3e50;
-    color: white;
-    height: 100vh;
-    position: fixed;
-    padding: 20px;
-    text-align: center;
-}
+        .sidebar h2 {
+            margin: 0;
+            font-size: 28px;
+            text-align: center;
+        }
 
-.sidebar h2 {
-    margin: 0;
-    font-size: 28px;
-    text-align: center;
-}
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            text-align: left;
+        }
 
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
-    text-align: left;
-}
+        .sidebar ul li {
+            margin: 10px 0;
+            font-size: 18px;
+        }
 
-.sidebar ul li {
-    margin: 10px 0;
-    font-size: 18px;
-}
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
 
-.sidebar ul li a {
-    text-decoration: none;
-    color: white;
-    display: block;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
+        .sidebar ul li a:hover {
+            background-color: #34495e;
+        }
 
-.sidebar ul li a:hover {
-    background-color: #34495e;
-}
+        .Cerrarsesion {
+            position: fixed;
+            bottom: 0;
+            align-items: center;
+            text-align: center;
+            width: 250px;
+            padding: 10px;
+            background-color: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 0 0 5px 5px;
+            transition: background-color 0.1s;
+        }
 
-.Cerrarsesion {
-    position: fixed;
-    bottom: 0;
-    align-items: center;
-     text-align: center;
-    width: 250px;
-    padding: 10px;
-    background-color: #2c3e50;
-    color: white;
-    text-decoration: none;
-    border-radius: 0 0 5px 5px;
-    transition: background-color 0.1s;
-}
+        .main-content {
+            margin-left: 300px;
+            padding: 20px;
+            flex-grow: 1;
+        }
 
-.main-content {
-    margin-left: 300px;
-    padding: 20px;
-    flex-grow: 1;
-}
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+        }
 
-.btn {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    margin: 5px;
-    transition: background-color 0.3s;
-}
+        .btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-.btn:hover {
-    background-color: #0056b3;
-}
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
 
-.btn:active {
-    transform: translateY(1px);
-}
+        .create-task-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 50px;
+            margin: 20px 0;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 999;
-}
+        .create-task-btn:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
 
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    border-radius: 10px;
-    position: relative;
-}
+        .create-task-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-.task-details {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-}
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+        }
 
-.task-details-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    border-radius: 10px;
-}
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 40px;
+            border: 1px solid #888;
+            width: 100%;
+            border-radius: 10px;
+            position:fixed;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease-in-out;
+        }
 
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-.close:hover {
-    color: #000;
-}
+        .task-details {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        
 
 .task-category-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
-    margin-top: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ajusta el ancho mínimo */
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.task-category {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    width: 100%; /* Asegura que no se desborde */
+    max-width: 300px; /* Limita el ancho máximo */
+}
+
+.task-category h3 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    color: #2c3e50;
+}
+
+.task-category:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }
 
 .task-item {
-    background: white;
-    padding: 15px;
+    background: #f9f9f9;
+    padding: 20px;
     margin: 10px 0;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-radius: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     transition: all 0.3s;
 }
 
 .task-item:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
-.comment-box textarea {
-    width: 100%;
-    height: 100px;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
+        .task-details-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease-in-out;
+        }
 
-.file-upload label {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-.file-upload label:hover {
-    background-color: #0056b3;
-}
+        .close:hover {
+            color: #000;
+        }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-}
+      
 
-.header h1 {
-    color: var(--text-dark);
-    font-size: 2rem;
-}
+        .comment-box textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
 
-.quick-actions {
-    display: flex;
-    gap: 15px;
-}
+        .file-upload label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-.priority-indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 8px;
-}
+        .file-upload label:hover {
+            background-color: #0056b3;
+        }
 
-.low { background-color: #4CAF50; }
-.medium { background-color: #FFC107; }
-.high { background-color: #F44336; }
-.critical { background-color: #9C27B0; }
-.urgent { background-color: #E91E63; }
-.veryLow { background-color: #2196F3; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
 
-@media (max-width: 768px) {
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-    }
-    
-    .main-content {
-        margin-left: 0;
-    }
-    
-    .container {
-        width: 95%;
-    }
-    
-    .header {
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .task-category-container {
-        grid-template-columns: 1fr;
-    }
-}
+        .header h1 {
+            color: var(--text-dark);
+            font-size: 2rem;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .priority-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .low { background-color: #4CAF50; }
+        .medium { background-color: #FFC107; }
+        .high { background-color: #F44336; }
+        .critical { background-color: #9C27B0; }
+        .urgent { background-color: #E91E63; }
+        .veryLow { background-color: #2196F3; }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .container {
+                width: 95%;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .task-category-container {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -358,35 +422,36 @@ body {
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('createTaskModal').style.display='none'">&times;</span>
             <h2>Crear Nueva Tarea</h2>
-            <form id="createTaskForm">
-                <label for="createTitle">Título</label>
-                <input type="text" id="createTitle" name="createTitle" required><br><br>
-                <label for="createDescription">Descripción</label>
-                <textarea id="createDescription" name="createDescription" required></textarea><br><br>
-                <label for="createAssignedTo">Asignado a</label>
-                <input type="text" id="createAssignedTo" name="createAssignedTo" required><br><br>
-                <label for="createPriority">Prioridad</label>
-                <select id="createPriority" name="createPriority">
-                    <option value="low">Baja</option>
-                    <option value="medium">Media</option>
-                    <option value="high">Alta</option>
-                    <option value="critical">Crítica</option>
-                    <option value="urgent">Urgente</option>
-                    <option value="veryLow">Muy Baja</option>
-                </select><br><br>
-                <label for="createStatus">Estado</label>
-                <select id="createStatus" name="createStatus">
-                    <option value="pending">Pendiente</option>
-                    <option value="inProgress">En Progreso</option>
-                    <option value="completed">Completada</option>
-                    <option value="cancelled">Cancelada</option>
-                    <option value="onHold">En Espera</option>
-                    <option value="deferred">Diferida</option>
-                </select><br><br>
-                <label for="createDueDate">Fecha de Vencimiento</label>
-                <input type="date" id="createDueDate" name="createDueDate" required><br><br>
-                <button type="submit" class="btn">Crear Tarea</button>
-            </form>
+<form id="createTaskForm">
+    <label for="createTitle">Título</label>
+    <input type="text" id="createTitle" name="createTitle" required><br><br>
+    <label for="createDescription">Descripción</label>
+    <textarea id="createDescription" name="createDescription" required></textarea><br><br>
+    <label for="createAssignedTo">Asignado a</label>
+    <input type="text" id="createAssignedTo" name="createAssignedTo" required><br><br>
+    <label for="createPriority">Prioridad</label>
+    <select id="createPriority" name="createPriority">
+        <option value="low">Baja</option>
+        <option value="medium">Media</option>
+        <option value="high">Alta</option>
+        <option value="critical">Crítica</option>
+        <option value="urgent">Urgente</option>
+        <option value="veryLow">Muy Baja</option>
+    </select><br><br>
+    <label for="createStatus">Estado</label>
+    <select id="createStatus" name="createStatus">
+        <option value="pending">Pendiente</option>
+        <option value="inProgress">En Progreso</option>
+        <option value="completed">Completada</option>
+        <option value="cancelled">Cancelada</option>
+        <option value="onHold">En Espera</option>
+        <option value="deferred">Diferida</option>
+    </select><br><br>
+    <label for="createDueDate">Fecha de Vencimiento</label>
+    <input type="date" id="createDueDate" name="createDueDate" required><br><br>
+    <button type="button" class="btn" onclick="window.location.href='registrartarea.html'">Crear Tarea</button>
+</form>
+
         </div>
     </div>
 
@@ -397,12 +462,7 @@ body {
         var editTaskForm = document.getElementById('editTaskForm');
         var createTaskForm = document.getElementById('createTaskForm');
         var currentTaskIndex = null;
-        var tasks = [
-            // Example tasks
-            { title: "Tarea 1", description: "Descripción de la tarea 1", dueDate: "2023-10-10", priority: "Alta", assignedTo: "Empleado 1", status: "Pendiente", comments: [] },
-            { title: "Tarea 2", description: "Descripción de la tarea 2", dueDate: "2023-10-12", priority: "Media", assignedTo: "Empleado 2", status: "En Progreso", comments: [] },
-            // Add more tasks as needed
-        ];
+        var tasks = [];
 
         function viewTaskDetails(index) {
             currentTaskIndex = index;
@@ -459,7 +519,7 @@ body {
             task.dueDate = editTaskForm.editDueDate.value;
             taskModal.style.display = 'none';
             updateTaskCategories();
-            viewTaskDetails(currentTaskIndex); // Update task details view
+            viewTaskDetails(currentTaskIndex);
         }
 
         createTaskForm.onsubmit = function(event) {
@@ -491,56 +551,56 @@ body {
         updateDateTime();
 
         function updateTaskCategories() {
-            var now = new Date();
-            var tasksByDueDate = {
-                "Atrasadas": tasks.filter(task => new Date(task.dueDate) < now && task.status !== 'Completada'),
-                "Para Hoy": tasks.filter(task => new Date(task.dueDate).toDateString() === now.toDateString() && task.status !== 'Completada'),
-                "Para Esta Semana": tasks.filter(task => {
-                    var dueDate = new Date(task.dueDate);
-                    var weekFromNow = new Date();
-                    weekFromNow.setDate(now.getDate() + 7);
-                    return dueDate > now && dueDate <= weekFromNow && task.status !== 'Completada';
-                }),
-                "Para la Próxima Semana": tasks.filter(task => {
-                    var dueDate = new Date(task.dueDate);
-                    var weekFromNow = new Date();
-                    weekFromNow.setDate(now.getDate() + 7);
-                    var twoWeeksFromNow = new Date();
-                    twoWeeksFromNow.setDate(now.getDate() + 14);
-                    return dueDate > weekFromNow && dueDate <= twoWeeksFromNow && task.status !== 'Completada';
-                }),
-                "Dentro de Dos Semanas o Más": tasks.filter(task => {
-                    var dueDate = new Date(task.dueDate);
-                    var twoWeeksFromNow = new Date();
-                    twoWeeksFromNow.setDate(now.getDate() + 14);
-                    return dueDate > twoWeeksFromNow && task.status !== 'Completada';
-                }),
-                "Sin Fecha Límite": tasks.filter(task => !task.dueDate && task.status !== 'Completada')
+    var now = new Date();
+    var tasksByDueDate = {
+        "Atrasadas": tasks.filter(task => new Date(task.dueDate) < now && task.status !== 'Completada'),
+        "Para Hoy": tasks.filter(task => new Date(task.dueDate).toDateString() === now.toDateString() && task.status !== 'Completada'),
+        "Para Esta Semana": tasks.filter(task => {
+            var dueDate = new Date(task.dueDate);
+            var weekFromNow = new Date();
+            weekFromNow.setDate(now.getDate() + 7);
+            return dueDate > now && dueDate <= weekFromNow && task.status !== 'Completada';
+        }),
+        "Para la Próxima Semana": tasks.filter(task => {
+            var dueDate = new Date(task.dueDate);
+            var weekFromNow = new Date();
+            weekFromNow.setDate(now.getDate() + 7);
+            var twoWeeksFromNow = new Date();
+            twoWeeksFromNow.setDate(now.getDate() + 14);
+            return dueDate > weekFromNow && dueDate <= twoWeeksFromNow && task.status !== 'Completada';
+        }),
+        "Dentro de Dos Semanas o Más": tasks.filter(task => {
+            var dueDate = new Date(task.dueDate);
+            var twoWeeksFromNow = new Date();
+            twoWeeksFromNow.setDate(now.getDate() + 14);
+            return dueDate > twoWeeksFromNow && task.status !== 'Completada';
+        }),
+        "Sin Fecha Límite": tasks.filter(task => !task.dueDate && task.status !== 'Completada')
+    };
+
+    var taskCategories = document.getElementById('taskCategories');
+    taskCategories.innerHTML = '';
+
+    for (var category in tasksByDueDate) {
+        var categoryDiv = document.createElement('div');
+        categoryDiv.className = 'task-category';
+        categoryDiv.innerHTML = `<h3>${category}</h3>`;
+        tasksByDueDate[category].forEach((task, index) => {
+            var taskDiv = document.createElement('div');
+            taskDiv.className = 'task-item';
+            taskDiv.innerHTML = `
+                <p><strong>${task.title}</strong></p>
+                <p>${task.description}</p>
+                <p><em>Vence: ${task.dueDate}</em></p>
+            `;
+            taskDiv.onclick = function() {
+                viewTaskDetails(index);
             };
-
-            var taskCategories = document.getElementById('taskCategories');
-            taskCategories.innerHTML = '';
-
-            for (var category in tasksByDueDate) {
-                var categoryDiv = document.createElement('div');
-                categoryDiv.className = 'task-category';
-                categoryDiv.innerHTML = `<h3>${category}</h3>`;
-                tasksByDueDate[category].forEach((task, index) => {
-                    var taskDiv = document.createElement('div');
-                    taskDiv.className = 'task-item';
-                    taskDiv.innerHTML = `
-                        <p><strong>${task.title}</strong></p>
-                        <p>${task.description}</p>
-                        <p><em>Vence: ${task.dueDate}</em></p>
-                    `;
-                    taskDiv.onclick = function() {
-                        viewTaskDetails(index);
-                    };
-                    categoryDiv.appendChild(taskDiv);
-                });
-                taskCategories.appendChild(categoryDiv);
-            }
-        }
+            categoryDiv.appendChild(taskDiv);
+        });
+        taskCategories.appendChild(categoryDiv);
+    }
+}
 
         updateTaskCategories();
     </script>

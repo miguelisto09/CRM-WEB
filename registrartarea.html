@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Tarea</title>
+</head>
+<body>
+    <style> 
+    header {
+        background-color: #34495e;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        width: 400px;
+        margin: auto;
+    }
+    .input-group {
+        margin-bottom: 15px;
+        margin: 10px;
+    }
+    .input-group input, .input-group select, .input-group textarea {
+        width: 90%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    form button {
+        width: 100%;
+        padding: 10px;
+        background-color: #34495e;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 16px;
+    }
+    button:hover {
+        cursor: pointer;
+    }
+    button + button {
+        margin-top: 10px;
+        background-color: red;   
+    }
+    </style>
+
+    <form id="form-registrar-tarea"> 
+        <header>
+            <h2>Registrar Tarea</h2>
+        </header>
+        <div class="input-group">
+            <label>Título:</label>
+            <input type="text" id="titulo" required>
+        </div>
+        <div class="input-group">
+            <label>Descripción:</label>
+            <textarea id="descripcion" rows="4" required></textarea>
+        </div>
+        <div class="input-group">
+            <label>Asignado a:</label>
+            <input type="text" id="asignado_a" required>
+        </div>
+        <div class="input-group">
+            <label>Prioridad:</label>
+            <select id="prioridad">
+                <option value="Baja">Baja</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Estado:</label>
+            <select id="estado">
+                <option value="Pendiente">Pendiente</option>
+                <option value="En Progreso">En Progreso</option>
+                <option value="Completada">Completada</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Fecha de Vencimiento:</label>
+            <input type="date" id="fecha_vencimiento" required>
+        </div>
+        <div class="input-group">
+            <label>Subir Documentos:</label>
+            <input type="file" id="documentos">
+        </div>
+
+        <button type="submit">Registrar</button>
+        <button type="button" onclick="window.history.back()">Cancelar</button>
+    </form>
+
+    <script>
+        document.getElementById("form-registrar-tarea").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const tarea = {
+                titulo: document.getElementById("titulo").value,
+                descripcion: document.getElementById("descripcion").value,
+                asignado_a: document.getElementById("asignado_a").value,
+                prioridad: document.getElementById("prioridad").value,
+                estado: document.getElementById("estado").value,
+                fecha_vencimiento: document.getElementById("fecha_vencimiento").value,
+                documentos: document.getElementById("documentos").files[0] ? document.getElementById("documentos").files[0].name : null
+            };
+
+            try {
+                const formData = new FormData();
+                formData.append('titulo', tarea.titulo);
+                formData.append('descripcion', tarea.descripcion);
+                formData.append('asignado_a', tarea.asignado_a);
+                formData.append('prioridad', tarea.prioridad);
+                formData.append('estado', tarea.estado);
+                formData.append('fecha_vencimiento', tarea.fecha_vencimiento);
+                if (tarea.documentos) {
+                    formData.append('documentos', document.getElementById("documentos").files[0]);
+                }
+
+                const response = await fetch("http://localhost:4000/tarea", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Error desconocido");
+                }
+
+                alert("✅ Tarea registrada con éxito.");
+                window.location.href = "Registrartarea.html"; 
+
+            } catch (error) {
+                console.error("❌ Error en el registro:", error);
+                alert("❌ Error al registrar tarea: " + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
+s
