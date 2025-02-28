@@ -100,7 +100,8 @@
 
         <div>
             <label>Persona asignada:</label>
-            <input type="text" id="persona_asignada">
+            <select id="persona_asignada">
+            </select>
         </div>
 
         <button type="submit">Guardar Cambios</button>
@@ -112,49 +113,36 @@
             const params = new URLSearchParams(window.location.search);
             const id = params.get("id");
 
-            if (!id || isNaN(id)) {
-                alert("ID de tarea inválido.");
+            if (!id) {
+                alert("ID de tarea no encontrado.");
                 window.history.back();
                 return;
             }
 
             try {
                 const response = await fetch(`http://localhost:4000/tarea/${id}`);
-                
-                if (!response.ok) {
-                    throw new Error("Error al obtener los datos.");
-                }
-
                 const tarea = await response.json();
 
-                if (!tarea || Object.keys(tarea).length === 0) {
-                    throw new Error("Tarea no encontrada.");
-                }
-                document.getElementById("id_tarea").value = tarea.id_tarea || "";
+                document.getElementById("id_tarea").value = tarea.id_tarea;
                 document.getElementById("nombre").value = tarea.nombre_tarea || "";
-                document.getElementById("descripcion").value = tarea.descripcion || "";
+                document.getElementById("descripcion").value = tarea.descripcion || ""; 
                 document.getElementById("prioridad").value = tarea.prioridad || "";
-                
                 if (tarea.fecha_limite) {
-                    const fecha = new Date(tarea.fecha_limite);
-                    document.getElementById("fecha_limite").value = fecha.toISOString().split("T")[0]; 
-                }
-
-                document.getElementById("estado").value = tarea.estado || "";
-                document.getElementById("persona_asignada").value = tarea.persona_asignada || "";
-
+            const fecha = new Date(tarea.fecha_limite);
+            const fechaFormateada = fecha.toISOString().split("T")[0];
+            document.getElementById("fecha_limite").value = fechaFormateada;
+        }
+                document.getElementById("estado").value = tarea.estado || "Activo";
             } catch (error) {
                 console.error("Error al cargar datos:", error);
-                alert("No se pudo obtener la tarea.");
             }
         });
-
+        
         document.getElementById("form-editar-tarea").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const id = document.getElementById("id_tarea").value;
-
-            const tarea = {
-                nombre_tarea: document.getElementById("nombre").value,
+             const id = document.getElementById("id_tarea").value;
+             const tarea = {
+               nombre_tarea: document.getElementById("nombre").value,
                 descripcion: document.getElementById("descripcion").value,
                 prioridad: document.getElementById("prioridad").value,
                 fecha_limite: document.getElementById("fecha_limite").value,
@@ -163,22 +151,20 @@
             };
 
             try {
-                const response = await fetch(`http://localhost:4000/tareas/${id}`, {
+                const response = await fetch(`http://localhost:4000/tarea/${id}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(tarea)
                 });
 
-                if (!response.ok) {
-                    throw new Error("Error al actualizar la tarea.");
+                if (response.ok) {
+                    alert("Tarea actualizada con éxito.");
+                    window.location.href = "tareas.html";
+                } else {
+                    alert("Error al actualizar tarea.");
                 }
-
-                alert("Tarea actualizada con éxito.");
-                window.location.href = "tareas.html";
-
             } catch (error) {
                 console.error("Error en la actualización:", error);
-                alert("No se pudo actualizar la tarea.");
             }
         });
     </script>

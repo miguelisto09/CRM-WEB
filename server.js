@@ -3,6 +3,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
+
 dotenv.config(); 
 
 const app = express();
@@ -36,8 +37,6 @@ app.get('/empleado', (req, res) => {
     res.json(results);
   });
 });
-
-
 
 app.get('/empleado/:id', (req, res) => {
   const { id } = req.params;
@@ -96,87 +95,31 @@ app.delete('/empleado/:id', (req, res) => {
   });
 });
 
-app.get('/tareas', (req, res) => {
-  const sql = `
-      SELECT 
-          t.id_tarea, 
-          t.nombre_tarea, 
-          t.descripcion, 
-          e.nombre AS nombre_encargado, 
-          t.prioridad, 
-          t.estado, 
-          t.fecha_limite 
-      FROM 
-          tarea t 
-      LEFT JOIN 
-          empleado e 
-      ON 
-          t.persona_asignada = e.id_empleado;
-  `;
+app.get('/tarea', (req, res) => {
+    const sql = `
+        SELECT 
+            t.id_tarea, 
+            t.nombre_tarea, 
+            t.descripcion, 
+            e.nombre AS nombre_encargado,  
+            t.prioridad, 
+            t.estado, 
+            t.fecha_limite
+        FROM tarea t
+        LEFT JOIN empleado e ON t.persona_asignada = e.id_empleado;
+    `;
 
-  pool.query(sql, (err, results) => {
-      if (err) {
-          return res.status(500).json({ error: 'Error en la consulta', details: err.message });
-      }
-      res.json(results);
-  });
-});
-
-
-app.get('/tareas/clasificadas', (req, res) => {
-  const now = new Date();
-  const weekFromNow = new Date();
-  weekFromNow.setDate(now.getDate() + 7);
-  const twoWeeksFromNow = new Date();
-  twoWeeksFromNow.setDate(now.getDate() + 14);
-
-  const sql = `
-    SELECT 
-        t.id_tarea, 
-        t.nombre_tarea, 
-        t.descripcion, 
-        e.nombre AS nombre_encargado,  
-        t.prioridad, 
-        t.estado, 
-        t.fecha_limite,
-        CASE
-            WHEN t.fecha_limite < ? THEN 'Atrasadas'
-            WHEN t.fecha_limite = ? THEN 'Para Hoy'
-            WHEN t.fecha_limite > ? AND t.fecha_limite <= ? THEN 'Para Esta Semana'
-            WHEN t.fecha_limite > ? AND t.fecha_limite <= ? THEN 'Para la Próxima Semana'
-            WHEN t.fecha_limite > ? THEN 'Dentro de Dos Semanas o Más'
-            ELSE 'Sin Fecha Límite'
-        END AS categoria
-    FROM tarea t
-    LEFT JOIN empleado e ON t.persona_asignada = e.id_empleado
-    WHERE t.estado != 'Completada';
-  `;
-
-  pool.query(sql, [now, now, now, weekFromNow, weekFromNow, twoWeeksFromNow, twoWeeksFromNow], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
-    }
-    res.json(results);
-  });
+    pool.query(sql, (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+        }
+        res.json(results);
+    });
 });
 
 app.get('/tarea/:id', (req, res) => {
   const { id } = req.params;
-  const sql = `
-    SELECT 
-        t.id_tarea, 
-        t.nombre_tarea, 
-        t.descripcion, 
-        e.nombre AS nombre_encargado,  
-        t.prioridad, 
-        t.estado, 
-        t.fecha_limite
-    FROM tarea t
-    LEFT JOIN empleado e ON t.persona_asignada = e.id_empleado
-    WHERE t.id_tarea = ?;
-  `;
-
-  pool.query(sql, [id], (err, results) => {
+  pool.query('SELECT * FROM tarea WHERE id_tarea = ?', [id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: 'Error en la consulta', details: err.message });
     }
@@ -184,6 +127,39 @@ app.get('/tarea/:id', (req, res) => {
       return res.status(404).json({ error: 'Tarea no encontrada' });
     }
     res.json(results[0]);
+  });
+});
+
+const multer = require('multer');
+
+// Configurar Multer para almacenar archivos en memoria
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+app.post('/submitTask', upload.single('file'), (req, res) => {
+  const { taskId, employeeId, submissionText } = req.body;
+  const file = req.file;
+
+  if (!taskId || !employeeId) {
+      return res.status(400).json({ error: 'El id de tarea y el id del empleado son obligatorios' });
+  }
+
+  const query = `INSERT INTO envio_tarea (id_tarea, id_empleado, texto_envio, archivo, nombre_archivo, tipo_mime) VALUES (?, ?, ?, ?, ?, ?)`;
+  const values = [
+      taskId,
+      employeeId,
+      submissionText || null,
+      file ? file.buffer : null,
+      file ? file.originalname : null,
+      file ? file.mimetype : null
+  ];
+
+  pool.query(query, values, (err, result) => {
+      if (err) {
+          console.error('Error al guardar la tarea enviada:', err);
+          return res.status(500).json({ error: 'Error al guardar la tarea' });
+      }
+      res.json({ message: 'Tarea enviada correctamente', id_envio: result.insertId });
   });
 });
 
@@ -207,6 +183,31 @@ app.put('/tarea/:id', (req, res) => {
           return res.status(404).json({ error: 'Tarea no encontrada' });
       }
       res.json({ message: 'Tarea actualizada correctamente' });
+  });
+});
+app.delete('/tarea/:id', (req, res) => {
+  const { id } = req.params;
+  pool.query('DELETE FROM tarea WHERE id_tarea = ?', [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al eliminar tarea', details: err.message });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Tarea no encontrada' });
+    }
+    res.json({ message: 'Tarea eliminada correctamente' });
+  });
+});
+app.post('/tarea', (req, res) => {
+  const { Nombre_tarea, Prioridad, Persona_asignada } = req.body;
+  if (!Nombre_tarea || !Prioridad || !Persona_asignada) {
+    return res.status(400).json({ error: 'Los campos nombre, prioridad y persona asignada son obligatorios' });
+  }
+  
+  pool.query('INSERT INTO tarea SET ?', req.body, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al insertar tarea', details: err.message });
+    }
+    res.status(201).json({ id: result.insertId, ...req.body });
   });
 });
 

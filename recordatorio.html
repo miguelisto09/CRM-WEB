@@ -355,7 +355,8 @@
    
 
     <div class="container main-content">
-        <button class="create-task-btn" onclick="openCreateTaskModal()">Crear Nueva Tarea</button>
+        <button class="create-task-btn" onclick="window.location.href='registrartarea.html'">Crear Nueva Tarea</button>
+
         <div class="task-category-container" id="taskCategories">
             <!-- Task categories will be dynamically inserted here -->
         </div>
@@ -456,243 +457,234 @@
     </div>
 
     <script>
-        var taskDetails = document.getElementById('taskDetails');
-        var taskModal = document.getElementById('taskModal');
-        var createTaskModal = document.getElementById('createTaskModal');
-        var editTaskForm = document.getElementById('editTaskForm');
-        var createTaskForm = document.getElementById('createTaskForm');
-        var currentTaskIndex = null;
-        var tasks = [];
+    // Array de tareas
+    var tasks = [];
 
-        function viewTaskDetails(index) {
-            currentTaskIndex = index;
-            var task = tasks[index];
-            document.getElementById('taskTitle').innerText = task.title;
-            document.getElementById('taskDescription').innerText = task.description;
-            document.getElementById('taskAssignedTo').innerText = task.assignedTo;
-            document.getElementById('taskPriority').innerText = task.priority;
-            document.getElementById('taskStatus').innerText = task.status;
-            document.getElementById('taskDueDate').innerText = task.dueDate;
-            document.getElementById('taskComments').innerHTML = task.comments.map(comment => `<p>${comment}</p>`).join('');
-            taskDetails.style.display = 'block';
-        }
-
-        function addComment() {
-            var comment = document.getElementById('newComment').value;
-            if (comment) {
-                tasks[currentTaskIndex].comments.push(comment);
-                document.getElementById('newComment').value = '';
-                viewTaskDetails(currentTaskIndex);
-            }
-        }
-
-        function completeTask(index) {
-            tasks[index].status = 'Completada';
-            updateTaskCategories();
-            taskDetails.style.display = 'none';
-        }
-
-        function cancelTask() {
-            taskDetails.style.display = 'none';
-        }
-
-        function editTask(index) {
-            currentTaskIndex = index;
-            var task = tasks[index];
-            document.getElementById('editTitle').value = task.title;
-            document.getElementById('editDescription').value = task.description;
-            document.getElementById('editAssignedTo').value = task.assignedTo;
-            document.getElementById('editPriority').value = task.priority;
-            document.getElementById('editStatus').value = task.status;
-            document.getElementById('editDueDate').value = task.dueDate;
-            taskModal.style.display = 'block';
-        }
-
-        function fetchTasks() {
-    fetch('/tareas')
-        .then(response => response.json())
-        .then(data => {
-            const now = new Date();
-            const tasksByDueDate = {
-                "Atrasadas": [],
-                "Para Hoy": [],
-                "Para Esta Semana": [],
-                "Para la Próxima Semana": [],
-                "Dentro de Dos Semanas o Más": [],
-                "Sin Fecha Límite": []
-            };
-
-            data.forEach(task => {
-                const dueDate = new Date(task.fecha_limite);
-                if (!task.fecha_limite) {
-                    tasksByDueDate["Sin Fecha Límite"].push(task);
-                } else if (dueDate < now) {
-                    tasksByDueDate["Atrasadas"].push(task);
-                } else if (dueDate.toDateString() === now.toDateString()) {
-                    tasksByDueDate["Para Hoy"].push(task);
-                } else {
-                    const weekFromNow = new Date();
-                    weekFromNow.setDate(now.getDate() + 7);
-                    if (dueDate <= weekFromNow) {
-                        tasksByDueDate["Para Esta Semana"].push(task);
-                    } else {
-                        const twoWeeksFromNow = new Date();
-                        twoWeeksFromNow.setDate(now.getDate() + 14);
-                        if (dueDate <= twoWeeksFromNow) {
-                            tasksByDueDate["Para la Próxima Semana"].push(task);
-                        } else {
-                            tasksByDueDate["Dentro de Dos Semanas o Más"].push(task);
-                        }
-                    }
-                }
-            });
-
-            const taskCategories = document.getElementById('taskCategories');
-            taskCategories.innerHTML = '';
-
-            for (const category in tasksByDueDate) {
-                const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'task-category';
-                categoryDiv.innerHTML = `<h3>${category}</h3>`;
-
-                tasksByDueDate[category].forEach(task => {
-                    const taskDiv = document.createElement('div');
-                    taskDiv.className = 'task-item';
-                    taskDiv.innerHTML = `
-                        <p><strong>${task.nombre_tarea}</strong></p>
-                        <p>${task.descripcion}</p>
-                        <p><em>Vence: ${task.fecha_limite}</em></p>
-                    `;
-                    taskDiv.onclick = function() {
-                        viewTaskDetails(task.id_tarea);
-                    };
-                    categoryDiv.appendChild(taskDiv);
-                });
-
-                taskCategories.appendChild(categoryDiv);
-            }
-        })
-        .catch(error => console.error('Error fetching tasks:', error));
-}
-
-// Llamar a fetchTasks cuando la página se cargue
-document.addEventListener('DOMContentLoaded', fetchTasks);
-
-function viewTaskDetails(taskId) {
-  fetch(`/tarea/${taskId}`)
-    .then(response => response.json())
-    .then(task => {
-      document.getElementById('taskTitle').innerText = task.nombre_tarea;
-      document.getElementById('taskDescription').innerText = task.descripcion;
-      document.getElementById('taskAssignedTo').innerText = task.nombre_encargado || 'No asignado';
-      document.getElementById('taskPriority').innerText = task.prioridad;
-      document.getElementById('taskStatus').innerText = task.estado;
-      document.getElementById('taskDueDate').innerText = task.fecha_limite;
-      document.getElementById('taskComments').innerHTML = task.comments ? task.comments.map(comment => `<p>${comment}</p>`).join('') : '';
-      taskDetails.style.display = 'block';
-    })
-    .catch(error => console.error('Error fetching task details:', error));
-}
-
-
-// Llamar a fetchTasks cuando la página se cargue
-document.addEventListener('DOMContentLoaded', fetchTasks);
-
-        editTaskForm.onsubmit = function(event) {
-            event.preventDefault();
-            var task = tasks[currentTaskIndex];
-            task.title = editTaskForm.editTitle.value;
-            task.description = editTaskForm.editDescription.value;
-            task.assignedTo = editTaskForm.editAssignedTo.value;
-            task.priority = editTaskForm.editPriority.value;
-            task.status = editTaskForm.editStatus.value;
-            task.dueDate = editTaskForm.editDueDate.value;
-            taskModal.style.display = 'none';
-            updateTaskCategories();
-            viewTaskDetails(currentTaskIndex);
-        }
-
-        createTaskForm.onsubmit = function(event) {
-            event.preventDefault();
-            var newTask = {
-                title: createTaskForm.createTitle.value,
-                description: createTaskForm.createDescription.value,
-                assignedTo: createTaskForm.createAssignedTo.value,
-                priority: createTaskForm.createPriority.value,
-                status: createTaskForm.createStatus.value,
-                dueDate: createTaskForm.createDueDate.value,
-                comments: []
-            };
-            tasks.push(newTask);
-            createTaskModal.style.display = 'none';
-            updateTaskCategories();
-        }
-
-        function openCreateTaskModal() {
-            createTaskModal.style.display = 'block';
-        }
-
-        function updateDateTime() {
-            const now = new Date();
-            document.getElementById('datetime').innerText = now.toLocaleString();
-        }
-
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-
-        function updateTaskCategories() {
-    var now = new Date();
-    var tasksByDueDate = {
-        "Atrasadas": tasks.filter(task => new Date(task.dueDate) < now && task.status !== 'Completada'),
-        "Para Hoy": tasks.filter(task => new Date(task.dueDate).toDateString() === now.toDateString() && task.status !== 'Completada'),
-        "Para Esta Semana": tasks.filter(task => {
-            var dueDate = new Date(task.dueDate);
-            var weekFromNow = new Date();
-            weekFromNow.setDate(now.getDate() + 7);
-            return dueDate > now && dueDate <= weekFromNow && task.status !== 'Completada';
-        }),
-        "Para la Próxima Semana": tasks.filter(task => {
-            var dueDate = new Date(task.dueDate);
-            var weekFromNow = new Date();
-            weekFromNow.setDate(now.getDate() + 7);
-            var twoWeeksFromNow = new Date();
-            twoWeeksFromNow.setDate(now.getDate() + 14);
-            return dueDate > weekFromNow && dueDate <= twoWeeksFromNow && task.status !== 'Completada';
-        }),
-        "Dentro de Dos Semanas o Más": tasks.filter(task => {
-            var dueDate = new Date(task.dueDate);
-            var twoWeeksFromNow = new Date();
-            twoWeeksFromNow.setDate(now.getDate() + 14);
-            return dueDate > twoWeeksFromNow && task.status !== 'Completada';
-        }),
-        "Sin Fecha Límite": tasks.filter(task => !task.dueDate && task.status !== 'Completada')
-    };
-
-    var taskCategories = document.getElementById('taskCategories');
-    taskCategories.innerHTML = '';
-
-    for (var category in tasksByDueDate) {
-        var categoryDiv = document.createElement('div');
-        categoryDiv.className = 'task-category';
-        categoryDiv.innerHTML = `<h3>${category}</h3>`;
-        tasksByDueDate[category].forEach((task, index) => {
-            var taskDiv = document.createElement('div');
-            taskDiv.className = 'task-item';
-            taskDiv.innerHTML = `
-                <p><strong>${task.title}</strong></p>
-                <p>${task.description}</p>
-                <p><em>Vence: ${task.dueDate}</em></p>
-            `;
-            taskDiv.onclick = function() {
-                viewTaskDetails(index);
-            };
-            categoryDiv.appendChild(taskDiv);
-        });
-        taskCategories.appendChild(categoryDiv);
+    // Actualiza el elemento con id "datetime" para mostrar la fecha y hora actual
+    function updateDateTime() {
+        const now = new Date();
+        document.getElementById('datetime').innerText = now.toLocaleString();
     }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    
+
+    // Función para obtener las tareas del servidor
+    function fetchTasks() {
+        fetch('http://localhost:4000/tarea')
+            .then(response => response.json())
+            .then(data => {
+                tasks = data;
+                updateTaskCategories();
+            })
+            .catch(error => {
+                console.error('Error al obtener tareas:', error);
+            });
+    }
+
+    
+
+    // Función que organiza las tareas en categorías según su fecha de vencimiento
+    function updateTaskCategories() {
+        var now = new Date();
+        // Creamos una fecha de hoy sin la parte de la hora
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        var tasksByDueDate = {
+            "Atrasadas": tasks.filter(task => {
+                if (!task.fecha_limite) return false;
+                var dueDate = new Date(task.fecha_limite);
+                var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+                return dueDateOnly < today && task.estado !== 'Completada';
+            }),
+            "Para Hoy": tasks.filter(task => {
+                if (!task.fecha_limite) return false;
+                var dueDate = new Date(task.fecha_limite);
+                var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+                return dueDateOnly.getTime() === today.getTime() && task.estado !== 'Completada';
+            }),
+            "Para Esta Semana": tasks.filter(task => {
+                if (!task.fecha_limite) return false;
+                var dueDate = new Date(task.fecha_limite);
+                var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+                var weekFromNow = new Date(today);
+                weekFromNow.setDate(today.getDate() + 7);
+                return dueDateOnly > today && dueDateOnly <= weekFromNow && task.estado !== 'Completada';
+            }),
+            "Para la Próxima Semana": tasks.filter(task => {
+                if (!task.fecha_limite) return false;
+                var dueDate = new Date(task.fecha_limite);
+                var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+                var weekFromNow = new Date(today);
+                weekFromNow.setDate(today.getDate() + 7);
+                var twoWeeksFromNow = new Date(today);
+                twoWeeksFromNow.setDate(today.getDate() + 14);
+                return dueDateOnly > weekFromNow && dueDateOnly <= twoWeeksFromNow && task.estado !== 'Completada';
+            }),
+            "Dentro de Dos Semanas o Más": tasks.filter(task => {
+                if (!task.fecha_limite) return false;
+                var dueDate = new Date(task.fecha_limite);
+                var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+                var twoWeeksFromNow = new Date(today);
+                twoWeeksFromNow.setDate(today.getDate() + 14);
+                return dueDateOnly > twoWeeksFromNow && task.estado !== 'Completada';
+            }),
+            "Sin Fecha Límite": tasks.filter(task => !task.fecha_limite && task.estado !== 'Completada')
+        };
+
+        var taskCategories = document.getElementById('taskCategories');
+        taskCategories.innerHTML = '';
+
+        for (var category in tasksByDueDate) {
+            var categoryDiv = document.createElement('div');
+            categoryDiv.className = 'task-category';
+            categoryDiv.innerHTML = `<h3>${category}</h3>`;
+            tasksByDueDate[category].forEach(task => {
+                var taskDiv = document.createElement('div');
+                taskDiv.className = 'task-item';
+                taskDiv.innerHTML = `
+                    <p><strong>${task.nombre_tarea}</strong></p>
+                    <p>${task.descripcion}</p>
+                    <p><em>Vence: ${new Date(task.fecha_limite).toLocaleDateString()}</em></p>
+                `;
+                // Al hacer clic se abre el apartado de la tarea para completarla
+                taskDiv.addEventListener('click', function() {
+                    openTaskModal(task);
+                });
+                categoryDiv.appendChild(taskDiv);
+            });
+            taskCategories.appendChild(categoryDiv);
+        }
+    }
+
+    // Función para abrir el apartado (modal) de la tarea con estética minimalista y espaciosa
+    function openTaskModal(task) {
+        var modal = document.getElementById('taskModal');
+        modal.innerHTML = `
+            <div class="modal-content" style="
+                border-radius: 16px;
+                padding: 40px;
+                background: #fff;
+                max-width: 800px;
+                width: 90%;
+                margin: 80px auto;
+                position: relative;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            ">
+                <span id="modalClose" style="
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    cursor: pointer;
+                    font-size: 28px;
+                    color: #888;
+                ">&times;</span>
+                <h2 style="margin-bottom: 20px;">${task.nombre_tarea}</h2>
+                <p style="margin-bottom: 20px;">${task.descripcion}</p>
+                <p style="margin-bottom: 30px;"><em>Vence: ${new Date(task.fecha_limite).toLocaleDateString()}</em></p>
+                <hr style="margin-bottom: 30px;">
+                <form id="taskForm">
+                    <div style="margin-bottom: 20px;">
+                        <label for="submissionText" style="display:block; margin-bottom:8px;"><strong>Escribe tu respuesta:</strong></label>
+                        <textarea id="submissionText" style="
+                            width: 100%;
+                            height: 150px;
+                            border-radius: 8px;
+                            padding: 12px;
+                            border: 1px solid #ccc;
+                            resize: vertical;
+                        " placeholder="Escribe aquí..."></textarea>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label for="fileUpload" style="display:block; margin-bottom:8px;"><strong>Subir Archivo:</strong></label>
+                        <input type="file" id="fileUpload" style="
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ccc;
+                            border-radius: 8px;
+                        ">
+                    </div>
+                    <div>
+                        <button type="submit" style="
+                            padding: 12px 24px;
+                            border: none;
+                            background: #28a745;
+                            color: #fff;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-size: 16px;
+                        ">Enviar Tarea</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        modal.style.display = 'block';
+
+        // Cerrar modal al hacer clic en la "X"
+        document.getElementById('modalClose').addEventListener('click', closeTaskModal);
+
+        // Manejar el envío del formulario
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleSubmitTask(task);
+        });
+    }
+
+    // Función para cerrar el modal
+    function closeTaskModal() {
+        var modal = document.getElementById('taskModal');
+        modal.style.display = 'none';
+    }
+
+    // Función para manejar el envío de la tarea (comentario, archivo, etc.)
+    function handleSubmitTask(task) {
+    var submissionText = document.getElementById('submissionText').value;
+    var fileInput = document.getElementById('fileUpload');
+    var file = fileInput.files[0];
+
+    // Obtén el ID del empleado (lo puedes obtener desde la sesión, o de un campo oculto, etc.)
+    var employeeId = 1; // Este es un ejemplo, deberías obtener el ID del empleado de forma dinámica
+
+    // Preparamos los datos para enviar (ajusta la URL y la lógica según tu backend)
+    var formData = new FormData();
+    formData.append('taskId', task.id_tarea);
+    formData.append('employeeId', employeeId); // Asegúrate de enviar el ID del empleado
+    formData.append('submissionText', submissionText || ''); // Si no hay texto, enviar vacío
+    if (file) {
+        formData.append('file', file); // Solo si hay archivo
+    }
+
+    fetch('http://localhost:4000/submitTask', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Tarea enviada correctamente');
+        closeTaskModal();
+    })
+    .catch(error => {
+        console.error('Error al enviar la tarea:', error);
+        alert('Error al enviar la tarea');
+    });
 }
 
-        updateTaskCategories();
-    </script>
+    // Cerrar modal si se hace clic fuera del contenido del modal
+    window.addEventListener('click', function(event) {
+        var modal = document.getElementById('taskModal');
+        if (event.target === modal) {
+            closeTaskModal();
+        }
+    });
+
+    // Llama a la función para obtener las tareas al cargar la página
+    window.onload = fetchTasks;
+</script>
+
+    
+    
+    
+    
 </body>
 </html>

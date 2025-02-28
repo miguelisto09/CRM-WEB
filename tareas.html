@@ -283,7 +283,7 @@
     </div>
     <div class="main-content">
         <div class="task-table-container">
-            <button class="btn" onclick="document.getElementById('taskModal').style.display='block'">Crear Tarea</button>
+            <button class="btn" onclick="registrartarea()">Crear Tarea</button>
             <table class="task-table">
                 <thead>
                     <tr>
@@ -372,7 +372,7 @@
     <script>
         async function cargartarea() {
             try {
-                const response = await fetch('http://localhost:4000/tareas');
+                const response = await fetch('http://localhost:4000/tarea');
                 const tareas = await response.json();
                 const tabla = document.getElementById('taskTableBody');
                 tabla.innerHTML = '';
@@ -400,6 +400,19 @@
         function editartarea(id) {
     window.location.href = `editartarea.html?id=${id}`;
  }
+ async function eliminartarea(id) {
+    if (confirm('¿Estás seguro de eliminar esta tarea?')) {
+        try {
+            await fetch(`http://localhost:4000/tarea/${id}`, { method: 'DELETE' });
+            cargartarea();
+        } catch (error) {
+            console.error('Error al eliminar tarea:', error);
+        }
+    }
+}
+function registrartarea() {
+    window.location.href = `registrartarea.html`;
+}
         document.addEventListener('DOMContentLoaded', cargartarea);
     </script>
 
