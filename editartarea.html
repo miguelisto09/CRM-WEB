@@ -79,12 +79,13 @@
             <label>Descripción:</label>
             <input type="text" id="descripcion" required>
         </div>
-        
         <div>
             <label>Prioridad:</label>
-            <input type="text" id="prioridad" required>
-        </div>
-
+            <select id="prioridad">
+                <option value="Baja">Baja</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+            </select>
         <div>
             <label>Fecha límite:</label>
             <input type="date" id="fecha_limite" required>
@@ -93,8 +94,9 @@
         <div>
             <label>Estado:</label>
             <select id="estado">
-                <option value="Activo">Activo</option>
-                <option value="Inactivo">Inactivo</option>
+                <option value="Realizada">Realizada</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Atrasada">Atrasada</option>
             </select>
         </div>
 
@@ -120,29 +122,47 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:4000/tarea/${id}`);
-                const tarea = await response.json();
+                const empleadosResponse = await fetch("http://localhost:4000/empleado");
+                const empleados = await empleadosResponse.json();
+                const selectEmpleados = document.getElementById("persona_asignada");
+
+                empleados.forEach(empleado => {
+                    const option = document.createElement("option");
+                    option.value = empleado.id_empleado;
+                    option.textContent = empleado.nombre;
+                    selectEmpleados.appendChild(option);
+                });
+
+                const tareaResponse = await fetch(`http://localhost:4000/tarea/${id}`);
+                const tarea = await tareaResponse.json();
 
                 document.getElementById("id_tarea").value = tarea.id_tarea;
                 document.getElementById("nombre").value = tarea.nombre_tarea || "";
                 document.getElementById("descripcion").value = tarea.descripcion || ""; 
                 document.getElementById("prioridad").value = tarea.prioridad || "";
+                
                 if (tarea.fecha_limite) {
-            const fecha = new Date(tarea.fecha_limite);
-            const fechaFormateada = fecha.toISOString().split("T")[0];
-            document.getElementById("fecha_limite").value = fechaFormateada;
-        }
+                    const fecha = new Date(tarea.fecha_limite);
+                    const fechaFormateada = fecha.toISOString().split("T")[0];
+                    document.getElementById("fecha_limite").value = fechaFormateada;
+                }
+
                 document.getElementById("estado").value = tarea.estado || "Activo";
+                
+                if (tarea.persona_asignada) {
+                    document.getElementById("persona_asignada").value = tarea.persona_asignada;
+                }
+
             } catch (error) {
                 console.error("Error al cargar datos:", error);
             }
         });
-        
+
         document.getElementById("form-editar-tarea").addEventListener("submit", async (e) => {
             e.preventDefault();
-             const id = document.getElementById("id_tarea").value;
-             const tarea = {
-               nombre_tarea: document.getElementById("nombre").value,
+            const id = document.getElementById("id_tarea").value;
+            const tarea = {
+                nombre_tarea: document.getElementById("nombre").value,
                 descripcion: document.getElementById("descripcion").value,
                 prioridad: document.getElementById("prioridad").value,
                 fecha_limite: document.getElementById("fecha_limite").value,

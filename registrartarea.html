@@ -1,124 +1,153 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar tarea</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Tarea</title>
 </head>
 <body>
-    <style> 
+  <style>
     header {
-        background-color: #34495e;
-        color: white;
-        padding: 10px;
-        text-align: center;
+      background-color: #34495e;
+      color: white;
+      padding: 10px;
+      text-align: center;
     }
     form {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        width: 400px;
-        margin: auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      margin: auto;
     }
     .input-group {
-        margin-bottom: 15px;
-        margin: 10px;
+      margin-bottom: 15px;
+      margin: 10px;
     }
     .input-group input, .input-group select {
-        width: 90%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+      width: 90%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
     form button {
-        width: 100%;
-        padding: 10px;
-        background-color: #34495e;
-        border: none;
-        border-radius: 4px;
-        color: #fff;
-        font-size: 16px;
+      width: 100%;
+      padding: 10px;
+      background-color: #34495e;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 16px;
     }
     button:hover {
-        cursor: pointer;
+      cursor: pointer;
     }
     button + button {
-        margin-top: 10px;
-        background-color: red;   
+      margin-top: 10px;
+      background-color: red;
     }
-    </style>
+  </style>
 
-    <form id="form-registrar-tarea"> 
-        <header>
-            <h2>Registrar tarea</h2>
-        </header>
-        <div class="input-group">
-            <label>Nombre:</label>
-            <input type="text" id="nombre" required>
-        </div>
-        <div class="input-group">
-            <label>Descripción:</label>
-            <input type="text" id="descripcion" required>
-        </div>
-        <div class="input-group">
-            <label>Prioridad:</label>
-            <input type="text" id="prioridad" required>
-        </div>
-        <div class="input-group">
-            <label>Fecha límite:</label>
-            <input type="date" id="fecha_limite" required>
-        </div>
-        <div class="input-group">
-            <label>Estado:</label>
-            <select id="estado">
-                <option value="Activo">Activo</option>
-                <option value="Inactivo">Inactivo</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Persona asignada:</label>
-            <input type="number" id="persona_asignada" required>
-        </div>
+  <form id="form-registrar-tarea">
+    <header>
+      <h2>Registrar Tarea</h2>
+    </header>
+    <div class="input-group">
+      <label>Nombre:</label>
+      <input type="text" id="nombre" required>
+    </div>
+    <div class="input-group">
+      <label>Descripción:</label>
+      <input type="text" id="descripcion" required>
+    </div>
+    <div class="input-group">
+      <label>Prioridad:</label>
+      <select id="prioridad" required>
+        <option value="Baja">Baja</option>
+        <option value="Media">Media</option>
+        <option value="Alta">Alta</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label>Fecha límite:</label>
+      <input type="date" id="fecha_limite" required>
+    </div>
+    <div class="input-group">
+      <label>Estado:</label>
+      <select id="estado">
+        <option value="Realizada">Realizada</option>
+        <option value="Pendiente">Pendiente</option>
+        <option value="Atrasada">Atrasada</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label>Persona asignada:</label>
+      <select id="personaAsignada">
+        <option value="">Seleccione una persona</option>
+      </select>
+    </div>
+    <button type="submit">Registrar</button>
+    <button type="button" onclick="window.history.back()">Cancelar</button>
+  </form>
 
-        <button type="submit">Registrar</button>
-        <button type="button" onclick="window.history.back()">Cancelar</button>
-    </form>
-
-    <script>
-        document.getElementById("form-registrar-tarea").addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const tarea = {
-                Nombre_tarea: document.getElementById("nombre").value,
-                Descripcion: document.getElementById("descripcion").value,
-                Prioridad: document.getElementById("prioridad").value,
-                Fecha_limite: document.getElementById("fecha_limite").value,
-                Estado: document.getElementById("estado").value,
-                Persona_asignada: document.getElementById("persona_asignada").value
-            };
-
-            try {
-                const response = await fetch("http://localhost:4000/tarea", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(tarea)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || "Error desconocido");
-                }
-
-                alert("✅ Tarea registrada con éxito.");
-                window.location.href = "tareas.html"; 
-
-            } catch (error) {
-                console.error("❌ Error en el registro:", error);
-                alert("❌ Error al registrar tarea: " + error.message);
-            }
+  <script>
+    // Cargar empleados para el ComboBox
+    async function cargarEmpleados() {
+      try {
+        const response = await fetch("http://localhost:4000/empleado");
+        if (!response.ok) {
+          throw new Error("Error al cargar los empleados");
+        }
+        const data = await response.json();
+        const select = document.getElementById("personaAsignada");
+        select.innerHTML = '<option value="">Seleccione una persona</option>';
+        data.forEach(empleado => {
+          const option = document.createElement("option");
+          option.value = empleado.id_empleado;
+          option.textContent = `${empleado.nombre} ${empleado.apellido}`;
+          select.appendChild(option);
         });
-        
-    </script>
+      } catch (error) {
+        console.error("Error al cargar empleados:", error);
+        alert("Error al cargar la lista de empleados.");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", cargarEmpleados);
+
+    // Enviar formulario para registrar una tarea
+    document.getElementById("form-registrar-tarea").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const tarea = {
+        Nombre_tarea: document.getElementById("nombre").value,
+        Descripcion: document.getElementById("descripcion").value,
+        Prioridad: document.getElementById("prioridad").value,
+        Fecha_limite: document.getElementById("fecha_limite").value,
+        Estado: document.getElementById("estado").value,
+        Persona_asignada: document.getElementById("personaAsignada").value
+      };
+
+      try {
+        const response = await fetch("http://localhost:4000/tarea", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tarea)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Error desconocido");
+        }
+
+        alert("✅ Tarea registrada con éxito.");
+        window.location.href = "tareas.html";
+      } catch (error) {
+        console.error("❌ Error al registrar tarea:", error);
+        alert("❌ Error al registrar tarea: " + error.message);
+      }
+    });
+  </script>
 </body>
 </html>

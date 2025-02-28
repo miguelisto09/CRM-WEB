@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="sidebar">
         <h2>Bienvenido usuario</h2>
         <ul>
@@ -39,52 +40,139 @@
             </div>
 
             <div class="widget">
-                <h3>Recordatorios</h3>
-                <div class="list-item">Recordatorio 1</div>
-                <div class="list-item">Recordatorio 2</div>
-                <div class="list-item">Recordatorio 3</div>
-                <div class="list-item">Recordatorio 4</div>
+                <h3>Tareas pendientes</h3>
+                <div id="lista-tareas">
+                    <p>Cargando...</p>
+                </div>
+            </div>
+            <div class="widget">
+                <h3>Tareas atrasadas</h3>
+                <div id="lista-tareas-atrasadas">
+                    <p>Cargando...</p>
+                </div>
             </div>
 
             <div class="widget">
-                <h3>Tareas pendientes</h3>
-                <div class="list-item">Tarea 1</div>
-                <div class="list-item">Tarea 2</div>
-                <div class="list-item">Tarea 3</div>
-                <div class="list-item">Tarea 4</div>
+                <h3>Estadísticas de Tareas</h3>
+                <canvas id="graficoTareas"></canvas> 
             </div>
         </div>
     </div>
+
     <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            cargarCumpleanos();
+            cargarTareasPendientes();
+            cargarTareasAtrasadas();
+        });
+
         async function cargarCumpleanos() {
+            const listaCumpleanos = document.getElementById("lista-cumpleanos");
+
             try {
-                const response = await fetch('http://localhost:4000/empleado/cumpleanos');
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
-                const cumpleanos = await response.json();
-                const lista = document.getElementById('lista-cumpleanos');
-                lista.innerHTML = '';
+                const response = await fetch("http://localhost:4000/cumpleanos");
+                const empleados = await response.json();
 
-                if (cumpleanos.length === 0) {
-                    lista.innerHTML = '<p>No hay empleados con cumpleaños próximos.</p>';
-                    return;
-                }
+                listaCumpleanos.innerHTML = ""; 
 
-                cumpleanos.forEach(emp => {
-                    const fecha = new Date(emp.fecha_nacimiento).toLocaleDateString();
-                    const item = document.createElement('div');
-                    item.classList.add('list-item');
-                    item.innerHTML = `<i class="fas fa-birthday-cake"></i> ${emp.nombre} ${emp.apellido} - ${fecha}`;
-                    lista.appendChild(item);
-                });
+                if (empleados.length === 0) {
+                    listaCumpleanos.innerHTML = "<p>No hay cumpleaños próximos.</p>";
+                } else {
+                    empleados.forEach(empleado => {
+                        const div = document.createElement("div");
+                        div.classList.add("list-item");
+                        div.innerHTML = `<strong>${empleado.nombre} ${empleado.apellido}</strong> - 🎂 ${formatFecha(empleado.fecha_nacimiento)}`;
+                        listaCumpleanos.appendChild(div);
+                    });
+                }
             } catch (error) {
-                console.error('Error al cargar los cumpleaños:', error);
-                document.getElementById('lista-cumpleanos').innerHTML = '<p>Error al obtener datos.</p>';
+                console.error("Error al cargar los cumpleaños:", error);
+                listaCumpleanos.innerHTML = "<p>Error al cargar los datos.</p>";
             }
         }
 
-        document.addEventListener('DOMContentLoaded', cargarCumpleanos);
+        async function cargarTareasPendientes() {
+            const listaTareas = document.getElementById("lista-tareas");
+
+            try {
+                const response = await fetch("http://localhost:4000/tareas-pendientes");
+                const tareas = await response.json();
+
+                listaTareas.innerHTML = ""; 
+
+                if (tareas.length === 0) {
+                    listaTareas.innerHTML = "<p>No hay tareas pendientes.</p>";
+                } else {
+                    tareas.forEach(tarea => {
+                        const div = document.createElement("div");
+                        div.classList.add("list-item");
+                        div.innerHTML = `<strong>${tarea.nombre_tarea}</strong> - Prioridad: ${tarea.prioridad} - ⏳ Fecha límite: ${formatFecha(tarea.fecha_limite)}`;
+                        listaTareas.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error("Error al cargar las tareas pendientes:", error);
+                listaTareas.innerHTML = "<p>Error al cargar los datos.</p>";
+            }
+        }
+
+        async function cargarTareasAtrasadas() {
+            const listaTareasAtrasadas = document.getElementById("lista-tareas-atrasadas");
+
+            try {
+                const response = await fetch("http://localhost:4000/tareas-atrasadas");
+                const tareasatrasadas = await response.json();
+
+                listaTareasAtrasadas.innerHTML = ""; 
+
+                if (tareasatrasadas.length === 0) {
+                    listaTareasAtrasadas.innerHTML = "<p>No hay tareas atrasadas.</p>";
+                } else {
+                    tareasatrasadas.forEach(tarea => {
+                        const div = document.createElement("div");
+                        div.classList.add("list-item");
+                        div.innerHTML = `<strong>${tarea.nombre_tarea}</strong> - Prioridad: ${tarea.prioridad} - ⏳ Fecha límite: ${formatFecha(tarea.fecha_limite)}`;
+                        listaTareasAtrasadas.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error("Error al cargar las tareas atrasadas:", error);
+                listaTareasAtrasadas.innerHTML = "<p>Error al cargar los datos.</p>";
+            }
+        }
+
+        function formatFecha(fecha) {
+            const opciones = { day: "2-digit", month: "long" };
+            return new Date(fecha).toLocaleDateString("es-ES", opciones);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("http://localhost:4000/estadisticas-tareas")
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById("graficoTareas").getContext("2d");
+
+                new Chart(ctx, {
+                    type: "doughnut",
+                    data: {
+                        labels: ["Pendientes", "Atrasadas", "Realizadas"],
+                        datasets: [{
+                            data: [data.pendientes, data.atrasadas, data.realizadas],
+                            backgroundColor: ["#f39c12", "#e74c3c", "#2ecc71"]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: "bottom"
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error("Error al cargar estadísticas:", error));
+        });
     </script>
 </body>
 </html>

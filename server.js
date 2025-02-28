@@ -150,6 +150,41 @@ app.put('/tarea/:id', (req, res) => {
       res.json({ message: 'Tarea actualizada correctamente' });
   });
 });
+
+const multer = require('multer');
+
+// Configurar Multer para almacenar archivos en memoria
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+app.post('/submitTask', upload.single('file'), (req, res) => {
+  const { taskId, employeeId, submissionText } = req.body;
+  const file = req.file;
+
+  if (!taskId || !employeeId) {
+      return res.status(400).json({ error: 'El id de tarea y el id del empleado son obligatorios' });
+  }
+
+  const query = 'INSERT INTO envio_tarea (id_tarea, id_empleado, texto_envio, archivo, nombre_archivo, tipo_mime) VALUES (?, ?, ?, ?, ?, ?)';
+  const values = [
+      taskId,
+      employeeId,
+      submissionText || null,
+      file ? file.buffer : null,
+      file ? file.originalname : null,
+      file ? file.mimetype : null
+  ];
+
+  pool.query(query, values, (err, result) => {
+      if (err) {
+          console.error('Error al guardar la tarea enviada:', err);
+          return res.status(500).json({ error: 'Error al guardar la tarea' });
+      }
+      res.json({ message: 'Tarea enviada correctamente', id_envio: result.insertId });
+  });
+});
+
+
 app.delete('/tarea/:id', (req, res) => {
   const { id } = req.params;
   pool.query('DELETE FROM tarea WHERE id_tarea = ?', [id], (err, result) => {
@@ -175,6 +210,97 @@ app.post('/tarea', (req, res) => {
     res.status(201).json({ id: result.insertId, ...req.body });
   });
 });
+
+app.get("/cumpleanos", (req, res) => {
+  const sql = `
+        SELECT id_empleado, nombre, apellido, fecha_nacimiento 
+        FROM empleado 
+        WHERE DATE_FORMAT(fecha_nacimiento, '%m-%d') >= DATE_FORMAT(NOW(), '%m-%d')
+        ORDER BY DATE_FORMAT(fecha_nacimiento, '%m-%d') ASC
+        LIMIT 5;
+    `;
+
+  pool.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: "Error en la consulta", details: err.message });
+    }
+    res.json(results);
+  });
+});
+app.get("/tareas-pendientes", (req, res) => {
+  const sql = `
+        SELECT id_tarea, nombre_tarea, prioridad, fecha_limite 
+        FROM tarea 
+        WHERE estado = 'Pendiente'
+        ORDER BY fecha_limite ASC;
+    `;
+
+  pool.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: "Error en la consulta", details: err.message });
+    }
+    res.json(results);
+  });
+});
+app.get("/tareas-atrasadas", (req, res) => {
+  const sql = `
+        SELECT id_tarea, nombre_tarea, prioridad, fecha_limite 
+        FROM tarea 
+        WHERE estado = 'Atrasado'
+        ORDER BY fecha_limite ASC;
+    `;
+
+  pool.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: "Error en la consulta", details: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.get("/estadisticas-tareas", (req, res) => {
+  const sql = `
+      SELECT 
+          SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END) AS pendientes,
+          SUM(CASE WHEN estado = 'Atrasado' THEN 1 ELSE 0 END) AS atrasadas,
+          SUM(CASE WHEN estado = 'Realizada' THEN 1 ELSE 0 END) AS realizadas,
+          COUNT(*) AS total
+      FROM tarea;
+  `;
+
+  pool.query(sql, (err, results) => {
+      if (err) {
+          return res.status(500).json({ error: "Error en la consulta", details: err.message });
+      }
+
+      const { pendientes, atrasadas, realizadas, total } = results[0];
+
+      const data = {
+          pendientes: ((pendientes / total) * 100).toFixed(2),
+          atrasadas: ((atrasadas / total) * 100).toFixed(2),
+          realizadas: ((realizadas / total) * 100).toFixed(2)
+      };
+
+      res.json(data);
+  });
+});
+
+function actualizarTareasAtrasadas() {
+  const sql = `
+        UPDATE tarea 
+        SET estado = 'Atrasado' 
+        WHERE estado = 'Pendiente' AND fecha_limite < CURDATE();
+    `;
+
+  pool.query(sql, (err, result) => {
+    if (err) {
+      console.error("❌ Error al actualizar tareas atrasadas:", err);
+    } else if (result.affectedRows > 0) {
+      console.log(`✅ ${result.affectedRows} tareas actualizadas a 'Atrasado'.`);
+    }
+  });
+}
+setInterval(actualizarTareasAtrasadas, 300000); 
 
 
 const PORT = process.env.PORT || 4000;
