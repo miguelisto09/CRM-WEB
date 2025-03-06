@@ -64,7 +64,7 @@
             }
            
     </style>
-    <form>
+    <form id="registroForm">
         <h2>Regístrate</h2>
         <div class="input-group">
             <i class="fas fa-user"></i>
@@ -91,5 +91,38 @@
         <button>Registrarse</button>
         <a href="login.html" class="register-link">Ya tengo una cuenta</a>
     </form>
+    <script>
+             document.getElementById("registroForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const usuario = {
+                nombre_usuario: document.getElementById("Nombre de usuario").value,
+                contraseña: document.getElementById("Contraseña").value,
+                confirmar_contraseña: document.getElementById("Confirmar contraseña").value,
+                rol: document.getElementById("rol").value,
+            };
+
+            try {
+                const response = await fetch("http://localhost:4000/usuario", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(usuario)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Error desconocido");
+                }
+
+                alert("✅ Usuario registrado con éxito.");
+                window.location.href = "login.html"; 
+
+            } catch (error) {
+                console.error("❌ Error en el registro:", error);
+                alert("❌ Error al registrar empleado: " + error.message);
+            }
+        });
+        
+    </script>
 </body>
 </html>

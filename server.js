@@ -246,7 +246,7 @@ app.get("/tareas-atrasadas", (req, res) => {
   const sql = `
         SELECT id_tarea, nombre_tarea, prioridad, fecha_limite 
         FROM tarea 
-        WHERE estado = 'Atrasado'
+        WHERE estado = 'Atrasada'
         ORDER BY fecha_limite ASC;
     `;
 
@@ -262,7 +262,7 @@ app.get("/estadisticas-tareas", (req, res) => {
   const sql = `
       SELECT 
           SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END) AS pendientes,
-          SUM(CASE WHEN estado = 'Atrasado' THEN 1 ELSE 0 END) AS atrasadas,
+          SUM(CASE WHEN estado = 'Atrasada' THEN 1 ELSE 0 END) AS atrasadas,
           SUM(CASE WHEN estado = 'Realizada' THEN 1 ELSE 0 END) AS realizadas,
           COUNT(*) AS total
       FROM tarea;
@@ -302,6 +302,21 @@ function actualizarTareasAtrasadas() {
 }
 setInterval(actualizarTareasAtrasadas, 300000); 
 
+app.post('/usuario', (req, res) => {
+  const { nombre_usuario, contraseña, rol } = req.body;
+  if (!nombre_usuario || !contraseña) {
+    return res.status(400).json({ error: 'Los campos nombre de usuario y contraseña son obligatorios' });
+  }
+  if (!rol) {
+    rol = 'Empleado';
+  }
+  pool.query('INSERT INTO usuario SET ?', req.body, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al insertar usuario', details: err.message });
+    }
+    res.status(201).json({ id: result.insertId, ...req.body });
+  });
+});
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
