@@ -5,267 +5,272 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Registrar empleado</title>
-   
-</head>
-<body>
     <style>
         body {
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; 
             margin: 0;
-    padding: 0;
-    height: 100%;
+            padding: 0;
+            height: 100%;
+            display: flex;
         }
 
         .sidebar {
-    width: 250px;
-    background-color: #2c3e50;
-    color: white;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    padding: 20px;
-    text-align: center;
-}
-
-.sidebar h2 {
-    margin: 0;
-    font-size: 28px;
-    text-align: center;
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
-    padding-left: 0;
-    text-align: left;
-}
-
-.sidebar ul li {
-    margin: 10px 0;
-    font-size: 18px;
-}
-
-.main-content {
-    margin-left: 270px;
-    padding: 20px;
-}
-.Cerrarsesion {
-    position: fixed;
-    bottom: 0;
-    align-items: center;
-     text-align: center;
-    width: 250px;
-    padding: 10px;
-    background-color: #2c3e50;
-    color: white;
-    text-decoration: none;
-    border-radius: 0 0 5px 5px;
-    transition: background-color 0.1s;
-}
-
-.sidebar ul li a {
-    text-decoration: none;
-    color: white;
-    display: block;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-.sidebar ul li a:hover {
-    background-color: #34495e;
-}
-        
-        
-        .register-link {
-            display: block;
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 20px;
             text-align: center;
-            margin-top: 10px;
-            color: #34495e;
         }
-        .Verempleados {
-    /* Ponle un ancho máximo y centrado para que no sea tan ancha */
-    max-width: 900px; 
-    margin: 30px auto; /* auto en left y right para centrar */
-    padding: 20px;
-   
-}
-.Verempleados table {
-    width: 100%; /* o un porcentaje menor si deseas que sea más pequeña */
-    border-collapse: collapse;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px; /* pequeña separación bajo el título y búsqueda */
-    background-color: #fff; 
-}
 
-table th, table td {
-    text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
+        .sidebar h2 {
+            margin: 0;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            padding-left: 0;
+            text-align: left;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #34495e;
+        }
+
+        .Cerrarsesion {
+            position: fixed;
+            bottom: 0;
+            align-items: center;
+            text-align: center;
+            width: 250px;
+            padding: 10px;
+            background-color: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 0 0 5px 5px;
+            transition: background-color 0.1s;
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 20px;
+           
+        }
+
+        .Verempleados {
+            max-width: 100%;
+            margin: 20px auto;
+            padding: 20px;
+            overflow-x: auto; /* Allow horizontal scrolling if needed */
+        }
+
+        .Verempleados table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table {
+            width: 60%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background-color: #fff; 
+            table-layout: fixed; /* Ensure table maintains its width */
+        }
+
+        table th, table td {
+            text-align: left; /* Align text to the left */
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-size: 1em; /* Use em units for font size */
+        }
+
         table thead {
-    background-color: #3498db;
-    color: #fff;
-}
+            background-color: #3498db;
+            color: #fff;
+        }
+
         table tbody tr:nth-child(even) {
             background-color: #f9f9f9;
         }
+
         table tbody tr:hover {
-    background-color: #f5f5f5;
-}
+            background-color: #f5f5f5;
+        }
+
         table tbody td {
-            text-align: center;
+            text-align: left; /* Align text to the left */
             font-family: 'Franklin Gothic Medium Cond';
         }
 
         table button {
-    padding: 6px 12px;
-    background-color: #34495e;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    margin: 0 2px;
-    cursor: pointer;
-    font-size: 14px;
-}
-table button:hover {
-    background-color: #2c3e50;
-}
-table button:last-child:hover {
-    background-color: #c0392b;
-}
-        table tbody td button {
-            padding: 5px;
+            padding: 6px 4px; /* Increase vertical padding */
             background-color: #34495e;
-            color: white;
+            color: #fff;
             border: none;
             border-radius: 4px;
-            margin-top: 5px;
-            size: 10px;
-            width: 90px;
+            margin: 0 2px;
+            cursor: pointer;
+            font-size: 0.9em; /* Slightly smaller font size */
+            width: 60px; /* Reduce width */
         }
-        
-        table tbody td button:hover {
+
+        table button:hover {
             background-color: #2c3e50;
         }
-        table tbody td button + button:hover {
+
+        table button:last-child:hover {
             background-color: #c0392b;
         }
-        .Verempleados button {
+
+        table td {
+            text-align: left;
+            font-family: 'Franklin Gothic Medium Cond';
+            max-width: 150px;
+            position: relative;
+        }
+
+        .wrap-text {
+            font-size: 0.9em;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: #fff;
+            position: relative;
+        }
+
+        .input-container i {
+            color: gray;
+            margin-left: 5px;
+        }
+
+        .Buscar {
+            border: none;
+            outline: none;
+            flex: 1;
+            padding-left: 5px;
+            height: 25px;
+            font-size: 14px;
+        }
+
+        .alinear {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 99%;
+        }
+
+        .alinear h2 {
+            margin: 0;
+            font-size: 24px;
+            flex: 1;
+        }
+
+        
+
+        .Registro {
             padding: 10px;
             background-color: #34495e;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             color: white;
-            font-size: 16px;
-        } 
-        
-        .input-container {
-    display: flex;
-    align-items: center;
-    width: 250px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 5px;
-    background-color: #fff;
-    margin: 0;
-    position: relative;
-}
+            font-size: 14px;
+            margin-bottom: 10px;
+            white-space: nowrap;
+        }
 
-.input-container i {
-    color: gray;
-    margin-left: 5px;
-}
-.Buscar {
-    border: none;
-    outline: none;
-    flex: 1;
-    padding-left: 5px;
-    height: 30px;
-    font-size: 16px;
-}
-    .alinear {
-    display: flex;
-    justify-content: space-between;
-   
-    align-items: center;
-    margin-bottom: 20px;
-    width: 100%;
-}
+       
 
+        @media (min-width: 768px) {
+            .alinear {
+                flex-direction: row;
+                justify-content: space-between;
+            }
 
-.alinear h2 {
-    margin: 0;
-    font-size: 30px;
-    flex: 1; /* Ensure it takes available space */
-}
-
-.input-container-wrapper {
-    display: flex;
-    justify-content: flex-end; /* Align to the right */
-    width: 100%;
-}
-    .Registro {
-        padding: 10px;
-        background-color: #34495e;
-        border: none;
-        border-radius: 4px;
-        color: white;
-        font-size: 16px;
-        margin: 20px;
-    }
+            .Registro {
+                margin-bottom: 0;
+            }
+        }
     </style>
-    <body>
-        <div class="sidebar" style="background-color: #2c3e50;">
-            <h2>Bienvenido usuario</h2>
-            <ul>
-                <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
-                <li><a href="Tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
-                <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
-                <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
-                <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
-            </ul>
-            <ul>
-                <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
-            </ul>
-        </div> 
-    
-<button class="Registro" onclick="registrarEmpleado()">+ Nuevo empleado</button>
-    <div class="Verempleados">
-        <div class="alinear">
-            <h2>Empleados</h2>
-            <div class="input-container-wrapper">
-                <div class="input-container">
-                    <input id="buscar-empleado" class="Buscar" type="search" placeholder="Buscar empleado">
-                    <i class="fas fa-search"></i>
+</head>
+<body>
+    <div class="sidebar" style="background-color: #2c3e50;">
+        <h2>Bienvenido usuario</h2>
+        <ul>
+            <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
+            <li><a href="Tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
+            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
+            <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
+            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
+        </ul>
+        <ul>
+            <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
+        </ul>
+    </div> 
+
+    <div class="main-content">
+        <div class="Verempleados">
+            <div class="alinear">
+                <button class="Registro" onclick="registrarEmpleado()">+ Nuevo empleado</button>
+                <div class="input-container-wrapper">
+                    <div class="input-container">
+                        <input id="buscar-empleado" class="Buscar" type="search" placeholder="Buscar empleado">
+                        <i class="fas fa-search"></i>
+                    </div>
                 </div>
             </div>
-        </div>
-        <table>
-            <thead>
-                <td>Nombre</td>
-                <td>Apellido</td>
-                <td>Fecha de nacimiento</td>
-                <td>Correo electrónico</td>
-                <td>Cédula</td>
-                <td>Teléfono</td>
-                <td>Dirección</td>
-                <td>Cargo</td>
-                <td>Salario</td>
-                <td>Estado</td>
-                <td>Nota</td>
-                <td>Acciones</td>
-            </tr>
-            </thead>
-            <tbody id="tabla-empleados"></tbody>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Nombre</td>
+                        <td>Apellido</td>
+                        <td>Fecha de nacimiento</td>
+                        <td>Correo electrónico</td>
+                        <td>Cédula</td>
+                        <td>Teléfono</td>
+                        <td>Dirección</td>
+                        <td>Cargo</td>
+                        <td>Salario</td>
+                        <td>Estado</td>
+                        <td>Nota</td>
+                        <td>Acciones</td>
+                    </tr>
+                </thead>
+                <tbody id="tabla-empleados"></tbody>
             </table>
+        </div>
     </div>
-                
+
     <script>
         async function cargarEmpleados() {
             try {
@@ -280,14 +285,14 @@ table button:last-child:hover {
                         <td>${emp.nombre}</td>
                         <td>${emp.apellido}</td>
                         <td>${new Date(emp.fecha_nacimiento).toISOString().split('T')[0]}</td>
-                        <td>${emp.correo_electronico || 'N/A'}</td>
-                        <td>${emp.cedula || 'N/A'}</td>
-                        <td>${emp.telefono || 'N/A'}</td>
-                        <td>${emp.direccion || 'N/A'}</td>
-                        <td>${emp.cargo || 'N/A'}</td>
-                        <td>${emp.salario || 'N/A'}</td>
-                        <td>${emp.estado || 'N/A'}</td>
-                        <td>${emp.notas || 'N/A'}</td>
+                        <td class="wrap-text">${emp.correo_electronico || 'N/A'}</td>
+                        <td class="wrap-text">${emp.cedula || 'N/A'}</td>
+                        <td class="wrap-text">${emp.telefono || 'N/A'}</td>
+                        <td class="wrap-text">${emp.direccion || 'N/A'}</td>
+                        <td class="wrap-text">${emp.cargo || 'N/A'}</td>
+                        <td class="wrap-text">${emp.salario || 'N/A'}</td>
+                        <td class="wrap-text">${emp.estado || 'N/A'}</td>
+                        <td class="wrap-text">${emp.notas || 'N/A'}</td>
                         <td>
                             <button onclick="editarEmpleado(${emp.id_empleado})">Editar</button>
                             <button onclick="eliminarEmpleado(${emp.id_empleado})">Eliminar</button>
@@ -299,48 +304,51 @@ table button:last-child:hover {
                 console.error('Error al cargar empleados:', error);
             }
         }
-        function filtrarEmpleados() {
-        const input = document.getElementById('buscar-empleado');
-        const filtro = input.value.toUpperCase();
-        const tabla = document.getElementById('tabla-empleados');
-        const filas = tabla.getElementsByTagName('tr');
 
-        for (let i = 0; i < filas.length; i++) {
-            const celdas = filas[i].getElementsByTagName('td');
-            let coincide = false;
-            for (let j = 0; j < celdas.length; j++) {
-                if (celdas[j]) {
-                    const texto = celdas[j].textContent || celdas[j].innerText;
-                    if (texto.toUpperCase().indexOf(filtro) > -1) {
-                        coincide = true;
-                        break;
+        function filtrarEmpleados() {
+            const input = document.getElementById('buscar-empleado');
+            const filtro = input.value.toUpperCase();
+            const tabla = document.getElementById('tabla-empleados');
+            const filas = tabla.getElementsByTagName('tr');
+
+            for (let i = 0; i < filas.length; i++) {
+                const celdas = filas[i].getElementsByTagName('td');
+                let coincide = false;
+                for (let j = 0; j < celdas.length; j++) {
+                    if (celdas[j]) {
+                        const texto = celdas[j].textContent || celdas[j].innerText;
+                        if (texto.toUpperCase().indexOf(filtro) > -1) {
+                            coincide = true;
+                            break;
+                        }
                     }
                 }
+                filas[i].style.display = coincide ? '' : 'none';
             }
-            filas[i].style.display = coincide ? '' : 'none';
         }
-    }
 
-    document.getElementById('buscar-empleado').addEventListener('input', filtrarEmpleados);
+        document.getElementById('buscar-empleado').addEventListener('input', filtrarEmpleados);
 
         async function eliminarEmpleado(id) {
-    if (confirm('¿Estás seguro de eliminar este empleado?')) {
-        try {
-            await fetch(`http://localhost:4000/empleado/${id}`, { method: 'DELETE' });
-            cargarEmpleados();
-        } catch (error) {
-            console.error('Error al eliminar empleado:', error);
+            if (confirm('¿Estás seguro de eliminar este empleado?')) {
+                try {
+                    await fetch(`http://localhost:4000/empleado/${id}`, { method: 'DELETE' });
+                    cargarEmpleados();
+                } catch (error) {
+                    console.error('Error al eliminar empleado:', error);
+                }
+            }
         }
-    }
-}
+
         function editarEmpleado(id) {
-    window.location.href = `editarEmpleado.html?id=${id}`;
-}
-function registrarEmpleado() {
-    window.location.href = `registrarempleadoo.html`;
-}
+            window.location.href = `editarEmpleado.html?id=${id}`;
+        }
+
+        function registrarEmpleado() {
+            window.location.href = `registrarempleadoo.html`;
+        }
+
         document.addEventListener('DOMContentLoaded', cargarEmpleados);
-        
     </script>
-    </body>
+</body>
 </html>
