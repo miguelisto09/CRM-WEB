@@ -58,7 +58,7 @@
       <input type="text" id="nombre" required>
     </div>
     <div class="input-group">
-      <label>Descripción:</label>
+      <label>Descripción:</label>
       <input type="text" id="descripcion" required>
     </div>
     <div class="input-group">
@@ -70,14 +70,15 @@
       </select>
     </div>
     <div class="input-group">
-      <label>Fecha límite:</label>
+      <label>Fecha límite:</label>
       <input type="date" id="fecha_limite" required>
     </div>
     <div class="input-group">
       <label>Estado:</label>
       <select id="estado">
-        <option value="Activo">Activo</option>
-        <option value="Inactivo">Inactivo</option>
+        <option value="Realizada">Realizada</option>
+        <option value="Pendiente">Pendiente</option>
+        <option value="Atrasada">Atrasada</option>
       </select>
     </div>
     <div class="input-group">
@@ -140,7 +141,7 @@
           throw new Error(errorData.error || "Error desconocido");
         }
 
-        alert("✅ Tarea registrada con éxito.");
+        alert("✅ Tarea registrada con éxito.");
         window.location.href = "tareas.html";
       } catch (error) {
         console.error("❌ Error al registrar tarea:", error);

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -194,8 +195,8 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     margin-bottom: 20px;
-    width: 100%; /* Asegura que no se desborde */
-    max-width: 300px; /* Limita el ancho máximo */
+    width: 100%; 
+    max-width: 300px;
 }
 
 .task-category h3 {
@@ -358,7 +359,6 @@
         <button class="create-task-btn" onclick="window.location.href='registrartarea.html'">Crear Nueva Tarea</button>
 
         <div class="task-category-container" id="taskCategories">
-            <!-- Task categories will be dynamically inserted here -->
         </div>
     </div>
 
@@ -548,7 +548,6 @@
                     <p>${task.descripcion}</p>
                     <p><em>Vence: ${new Date(task.fecha_limite).toLocaleDateString()}</em></p>
                 `;
-                // Al hacer clic se abre el apartado de la tarea para completarla
                 taskDiv.addEventListener('click', function() {
                     openTaskModal(task);
                 });
@@ -558,7 +557,6 @@
         }
     }
 
-    // Función para abrir el apartado (modal) de la tarea con estética minimalista y espaciosa
     function openTaskModal(task) {
         var modal = document.getElementById('taskModal');
         modal.innerHTML = `
@@ -621,38 +619,32 @@
         `;
         modal.style.display = 'block';
 
-        // Cerrar modal al hacer clic en la "X"
         document.getElementById('modalClose').addEventListener('click', closeTaskModal);
 
-        // Manejar el envío del formulario
         document.getElementById('taskForm').addEventListener('submit', function(e) {
             e.preventDefault();
             handleSubmitTask(task);
         });
     }
 
-    // Función para cerrar el modal
     function closeTaskModal() {
         var modal = document.getElementById('taskModal');
         modal.style.display = 'none';
     }
 
-    // Función para manejar el envío de la tarea (comentario, archivo, etc.)
     function handleSubmitTask(task) {
     var submissionText = document.getElementById('submissionText').value;
     var fileInput = document.getElementById('fileUpload');
     var file = fileInput.files[0];
 
-    // Obtén el ID del empleado (lo puedes obtener desde la sesión, o de un campo oculto, etc.)
-    var employeeId = 1; // Este es un ejemplo, deberías obtener el ID del empleado de forma dinámica
+    var employeeId = 1; 
 
-    // Preparamos los datos para enviar (ajusta la URL y la lógica según tu backend)
     var formData = new FormData();
     formData.append('taskId', task.id_tarea);
-    formData.append('employeeId', employeeId); // Asegúrate de enviar el ID del empleado
-    formData.append('submissionText', submissionText || ''); // Si no hay texto, enviar vacío
+    formData.append('employeeId', employeeId); 
+    formData.append('submissionText', submissionText || ''); 
     if (file) {
-        formData.append('file', file); // Solo si hay archivo
+        formData.append('file', file); 
     }
 
     fetch('http://localhost:4000/submitTask', {
@@ -670,7 +662,6 @@
     });
 }
 
-    // Cerrar modal si se hace clic fuera del contenido del modal
     window.addEventListener('click', function(event) {
         var modal = document.getElementById('taskModal');
         if (event.target === modal) {
@@ -678,13 +669,8 @@
         }
     });
 
-    // Llama a la función para obtener las tareas al cargar la página
     window.onload = fetchTasks;
 </script>
-
-    
-    
-    
     
 </body>
 </html>
