@@ -1,5 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
@@ -303,18 +305,23 @@ function actualizarTareasAtrasadas() {
 setInterval(actualizarTareasAtrasadas, 300000); 
 
 app.post('/usuario', (req, res) => {
-  const { nombre_usuario, contraseña, rol } = req.body;
-  if (!nombre_usuario || !contraseña) {
-    return res.status(400).json({ error: 'Los campos nombre de usuario y contraseña son obligatorios' });
+  let { nombre_usuario, contraseña, confirmar_contraseña, rol } = req.body;
+
+  if (!nombre_usuario || !contraseña || !confirmar_contraseña) {
+      return res.status(400).json({ error: 'Los campos nombre de usuario, contraseña y confirmar contraseña son obligatorios' });
   }
-  if (!rol) {
-    rol = 'Empleado';
-  }
-  pool.query('INSERT INTO usuario SET ?', req.body, (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al insertar usuario', details: err.message });
-    }
-    res.status(201).json({ id: result.insertId, ...req.body });
+
+  rol = rol || 'Empleado';
+
+  const sql = 'INSERT INTO usuario (nombre_usuario, contraseña, rol) VALUES (?, ?, ?)';
+  const values = [nombre_usuario, contraseña, rol];
+
+  pool.query(sql, values, (err, result) => {
+      if (err) {
+          console.error('Error al insertar usuario:', err.message);
+          return res.status(500).json({ error: 'Error al insertar usuario', details: err.message });
+      }
+      res.status(201).json({ id: result.insertId, nombre_usuario, rol });
   });
 });
 

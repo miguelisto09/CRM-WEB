@@ -24,6 +24,80 @@
             left: 0;
             padding: 20px;
             text-align: center;
+            transition: width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+            padding: 20px 10px;
+        }
+
+        .sidebar h2, .sidebar ul li a span {
+            transition: opacity 0.3s, width 0.3s; /* Unified transition duration */
+            opacity: 1;
+            width: auto;
+        }
+
+        .sidebar.collapsed h2, .sidebar.collapsed ul li a span {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed ul li a {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .sidebar.collapsed ul li a i {
+            transition: opacity 0.3s; /* Add transition for icons */
+            margin-right: 0;
+        }
+
+        .sidebar.collapsed .Cerrarsesion {
+            width: 60px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: right 0.3s, transform 0.3s; /* Unified transition duration */
+            z-index: 1000; /* Ensure the button is always on top */
+            transform: translateY(-50%);
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            right: -20px;
+        }
+
+        .toggle-btn i {
+            transition: transform 0.3s; /* Unified transition duration */
+        }
+
+        .sidebar.collapsed .toggle-btn i {
+            transform: rotate(180deg);
+        }
+
+        .main-content {
+            margin-left: 270px;
+            transition: margin-left 0.3s; /* Unified transition duration */
+        }
+
+        .main-content.collapsed {
+            margin-left: 80px;
         }
 
         .sidebar h2 {
@@ -51,7 +125,7 @@
             display: block;
             padding: 10px;
             border-radius: 5px;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s; /* Unified transition duration */
         }
 
         .sidebar ul li a:hover {
@@ -69,7 +143,7 @@
             color: white;
             text-decoration: none;
             border-radius: 0 0 5px 5px;
-            transition: background-color 0.1s;
+            transition: background-color 0.3s, width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
         }
 
         .main-content {
@@ -82,25 +156,28 @@
             max-width: 100%;
             margin: 20px auto;
             padding: 20px;
+            overflow-x: auto; /* Allow horizontal scrolling if needed */
         }
 
         .Verempleados table {
             width: 100%;
             border-collapse: collapse;
-        }
-
-        table {
-            width: 60%;
-            border-collapse: collapse;
             margin-top: 10px;
             background-color: #fff; 
+            table-layout: auto; /* Allow table to adjust based on content */
+        }
+
+        table, th, td {
+            border: 1px solid #ddd; /* Add border to table, th, and td */
         }
 
         table th, table td {
-            text-align: left;
-            padding: 10px;
+            text-align: left; /* Align text to the left */
+            padding: 8px; /* Reduce padding */
             border-bottom: 1px solid #ddd;
-            font-size: 14px;
+            font-size: 0.9em; /* Reduce font size */
+            white-space: normal; /* Allow text to wrap */
+            word-wrap: break-word; /* Ensure text wraps within the cell */
         }
 
         table thead {
@@ -117,19 +194,23 @@
         }
 
         table tbody td {
-            text-align: center;
+            text-align: left; /* Align text to the left */
             font-family: 'Franklin Gothic Medium Cond';
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Add ellipsis for overflow text */
         }
 
         table button {
-            padding: 4px 8px;
+            padding: 4px 2px; /* Reduce padding */
             background-color: #34495e;
             color: #fff;
             border: none;
             border-radius: 4px;
             margin: 0 2px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 0.8em; /* Reduce font size */
+            width: 50px; /* Reduce width */
         }
 
         table button:hover {
@@ -140,7 +221,13 @@
             background-color: #c0392b;
         }
 
-        
+        .wrap-text {
+            font-size: 0.8em; /* Reduce font size */
+            word-wrap: break-word;
+            white-space: normal;
+            max-height: 3em; /* Allow up to two lines of text */
+            overflow-y: auto; /* Add vertical scroll for long text */
+        }
 
         .input-container {
             display: flex;
@@ -207,23 +294,35 @@
                 margin-bottom: 0;
             }
         }
+
+        @media (max-width: 768px) {
+            .Verempleados table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .Verempleados table th, .Verempleados table td {
+                white-space: nowrap;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="sidebar" style="background-color: #2c3e50;">
         <h2>Bienvenido usuario</h2>
         <ul>
-            <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
-            <li><a href="Tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
-            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
-            <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
-            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
+            <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+            <li><a href="Tareas.html"><i class="fas fa-tasks"></i> <span>Tareas</span></a></li>
+            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> <span>Empleados</span></a></li>
+            <li><a href="Configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
+            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> <span>Recordatorios</span></a></li>
         </ul>
         <ul>
-            <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
+            <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> <span>Cerrar sesión</span></a></li>
         </ul>
+        <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
     </div> 
-
     <div class="main-content">
         <div class="Verempleados">
             <div class="alinear">
@@ -271,14 +370,14 @@
                         <td>${emp.nombre}</td>
                         <td>${emp.apellido}</td>
                         <td>${new Date(emp.fecha_nacimiento).toISOString().split('T')[0]}</td>
-                        <td>${emp.correo_electronico || 'N/A'}</td>
-                        <td>${emp.cedula || 'N/A'}</td>
-                        <td>${emp.telefono || 'N/A'}</td>
-                        <td>${emp.direccion || 'N/A'}</td>
-                        <td>${emp.cargo || 'N/A'}</td>
-                        <td>${emp.salario || 'N/A'}</td>
-                        <td>${emp.estado || 'N/A'}</td>
-                        <td>${emp.notas || 'N/A'}</td>
+                        <td class="wrap-text">${emp.correo_electronico || 'N/A'}</td>
+                        <td class="wrap-text">${emp.cedula || 'N/A'}</td>
+                        <td class="wrap-text">${emp.telefono || 'N/A'}</td>
+                        <td class="wrap-text">${emp.direccion || 'N/A'}</td>
+                        <td class="wrap-text">${emp.cargo || 'N/A'}</td>
+                        <td class="wrap-text">${emp.salario || 'N/A'}</td>
+                        <td class="wrap-text">${emp.estado || 'N/A'}</td>
+                        <td class="wrap-text">${emp.notas || 'N/A'}</td>
                         <td>
                             <button onclick="editarEmpleado(${emp.id_empleado})">Editar</button>
                             <button onclick="eliminarEmpleado(${emp.id_empleado})">Eliminar</button>
@@ -332,6 +431,59 @@
 
         function registrarEmpleado() {
             window.location.href = `registrarempleadoo.html`;
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const toggleBtn = document.querySelector('.toggle-btn i');
+            const optionNames = document.querySelectorAll('.sidebar h2, .sidebar ul li a span');
+            const icons = document.querySelectorAll('.sidebar ul li a i, .toggle-btn i');
+
+            if (sidebar.classList.contains('collapsed')) {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('collapsed');
+                    toggleBtn.classList.remove('collapsed');
+                    setTimeout(() => {
+                        optionNames.forEach(name => {
+                            name.style.display = 'inline';
+                            setTimeout(() => {
+                                name.style.opacity = '1';
+                            }, 10); // Small delay to trigger opacity transition
+                        });
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 300); // Match the transition duration
+                }, 300); // Match the transition duration
+            } else {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    optionNames.forEach(name => {
+                        name.style.display = 'none';
+                    });
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('collapsed');
+                    toggleBtn.classList.add('collapsed');
+                    setTimeout(() => {
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 10); 
+                }, 300); 
+            }
         }
         document.addEventListener('DOMContentLoaded', cargarEmpleados);
     </script>
