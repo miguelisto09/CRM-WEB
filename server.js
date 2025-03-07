@@ -302,6 +302,31 @@ function actualizarTareasAtrasadas() {
 }
 setInterval(actualizarTareasAtrasadas, 300000); 
 
+app.get('/configuracion', (req, res) => {
+  pool.query('SELECT * FROM configuracion WHERE id_usuario = ?', [req.query.id_usuario], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+    }
+    res.json(results[0]);
+  });
+});
+
+app.put('/configuracion', (req, res) => {
+  const { id_usuario, idioma, zona_horaria, formato_fecha_hora, notificaciones, tema, tamano_fuente, modo_interfaz } = req.body;
+  const query = `
+    UPDATE configuracion 
+    SET idioma = ?, zona_horaria = ?, formato_fecha_hora = ?, notificaciones = ?, tema = ?, tamano_fuente = ?, modo_interfaz = ? 
+    WHERE id_usuario = ?
+  `;
+  const values = [idioma || null, zona_horaria || null, formato_fecha_hora || null, notificaciones || null, tema || null, tamano_fuente || null, modo_interfaz || null, id_usuario];
+  
+  pool.query(query, values, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al actualizar configuración', details: err.message });
+    }
+    res.json({ message: 'Configuración actualizada correctamente' });
+  });
+});
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -218,11 +217,49 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     transition: all 0.3s;
+    border: 1px solid #ddd; /* Add border for visible dividers */
 }
 
 .task-item:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
+}
+
+.task-item p {
+    margin: 5px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ddd; /* Add border for visible dividers */
+}
+
+.task-item p:last-child {
+    border-bottom: none; /* Remove border from the last paragraph */
+}
+
+.task-item p strong {
+    font-weight: normal;
+}
+
+.task-item .title {
+    font-size: 1.5em; /* Larger font size for title */
+}
+
+.task-item .description {
+    font-weight: normal; /* Normal font weight for description */
+}
+
+.task-item .due-date {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: black; /* Change text color to black */
+}
+
+.task-item .due-date.on-time {
+    background-color: #a8e6cf; /* Pastel green */
+}
+
+.task-item .due-date.overdue {
+    background-color: #ff8b94; /* Pastel red */
 }
 
         .task-details-content {
@@ -543,10 +580,12 @@
             tasksByDueDate[category].forEach(task => {
                 var taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
+                var dueDateClass = new Date(task.fecha_limite) < new Date() ? 'overdue' : 'on-time';
+                var dueDateText = new Date(task.fecha_limite) < new Date() ? 'Venció: ' : 'Vence: ';
                 taskDiv.innerHTML = `
-                    <p><strong>${task.nombre_tarea}</strong></p>
-                    <p>${task.descripcion}</p>
-                    <p><em>Vence: ${new Date(task.fecha_limite).toLocaleDateString()}</em></p>
+                    <p class="title">${task.nombre_tarea}</p>
+                    <p class="description">${task.descripcion}</p>
+                    <p class="due-date ${dueDateClass}"><em>${dueDateText} ${new Date(task.fecha_limite).toLocaleDateString()}</em></p>
                 `;
                 taskDiv.addEventListener('click', function() {
                     openTaskModal(task);
