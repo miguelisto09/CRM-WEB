@@ -108,7 +108,7 @@
                 return;
             }
 
-            const usuario = { nombre_usuario, contraseña, rol };
+            const usuario = { nombre_usuario, contraseña, confirmar_contraseña, rol };
 
             try {
                 const response = await fetch("http://localhost:4000/usuario", {

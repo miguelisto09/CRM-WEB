@@ -11,8 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
+const pool = mysql.createPool({  host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'Marianny19',
   database: process.env.DB_NAME || 'manejadortareas',
@@ -303,28 +302,68 @@ function actualizarTareasAtrasadas() {
   });
 }
 setInterval(actualizarTareasAtrasadas, 300000); 
-
-app.post('/usuario', (req, res) => {
+// Registro de usuario
+app.post('/usuario', async (req, res) => {
   let { nombre_usuario, contraseña, confirmar_contraseña, rol } = req.body;
 
   if (!nombre_usuario || !contraseña || !confirmar_contraseña) {
-      return res.status(400).json({ error: 'Los campos nombre de usuario, contraseña y confirmar contraseña son obligatorios' });
+    return res.status(400).json({ error: 'Los campos nombre de usuario, contraseña y confirmar contraseña son obligatorios' });
+  }
+
+  if (contraseña !== confirmar_contraseña) {
+    return res.status(400).json({ error: 'Las contraseñas no coinciden' });
   }
 
   rol = rol || 'Empleado';
 
+  // Encriptar la contraseña
+  const hashedPassword = await bcrypt.hash(contraseña, 10);
+
   const sql = 'INSERT INTO usuario (nombre_usuario, contraseña, rol) VALUES (?, ?, ?)';
-  const values = [nombre_usuario, contraseña, rol];
+  const values = [nombre_usuario, hashedPassword, rol];
 
   pool.query(sql, values, (err, result) => {
-      if (err) {
-          console.error('Error al insertar usuario:', err.message);
-          return res.status(500).json({ error: 'Error al insertar usuario', details: err.message });
-      }
-      res.status(201).json({ id: result.insertId, nombre_usuario, rol });
+    if (err) {
+      console.error('Error al insertar usuario:', err.message);
+      return res.status(500).json({ error: 'Error al insertar usuario', details: err.message });
+    }
+    res.status(201).json({ id: result.insertId, nombre_usuario, rol });
   });
 });
 
+// Autenticación de usuario (login)
+app.post('/login', (req, res) => {
+  const { nombre_usuario, contraseña } = req.body;
+
+  if (!nombre_usuario || !contraseña) {
+    return res.status(400).json({ error: 'Los campos nombre de usuario y contraseña son obligatorios' });
+  }
+
+  const sql = 'SELECT * FROM usuario WHERE nombre_usuario = ?';
+  pool.query(sql, [nombre_usuario], async (err, results) => {
+    if (err) {
+      console.error('Error en la consulta:', err.message);
+      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Usuario no encontrado' });
+    }
+
+    const user = results[0];
+
+    // Comparar la contraseña
+    const isMatch = await bcrypt.compare(contraseña, user.contraseña);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Contraseña incorrecta' });
+    }
+
+    // Generar un token JWT
+    const token = jwt.sign({ id: user.id_usuario, nombre_usuario: user.nombre_usuario, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token });
+  });
+});
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);

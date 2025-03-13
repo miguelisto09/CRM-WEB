@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -32,20 +31,101 @@
             color: white;
             height: 100vh;
             position: fixed;
+            top: 0;
+            left: 0;
             padding: 20px;
             text-align: center;
+            transition: width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
+        }
+
+        .sidebar.collapsed {
+            width: 83px;
+            padding: 20px 10px;
+        }
+
+        .sidebar h2, .sidebar ul li a span {
+            transition: opacity 0.3s, width 0.3s; /* Unified transition duration */
+            opacity: 1;
+            width: auto;
+        }
+
+        .sidebar.collapsed h2, .sidebar.collapsed ul li a span {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed ul li a {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .sidebar.collapsed ul li a i {
+            transition: opacity 0.3s; /* Add transition for icons */
+            margin-right: 0;
+        }
+
+        .sidebar.collapsed .Cerrarsesion {
+            width: 60px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: right 0.3s, transform 0.3s; /* Unified transition duration */
+            z-index: 1000; /* Ensure the button is always on top */
+            transform: translateY(-50%);
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            right: -20px;
+        }
+
+        .toggle-btn i {
+            transition: transform 0.3s; /* Unified transition duration */
+        }
+
+        .sidebar.collapsed .toggle-btn i {
+            transform: rotate(180deg);
+        }
+
+        .main-content {
+            margin-left: 270px;
+            transition: margin-left 0.3s; /* Unified transition duration */
+           
+        }
+
+        .main-content.collapsed {
+            margin-left: 250px;
+           
+            
         }
 
         .sidebar h2 {
             margin: 0;
             font-size: 28px;
             text-align: center;
+            white-space: nowrap;
         }
 
         .sidebar ul {
             list-style: none;
             padding: 0;
             margin: 20px 0;
+            padding-left: 0;
             text-align: left;
         }
 
@@ -60,7 +140,7 @@
             display: block;
             padding: 10px;
             border-radius: 5px;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s; /* Unified transition duration */
         }
 
         .sidebar ul li a:hover {
@@ -83,7 +163,7 @@
 
         .main-content {
             margin-left: 300px;
-            padding: 20px;
+            padding: 30px;
             flex-grow: 1;
         }
 
@@ -184,19 +264,21 @@
 .task-category-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ajusta el ancho mínimo */
-    gap: 15px;
-    margin-top: 20px;
+    gap: 0px;
+    margin-top: 15px;
+    
+   
 }
 
 .task-category {
     background: white;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 50px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     margin-bottom: 20px;
-    width: 100%; 
-    max-width: 300px;
+    width: 90%; 
+    max-width: 400px;
 }
 
 .task-category h3 {
@@ -212,17 +294,55 @@
 
 .task-item {
     background: #f9f9f9;
-    padding: 20px;
+    padding: 18px;
     margin: 10px 0;
     border-radius: 30px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     transition: all 0.3s;
+    border: 1px solid #ddd; 
 }
 
 .task-item:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
+}
+
+.task-item p {
+    margin: 5px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ddd; 
+}
+
+.task-item p:last-child {
+    border-bottom: none; 
+}
+
+.task-item p strong {
+    font-weight: normal;
+}
+
+.task-item .title {
+    font-size: 1.5em; 
+}
+
+.task-item .description {
+    font-weight: normal; 
+}
+
+.task-item .due-date {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: black; /* Change text color to black */
+}
+
+.task-item .due-date.on-time {
+    background-color: #a8e6cf; /* Pastel green */
+}
+
+.task-item .due-date.overdue {
+    background-color: #ff8b94; /* Pastel red */
 }
 
         .task-details-content {
@@ -314,6 +434,7 @@
             
             .main-content {
                 margin-left: 0;
+                
             }
             
             .container {
@@ -338,18 +459,17 @@
                 <h2>Bienvenido usuario</h2>
                 <div id="datetime"></div>
             </div>
-            <nav>
                 <ul>
                     <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
                     <li><a href="Tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
                     <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
                     <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
                     <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
-                </ul>
+                </ul>5
                 <ul>
-                    <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
+                    <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> <span>Cerrar sesión</span></a></li>
                 </ul>
-            </nav>
+                <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
         </div>
 
        
@@ -543,10 +663,12 @@
             tasksByDueDate[category].forEach(task => {
                 var taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
+                var dueDateClass = new Date(task.fecha_limite) < new Date() ? 'overdue' : 'on-time';
+                var dueDateText = new Date(task.fecha_limite) < new Date() ? 'Venció: ' : 'Vence: ';
                 taskDiv.innerHTML = `
-                    <p><strong>${task.nombre_tarea}</strong></p>
-                    <p>${task.descripcion}</p>
-                    <p><em>Vence: ${new Date(task.fecha_limite).toLocaleDateString()}</em></p>
+                    <p class="title">${task.nombre_tarea}</p>
+                    <p class="description">${task.descripcion}</p>
+                    <p class="due-date ${dueDateClass}"><em>${dueDateText} ${new Date(task.fecha_limite).toLocaleDateString()}</em></p>
                 `;
                 taskDiv.addEventListener('click', function() {
                     openTaskModal(task);
@@ -661,6 +783,58 @@
         alert('Error al enviar la tarea');
     });
 }
+function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const toggleBtn = document.querySelector('.toggle-btn i');
+            const optionNames = document.querySelectorAll('.sidebar h2, .sidebar ul li a span');
+            const icons = document.querySelectorAll('.sidebar ul li a i, .toggle-btn i');
+
+            if (sidebar.classList.contains('collapsed')) {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('collapsed');
+                    toggleBtn.classList.remove('collapsed');
+                    setTimeout(() => {
+                        optionNames.forEach(name => {
+                            name.style.display = 'inline';
+                            setTimeout(() => {
+                                name.style.opacity = '1';
+                            }, 10); // Small delay to trigger opacity transition
+                        });
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 300); // Match the transition duration
+                }, 300); // Match the transition duration
+            } else {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    optionNames.forEach(name => {
+                        name.style.display = 'none';
+                    });
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('collapsed');
+                    toggleBtn.classList.add('collapsed');
+                    setTimeout(() => {
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 10); // Small delay to trigger opacity transition
+                }, 300); // Match the transition duration
+            }
+        }
 
     window.addEventListener('click', function(event) {
         var modal = document.getElementById('taskModal');
