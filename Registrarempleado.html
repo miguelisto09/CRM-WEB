@@ -104,6 +104,7 @@
             margin: 0;
             font-size: 28px;
             text-align: center;
+            white-space: nowrap;
         }
 
         .sidebar ul {
@@ -161,24 +162,23 @@
 
         .Verempleados table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            background-color: #fff; 
-            table-layout: auto; /* Allow table to adjust based on content */
+            margin: 20px 0;
+            border-collapse: collapse; /* Allow table to adjust based on content */
         }
 
         table, th, td {
-            border: 1px solid #ddd; /* Add border to table, th, and td */
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        /* Add border to table, th, and td */
         }
 
         table th, table td {
-            text-align: left; /* Align text to the left */
-            padding: 8px; /* Reduce padding */
-            border-bottom: 1px solid #ddd;
-            font-size: 0.9em; /* Reduce font size */
-            white-space: normal; /* Allow text to wrap */
-            word-wrap: break-word; /* Ensure text wraps within the cell */
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left; /* Ensure text wraps within the cell */
         }
+
 
         table thead {
             background-color: #3498db;

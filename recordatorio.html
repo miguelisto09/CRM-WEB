@@ -31,20 +31,101 @@
             color: white;
             height: 100vh;
             position: fixed;
+            top: 0;
+            left: 0;
             padding: 20px;
             text-align: center;
+            transition: width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
+        }
+
+        .sidebar.collapsed {
+            width: 83px;
+            padding: 20px 10px;
+        }
+
+        .sidebar h2, .sidebar ul li a span {
+            transition: opacity 0.3s, width 0.3s; /* Unified transition duration */
+            opacity: 1;
+            width: auto;
+        }
+
+        .sidebar.collapsed h2, .sidebar.collapsed ul li a span {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed ul li a {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .sidebar.collapsed ul li a i {
+            transition: opacity 0.3s; /* Add transition for icons */
+            margin-right: 0;
+        }
+
+        .sidebar.collapsed .Cerrarsesion {
+            width: 60px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: right 0.3s, transform 0.3s; /* Unified transition duration */
+            z-index: 1000; /* Ensure the button is always on top */
+            transform: translateY(-50%);
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            right: -20px;
+        }
+
+        .toggle-btn i {
+            transition: transform 0.3s; /* Unified transition duration */
+        }
+
+        .sidebar.collapsed .toggle-btn i {
+            transform: rotate(180deg);
+        }
+
+        .main-content {
+            margin-left: 0px;
+            transition: margin-left 0.3s; /* Unified transition duration */
+           
+        }
+
+        .main-content.collapsed {
+            margin-left: 180px;
+           
+            
         }
 
         .sidebar h2 {
             margin: 0;
             font-size: 28px;
             text-align: center;
+            white-space: nowrap;
         }
 
         .sidebar ul {
             list-style: none;
             padding: 0;
             margin: 20px 0;
+            padding-left: 0;
             text-align: left;
         }
 
@@ -59,7 +140,7 @@
             display: block;
             padding: 10px;
             border-radius: 5px;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s; /* Unified transition duration */
         }
 
         .sidebar ul li a:hover {
@@ -82,7 +163,7 @@
 
         .main-content {
             margin-left: 300px;
-            padding: 20px;
+            padding: 30px;
             flex-grow: 1;
         }
 
@@ -183,19 +264,22 @@
 .task-category-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ajusta el ancho mínimo */
-    gap: 15px;
-    margin-top: 20px;
+    gap: 0px;
+    margin-top: 15px;
+    
+    
+   
 }
 
 .task-category {
     background: white;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 50px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     margin-bottom: 20px;
-    width: 100%; 
-    max-width: 300px;
+    width: 90%; 
+    max-width: 400px;
 }
 
 .task-category h3 {
@@ -211,13 +295,14 @@
 
 .task-item {
     background: #f9f9f9;
-    padding: 20px;
+    padding: 18px;
     margin: 10px 0;
     border-radius: 30px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     transition: all 0.3s;
-    border: 1px solid #ddd; /* Add border for visible dividers */
+    border: 1px solid #ddd; 
+    position: relative; /* Add this line */
 }
 
 .task-item:hover {
@@ -225,14 +310,31 @@
     transform: translateY(-2px);
 }
 
+.delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #ff6b6b;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
 .task-item p {
     margin: 5px 0;
     padding-bottom: 5px;
-    border-bottom: 1px solid #ddd; /* Add border for visible dividers */
+    border-bottom: 1px solid #ddd; 
 }
 
 .task-item p:last-child {
-    border-bottom: none; /* Remove border from the last paragraph */
+    border-bottom: none; 
 }
 
 .task-item p strong {
@@ -240,11 +342,11 @@
 }
 
 .task-item .title {
-    font-size: 1.5em; /* Larger font size for title */
+    font-size: 1.5em; 
 }
 
 .task-item .description {
-    font-weight: normal; /* Normal font weight for description */
+    font-weight: normal; 
 }
 
 .task-item .due-date {
@@ -260,6 +362,10 @@
 
 .task-item .due-date.overdue {
     background-color: #ff8b94; /* Pastel red */
+}
+
+.task-item .due-date.due-today {
+    background-color: #ffb773; /* Strong orange color */
 }
 
         .task-details-content {
@@ -351,6 +457,7 @@
             
             .main-content {
                 margin-left: 0;
+                
             }
             
             .container {
@@ -365,6 +472,10 @@
             .task-category-container {
                 grid-template-columns: 1fr;
             }
+        }
+
+        .due-today {
+            background-color: #FFA500; /* Orange color */
         }
     </style>
 </head>
@@ -386,6 +497,7 @@
                 <ul>
                     <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
                 </ul>
+                <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
             </nav>
         </div>
 
@@ -525,7 +637,6 @@
     // Función que organiza las tareas en categorías según su fecha de vencimiento
     function updateTaskCategories() {
         var now = new Date();
-        // Creamos una fecha de hoy sin la parte de la hora
         var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
         var tasksByDueDate = {
@@ -533,13 +644,13 @@
                 if (!task.fecha_limite) return false;
                 var dueDate = new Date(task.fecha_limite);
                 var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-                return dueDateOnly < today && task.estado !== 'Completada';
+                return dueDateOnly < today && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada;
             }),
             "Para Hoy": tasks.filter(task => {
                 if (!task.fecha_limite) return false;
                 var dueDate = new Date(task.fecha_limite);
                 var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-                return dueDateOnly.getTime() === today.getTime() && task.estado !== 'Completada';
+                return dueDateOnly.getTime() === today.getTime() && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada;
             }),
             "Para Esta Semana": tasks.filter(task => {
                 if (!task.fecha_limite) return false;
@@ -547,7 +658,7 @@
                 var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
                 var weekFromNow = new Date(today);
                 weekFromNow.setDate(today.getDate() + 7);
-                return dueDateOnly > today && dueDateOnly <= weekFromNow && task.estado !== 'Completada';
+                return dueDateOnly > today && dueDateOnly <= weekFromNow && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada;
             }),
             "Para la Próxima Semana": tasks.filter(task => {
                 if (!task.fecha_limite) return false;
@@ -557,7 +668,7 @@
                 weekFromNow.setDate(today.getDate() + 7);
                 var twoWeeksFromNow = new Date(today);
                 twoWeeksFromNow.setDate(today.getDate() + 14);
-                return dueDateOnly > weekFromNow && dueDateOnly <= twoWeeksFromNow && task.estado !== 'Completada';
+                return dueDateOnly > weekFromNow && dueDateOnly <= twoWeeksFromNow && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada;
             }),
             "Dentro de Dos Semanas o Más": tasks.filter(task => {
                 if (!task.fecha_limite) return false;
@@ -565,9 +676,9 @@
                 var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
                 var twoWeeksFromNow = new Date(today);
                 twoWeeksFromNow.setDate(today.getDate() + 14);
-                return dueDateOnly > twoWeeksFromNow && task.estado !== 'Completada';
+                return dueDateOnly > twoWeeksFromNow && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada;
             }),
-            "Sin Fecha Límite": tasks.filter(task => !task.fecha_limite && task.estado !== 'Completada')
+            "Sin Fecha Límite": tasks.filter(task => !task.fecha_limite && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada)
         };
 
         var taskCategories = document.getElementById('taskCategories');
@@ -581,11 +692,20 @@
                 var taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
                 var dueDateClass = new Date(task.fecha_limite) < new Date() ? 'overdue' : 'on-time';
-                var dueDateText = new Date(task.fecha_limite) < new Date() ? 'Venció: ' : 'Vence: ';
+                var dueDateText = '';
+                var dueDate = new Date(task.fecha_limite);
+                var formattedDate = `${dueDate.getDate()}/${dueDate.getMonth() + 1}/${dueDate.getFullYear().toString().slice(-2)}`;
+                if (dueDate.getTime() === today.getTime()) {
+                    dueDateText = 'Venciendo: ';
+                    dueDateClass = 'due-today'; // Add a new class for tasks due today
+                } else {
+                    dueDateText = dueDate < new Date() ? 'Venció: ' : 'Vence: ';
+                }
                 taskDiv.innerHTML = `
                     <p class="title">${task.nombre_tarea}</p>
                     <p class="description">${task.descripcion}</p>
-                    <p class="due-date ${dueDateClass}"><em>${dueDateText} ${new Date(task.fecha_limite).toLocaleDateString()}</em></p>
+                    <p class="due-date ${dueDateClass}"><em>${dueDateText} ${formattedDate}</em></p>
+                    <button class="delete-btn" onclick="confirmDeleteTask(${task.id_tarea})"><i class="fas fa-trash-alt"></i></button>
                 `;
                 taskDiv.addEventListener('click', function() {
                     openTaskModal(task);
@@ -642,8 +762,13 @@
                             border-radius: 8px;
                         ">
                     </div>
+                    <div id="previousSubmission" style="margin-bottom: 20px; display: none;">
+                        <h3>Envío Anterior</h3>
+                        <p id="previousText"></p>
+                        <a id="previousFile" href="#" target="_blank">Ver Archivo Subido</a>
+                    </div>
                     <div>
-                        <button type="submit" style="
+                        <button type="submit" id="submitTaskButton" style="
                             padding: 12px 24px;
                             border: none;
                             background: #28a745;
@@ -664,6 +789,31 @@
             e.preventDefault();
             handleSubmitTask(task);
         });
+
+        // Fetch previous submission if exists
+        fetch(`/envio_tarea?id_tarea=${task.id_tarea}&id_empleado=1`) // Assuming employeeId is 1
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    document.getElementById('previousSubmission').style.display = 'block';
+                    document.getElementById('previousText').textContent = data.texto_envio;
+                    document.getElementById('previousFile').href = `/descargar_archivo?id_envio=${data.id_envio}`;
+                    document.getElementById('previousFile').textContent = data.nombre_archivo;
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener el envío anterior:', error);
+            });
+
+        // Disable submission if the task is overdue and not re-enabled by admin
+        if (new Date(task.fecha_limite) < new Date().setHours(0, 0, 0, 0) && !task.habilitada) {
+            document.getElementById('submitTaskButton').disabled = true;
+            document.getElementById('submitTaskButton').textContent = 'Tarea Vencida';
+            document.getElementById('submitTaskButton').style.backgroundColor = '#ccc';
+            document.getElementById('submitTaskButton').style.cursor = 'not-allowed';
+            document.getElementById('submissionText').disabled = true;
+            document.getElementById('fileUpload').disabled = true;
+        }
     }
 
     function closeTaskModal() {
@@ -672,34 +822,122 @@
     }
 
     function handleSubmitTask(task) {
-    var submissionText = document.getElementById('submissionText').value;
-    var fileInput = document.getElementById('fileUpload');
-    var file = fileInput.files[0];
+        var submissionText = document.getElementById('submissionText').value;
+        var fileInput = document.getElementById('fileUpload');
+        var file = fileInput.files[0];
 
-    var employeeId = 1; 
+        var employeeId = 1; 
 
-    var formData = new FormData();
-    formData.append('taskId', task.id_tarea);
-    formData.append('employeeId', employeeId); 
-    formData.append('submissionText', submissionText || ''); 
-    if (file) {
-        formData.append('file', file); 
+        var formData = new FormData();
+        formData.append('taskId', task.id_tarea);
+        formData.append('employeeId', employeeId); 
+        formData.append('submissionText', submissionText || ''); 
+        if (file) {
+            formData.append('file', file); 
+        }
+
+        fetch('http://localhost:4000/submitTask', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Tarea enviada correctamente');
+            closeTaskModal();
+            // Update the task status to "realizada" in the database
+            fetch(`http://localhost:4000/updateTaskStatus?id_tarea=${task.id_tarea}&estado=Realizada`, {
+                method: 'PUT'
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove the submitted task from the tasks array
+                tasks = tasks.filter(t => t.id_tarea !== task.id_tarea);
+                updateTaskCategories(); // Refresh task categories to remove the submitted task from the list
+            })
+            .catch(error => {
+                console.error('Error al actualizar el estado de la tarea:', error);
+            });
+        })
+        .catch(error => {
+            console.error('Error al enviar la tarea:', error);
+            alert('Error al enviar la tarea');
+        });
     }
 
-    fetch('http://localhost:4000/submitTask', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert('Tarea enviada correctamente');
-        closeTaskModal();
-    })
-    .catch(error => {
-        console.error('Error al enviar la tarea:', error);
-        alert('Error al enviar la tarea');
-    });
-}
+    function confirmDeleteTask(taskId) {
+        if (confirm("¿Desea eliminar esta tarea?")) {
+            deleteTask(taskId);
+        }
+    }
+
+    function deleteTask(taskId) {
+        fetch(`http://localhost:4000/tarea/${taskId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Tarea eliminada correctamente');
+            tasks = tasks.filter(t => t.id_tarea !== taskId);
+            updateTaskCategories();
+        })
+        .catch(error => {
+            console.error('Error al eliminar la tarea:', error);
+            alert('Error al eliminar la tarea');
+        });
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const toggleBtn = document.querySelector('.toggle-btn i');
+        const optionNames = document.querySelectorAll('.sidebar h2, .sidebar ul li a span');
+        const icons = document.querySelectorAll('.sidebar ul li a i, .toggle-btn i');
+
+        if (sidebar.classList.contains('collapsed')) {
+            optionNames.forEach(name => {
+                name.style.opacity = '0';
+            });
+            icons.forEach(icon => {
+                icon.style.opacity = '0';
+            });
+            setTimeout(() => {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('collapsed');
+                toggleBtn.classList.remove('collapsed');
+                setTimeout(() => {
+                    optionNames.forEach(name => {
+                        name.style.display = 'inline';
+                        setTimeout(() => {
+                            name.style.opacity = '1';
+                        }, 10); // Small delay to trigger opacity transition
+                    });
+                    icons.forEach(icon => {
+                        icon.style.opacity = '1';
+                    });
+                }, 300); // Match the transition duration
+            }, 300); // Match the transition duration
+        } else {
+            optionNames.forEach(name => {
+                name.style.opacity = '0';
+            });
+            icons.forEach(icon => {
+                icon.style.opacity = '0';
+            });
+            setTimeout(() => {
+                optionNames.forEach(name => {
+                    name.style.display = 'none';
+                });
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('collapsed');
+                toggleBtn.classList.add('collapsed');
+                setTimeout(() => {
+                    icons.forEach(icon => {
+                        icon.style.opacity = '1';
+                    });
+                }, 10); // Small delay to trigger opacity transition
+            }, 300); // Match the transition duration
+        }
+    }
 
     window.addEventListener('click', function(event) {
         var modal = document.getElementById('taskModal');

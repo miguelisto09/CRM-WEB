@@ -19,6 +19,7 @@
             <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> Recordatorios</a></li>
             <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
         </ul>
+        <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
     </div>
 
     <div class="main-content">
@@ -144,6 +145,59 @@
         function formatFecha(fecha) {
             const opciones = { day: "2-digit", month: "long" };
             return new Date(fecha).toLocaleDateString("es-ES", opciones);
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const toggleBtn = document.querySelector('.toggle-btn i');
+            const optionNames = document.querySelectorAll('.sidebar h2, .sidebar ul li a span');
+            const icons = document.querySelectorAll('.sidebar ul li a i, .toggle-btn i');
+
+            if (sidebar.classList.contains('collapsed')) {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('collapsed');
+                    toggleBtn.classList.remove('collapsed');
+                    setTimeout(() => {
+                        optionNames.forEach(name => {
+                            name.style.display = 'inline';
+                            setTimeout(() => {
+                                name.style.opacity = '1';
+                            }, 10); // Small delay to trigger opacity transition
+                        });
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 300); // Match the transition duration
+                }, 300); // Match the transition duration
+            } else {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    optionNames.forEach(name => {
+                        name.style.display = 'none';
+                    });
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('collapsed');
+                    toggleBtn.classList.add('collapsed');
+                    setTimeout(() => {
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 10); // Small delay to trigger opacity transition
+                }, 300); // Match the transition duration
+            }
         }
 
         document.addEventListener("DOMContentLoaded", function () {

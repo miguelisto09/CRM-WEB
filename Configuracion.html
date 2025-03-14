@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configuración del Manejador de Tareas</title>
+    <title>Configuración de Permisos de Usuario</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="estilo.css">
     <style>
@@ -111,18 +111,56 @@
             width: 75%;
             padding: 20px;
         }
+        .user-list {
+            margin-top: 20px; /* Adjust this value as needed */
+        }
+        .user-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .user-list th, .user-list td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .user-list th {
+            background-color: #f4f4f4;
+        }
+        .user-list tr:hover {
+            background-color: #ddd;
+        }
+        .user-list tr.selected {
+            background-color: #b3d9ff;
+        }
+        .user-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: -30px; /* Adjust this value as needed */
+        }
+        .user-actions button, .user-actions i {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 1.2em;
+            color: #333;
+            transition: color 0.3s, background-color 0.3s;
+            border-radius: 10px;
+            padding: 5px;
+        }
+        .user-actions button:hover, .user-actions i:hover {
+            color: #007bff;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        .btn-select {
+            font-size: 0.9em;
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const links = document.querySelectorAll('.config-sidebar ul li a');
             const sections = document.querySelectorAll('.config-section');
-            const themeSelect = document.getElementById('theme');
-            const languageSelect = document.getElementById('language');
-            const timezoneSelect = document.getElementById('timezone');
-            const datetimeFormatSelect = document.getElementById('datetimeFormat');
-            const notificationsCheckbox = document.getElementById('notifications');
-            const fontSizeSelect = document.getElementById('fontSize');
-            const interfaceModeSelect = document.getElementById('interfaceMode');
             const messageBox = document.createElement('div');
             messageBox.id = 'messageBox';
             messageBox.style.display = 'none';
@@ -151,32 +189,62 @@
                 sections[0].classList.add('active');
             }
 
-            // Load current configuration
-            fetch('/configuracion?id_usuario=1')
+            const userList = document.querySelector('.user-list table tbody');
+            let currentUserId = null;
+
+            // Fetch and display users
+            fetch('/usuarios')
                 .then(response => response.json())
-                .then(data => {
-                    themeSelect.value = data.tema || '';
-                    languageSelect.value = data.idioma || '';
-                    timezoneSelect.value = data.zona_horaria || '';
-                    datetimeFormatSelect.value = data.formato_fecha_hora || '';
-                    notificationsCheckbox.checked = data.notificaciones || false;
-                    fontSizeSelect.value = data.tamano_fuente || '';
-                    interfaceModeSelect.value = data.modo_interfaz || '';
-                    applyTheme(data.tema);
-                    applyConfiguration(data);
+                .then(users => {
+                    if (users.length === 0) {
+                        console.error('No se encontraron usuarios.');
+                        return;
+                    }
+                    users.forEach(user => {
+                        const userRow = document.createElement('tr');
+                        userRow.dataset.userId = user.id_usuario;
+                        userRow.innerHTML = `
+                            <td>${user.Nombre_usuario}</td>
+                            <td>${user.Contraseña}</td>
+                            <td>${user.Rol}</td>
+                        `;
+                        userList.appendChild(userRow);
+                    });
+
+                    // Add click event to user rows
+                    userList.querySelectorAll('tr').forEach(row => {
+                        row.addEventListener('click', function() {
+                            userList.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+                            this.classList.add('selected');
+                            currentUserId = this.dataset.userId;
+                            loadUserPermissions(currentUserId);
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al obtener usuarios:', error);
                 });
 
+            function loadUserPermissions(userId) {
+                fetch(`/configuracion?id_usuario=${userId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Display user permissions or other details if needed
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar permisos del usuario:', error);
+                    });
+            }
+
             // Save configuration
-            document.querySelector('.config-buttons .btn').addEventListener('click', function() {
+            document.querySelector('.config-buttons .btn-save').addEventListener('click', function() {
+                if (!currentUserId) {
+                    showMessage('Seleccione un usuario primero');
+                    return;
+                }
                 const config = {
-                    id_usuario: 1,
-                    idioma: languageSelect.value || null,
-                    zona_horaria: timezoneSelect.value || null,
-                    formato_fecha_hora: datetimeFormatSelect.value || null,
-                    notificaciones: notificationsCheckbox.checked ? 1 : 0,
-                    tema: themeSelect.value || null,
-                    tamano_fuente: fontSizeSelect.value || null,
-                    modo_interfaz: interfaceModeSelect.value || null
+                    id_usuario: currentUserId,
+                    // Add other configuration details if needed
                 };
                 fetch('/configuracion', {
                     method: 'PUT',
@@ -188,8 +256,6 @@
                 .then(response => response.json())
                 .then(data => {
                     showMessage('Configuración guardada correctamente');
-                    applyTheme(config.tema);
-                    applyConfiguration(config);
                 })
                 .catch(error => {
                     console.error('Error al guardar configuración:', error);
@@ -204,20 +270,57 @@
                 }, 3000);
             }
 
-            function applyTheme(theme) {
-                document.body.className = theme;
+            function toggleSidebar() {
                 const sidebar = document.querySelector('.sidebar');
-                sidebar.className = `sidebar ${theme}`;
-            }
+                const mainContent = document.querySelector('.main-content');
+                const toggleBtn = document.querySelector('.toggle-btn i');
+                const optionNames = document.querySelectorAll('.sidebar h2, .sidebar ul li a span');
+                const icons = document.querySelectorAll('.sidebar ul li a i, .toggle-btn i');
 
-            function applyConfiguration(config) {
-                document.getElementById('language').value = config.idioma || '';
-                document.getElementById('timezone').value = config.zona_horaria || '';
-                document.getElementById('datetimeFormat').value = config.formato_fecha_hora || '';
-                document.getElementById('notifications').checked = config.notificaciones || false;
-                document.getElementById('theme').value = config.tema || '';
-                document.getElementById('fontSize').value = config.tamano_fuente || '';
-                document.getElementById('interfaceMode').value = config.modo_interfaz || '';
+                if (sidebar.classList.contains('collapsed')) {
+                    optionNames.forEach(name => {
+                        name.style.opacity = '0';
+                    });
+                    icons.forEach(icon => {
+                        icon.style.opacity = '0';
+                    });
+                    setTimeout(() => {
+                        sidebar.classList.remove('collapsed');
+                        mainContent.classList.remove('collapsed');
+                        toggleBtn.classList.remove('collapsed');
+                        setTimeout(() => {
+                            optionNames.forEach(name => {
+                                name.style.display = 'inline';
+                                setTimeout(() => {
+                                    name.style.opacity = '1';
+                                }, 10); // Small delay to trigger opacity transition
+                            });
+                            icons.forEach(icon => {
+                                icon.style.opacity = '1';
+                            });
+                        }, 300); // Match the transition duration
+                    }, 300); // Match the transition duration
+                } else {
+                    optionNames.forEach(name => {
+                        name.style.opacity = '0';
+                    });
+                    icons.forEach(icon => {
+                        icon.style.opacity = '0';
+                    });
+                    setTimeout(() => {
+                        optionNames.forEach(name => {
+                            name.style.display = 'none';
+                        });
+                        sidebar.classList.add('collapsed');
+                        mainContent.classList.add('collapsed');
+                        toggleBtn.classList.add('collapsed');
+                        setTimeout(() => {
+                            icons.forEach(icon => {
+                                icon.style.opacity = '1';
+                            });
+                        }, 10); // Small delay to trigger opacity transition
+                    }, 300); // Match the transition duration
+                }
             }
         });
     </script>
@@ -233,80 +336,50 @@
             <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
             <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
         </ul>
+        <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
     </div>
 
     <div class="main-content">
         <div class="header">
-            <h1>Configuración del Manejador de Tareas</h1>
+            <h1>Configuración de Permisos de Usuario</h1>
         </div>
 
         <div class="config-container">
             <div class="config-sidebar">
                 <ul>
-                    <li><a href="#general">Configuración General</a></li>
-                    
-                    
-                    <li><a href="#interface">Configuración de la Interfaz</a></li>
-              
+                    <li><a href="#permissions">Permisos de Usuario</a></li>
                 </ul>
             </div>
 
             <div class="config-content">
-                <div id="general" class="config-section">
-                    <h2>1. Configuración General</h2>
-                    <label for="language">Idioma</label>
-                    <select id="language">
-                        <option value="es">Español</option>
-                        <option value="en">Inglés</option>
-                    </select>
-                    <label for="timezone">Zona horaria</label>
-                    <select id="timezone">
-                        <option value="gmt-5">GMT-5</option>
-                        <option value="gmt-6">GMT-6</option>
-                    </select>
-                    <label for="datetimeFormat">Formato de fecha y hora</label>
-                    <select id="datetimeFormat">
-                        <option value="dd/mm/yyyy">DD/MM/AAAA</option>
-                        <option value="mm/dd/yyyy">MM/DD/AAAA</option>
-                    </select>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="notifications">
-                        <label for="notifications">Notificaciones</label>
+                <div id="permissions" class="config-section active">
+                    <div class="user-actions">
+                        <button class="btn-select"><i class="fas fa-check"></i> Seleccionar</button>
+                        <i class="fas fa-edit"></i>
+                        <i class="fas fa-trash-alt"></i>
                     </div>
-                    <label for="theme">Tema</label>
-                    <select id="theme">
-                        <option value="light">Modo claro</option>
-                        <option value="dark">Modo oscuro</option>
-                    </select>
-                </div>
-
-                
-
-             
-
-
-                <div id="interface" class="config-section">
-                    <h2>8. Configuración de la Interfaz</h2>
-                    <label for="fontSize">Tamaño de fuentes y accesibilidad</label>
-                    <select id="fontSize">
-                        <option value="small">Pequeño</option>
-                        <option value="medium">Mediano</option>
-                        <option value="large">Grande</option>
-                    </select>
-                    <label for="iconCustomization">Personalización de iconos y colores</label>
-                    <textarea id="iconCustomization" placeholder="Definir personalización..."></textarea>
-                    <label for="interfaceMode">Modo de interfaz</label>
-                    <select id="interfaceMode">
-                        <option value="compact">Compacto</option>
-                        <option value="expanded">Expandido</option>
-                    </select>
+                    <h2>Permisos de Usuario</h2>
+                    <!-- User permissions or other details will be displayed here -->
+                    <div class="user-list">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre de Usuario</th>
+                                    <th>Contraseña</th>
+                                    <th>Rol</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- User list will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="config-buttons">
-                    <button class="btn">✔ Guardar cambios</button>
+                    <button class="btn btn-save">✔ Guardar cambios</button>
                     <button class="btn">❌ Cancelar</button>
                     <button class="btn">🔄 Restaurar valores predeterminados</button>
-                    
                 </div>
             </div>
         </div>

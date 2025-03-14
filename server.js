@@ -180,10 +180,46 @@ app.post('/submitTask', upload.single('file'), (req, res) => {
           console.error('Error al guardar la tarea enviada:', err);
           return res.status(500).json({ error: 'Error al guardar la tarea' });
       }
-      res.json({ message: 'Tarea enviada correctamente', id_envio: result.insertId });
+
+      // Mark the task as submitted and update its status to "realizada"
+      const updateTaskQuery = 'UPDATE tarea SET enviada = 1, estado = "realizada" WHERE id_tarea = ?';
+      pool.query(updateTaskQuery, [taskId], (err) => {
+          if (err) {
+              console.error('Error al marcar la tarea como enviada:', err);
+              return res.status(500).json({ error: 'Error al marcar la tarea como enviada' });
+          }
+          res.json({ message: 'Tarea enviada correctamente', id_envio: result.insertId });
+      });
   });
 });
 
+app.get('/envio_tarea', (req, res) => {
+  const { id_tarea, id_empleado } = req.query;
+  const query = 'SELECT * FROM envio_tarea WHERE id_tarea = ? AND id_empleado = ? ORDER BY fecha_envio DESC LIMIT 1';
+  pool.query(query, [id_tarea, id_empleado], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+    }
+    res.json(results[0]);
+  });
+});
+
+app.get('/descargar_archivo', (req, res) => {
+  const { id_envio } = req.query;
+  const query = 'SELECT archivo, nombre_archivo, tipo_mime FROM envio_tarea WHERE id_envio = ?';
+  pool.query(query, [id_envio], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Archivo no encontrado' });
+    }
+    const file = results[0];
+    res.setHeader('Content-Disposition', `attachment; filename=${file.nombre_archivo}`);
+    res.setHeader('Content-Type', file.tipo_mime);
+    res.send(file.archivo);
+  });
+});
 
 app.delete('/tarea/:id', (req, res) => {
   const { id } = req.params;
@@ -325,6 +361,56 @@ app.put('/configuracion', (req, res) => {
       return res.status(500).json({ error: 'Error al actualizar configuración', details: err.message });
     }
     res.json({ message: 'Configuración actualizada correctamente' });
+  });
+});
+
+app.get('/usuarios', (req, res) => {
+  pool.query('SELECT id_usuario, Nombre_usuario, Contraseña, Rol FROM usuario', (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.put('/configuracion', (req, res) => {
+  const { id_usuario, permisos } = req.body;
+  const query = 'UPDATE configuracion SET permisos = ? WHERE id_usuario = ?';
+  const values = [JSON.stringify(permisos), id_usuario];
+
+  pool.query(query, values, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al actualizar configuración', details: err.message });
+    }
+    res.json({ message: 'Configuración actualizada correctamente' });
+  });
+});
+
+app.post('/habilitarTarea', (req, res) => {
+  const { id_tarea } = req.body;
+  const query = 'UPDATE tarea SET habilitada = 1 WHERE id_tarea = ?';
+  pool.query(query, [id_tarea], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al habilitar tarea', details: err.message });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Tarea no encontrada' });
+    }
+    res.json({ message: 'Tarea habilitada correctamente' });
+  });
+});
+
+app.put('/updateTaskStatus', (req, res) => {
+  const { id_tarea, estado } = req.query;
+  const query = 'UPDATE tarea SET estado = ? WHERE id_tarea = ?';
+  pool.query(query, [estado, id_tarea], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al actualizar el estado de la tarea', details: err.message });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Tarea no encontrada' });
+    }
+    res.json({ message: 'Estado de la tarea actualizado correctamente' });
   });
 });
 

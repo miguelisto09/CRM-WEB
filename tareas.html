@@ -37,25 +37,16 @@
             background-color: #f1f1f1;
         }
         .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            font-family: 'Franklin Gothic Medium';
-            font-size: 14px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            outline: none;
-            color: #fff;
-            background-color: #3498db; 
+            padding: 10px;
+            background-color: #34495e;
             border: none;
-            border-radius: 5px; 
-            margin: 5px; 
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 10px;
+            white-space: nowrap;
         }
-        .btn:hover {background-color: #0056b3} 
-        .btn:active {
-            background-color: #0056b3;
-            transform: translateY(4px);
-        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -100,46 +91,122 @@
             margin-left: 20px;
         }
         .sidebar {
-    width: 250px;
-    background-color: #2c3e50;
-    color: white;
-    height: 100vh;
-    position: fixed;
-    padding: 20px;
-    text-align: center;
-}
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            text-align: center;
+            transition: width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
+        }
 
-.sidebar h2 {
-    margin: 0;
-    font-size: 28px;
-    text-align: center;
-}
+        .sidebar.collapsed {
+            width: 60px;
+            padding: 20px 10px;
+        }
 
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
-    padding-left: 0;
-    text-align: left;
-}
+        .sidebar h2, .sidebar ul li a span {
+            transition: opacity 0.3s, width 0.3s; /* Unified transition duration */
+            opacity: 1;
+            width: auto;
+        }
 
-.sidebar ul li {
-    margin: 10px 0;
-    font-size: 18px;
-}
+        .sidebar.collapsed h2, .sidebar.collapsed ul li a span {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
 
-.sidebar ul li a {
-    text-decoration: none;
-    color: white;
-    display: block;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
+        .sidebar.collapsed ul li a {
+            text-align: center;
+            padding: 10px 0;
+        }
 
-.sidebar ul li a:hover {
-    background-color: #34495e;
-}
+        .sidebar.collapsed ul li a i {
+            transition: opacity 0.3s; /* Add transition for icons */
+            margin-right: 0;
+        }
+
+        .sidebar.collapsed .Cerrarsesion {
+            width: 60px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: right 0.3s, transform 0.3s; /* Unified transition duration */
+            z-index: 1000; /* Ensure the button is always on top */
+            transform: translateY(-50%);
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            right: -20px;
+        }
+
+        .toggle-btn i {
+            transition: transform 0.3s; /* Unified transition duration */
+        }
+
+        .sidebar.collapsed .toggle-btn i {
+            transform: rotate(180deg);
+        }
+
+        .main-content {
+            margin-left: 270px;
+            transition: margin-left 0.3s; /* Unified transition duration */
+        }
+
+        .main-content.collapsed {
+            margin-left: 80px;
+        }
+
+        .sidebar h2 {
+            margin: 0;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            padding-left: 0;
+            text-align: left;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s; /* Unified transition duration */
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #34495e;
+        }
 
 .main-content {
     margin-left: 270px;
@@ -244,6 +311,29 @@
             background-color: #0056b3;
             transform: translateY(4px);
         }
+        .input-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: #fff;
+            position: relative;
+        }
+        .input-container i {
+            color: gray;
+            margin-left: 5px;
+        }
+        .Buscar {
+            border: none;
+            outline: none;
+            flex: 1;
+            padding-left: 5px;
+            height: 25px;
+            font-size: 14px;
+        }
         .chart-container {
             width: 100%;
             margin: 20px 0;
@@ -283,10 +373,19 @@
         <ul>
             <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
         </ul>
+        <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
     </div>
     <div class="main-content">
         <div class="task-table-container">
-            <button class="btn" onclick="registrartarea()">Crear Tarea</button>
+            <button class="btn" onclick="registrartarea()">+ Nueva tarea</button>
+            <div class="input-container-wrapper">
+                <div class="input-container">
+                    <input id="buscar-tarea" class="Buscar" type="search" placeholder="Buscar tarea">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+           
             <table class="task-table">
                 <thead>
                     <tr>
@@ -416,6 +515,82 @@
 function registrartarea() {
     window.location.href = `registrartarea.html`;
 }
+function filtrarEmpleados() {
+            const input = document.getElementById('buscar-tarea');
+            const filtro = input.value.toUpperCase();
+            const tabla = document.getElementById('tabla-tareas');
+            const filas = tabla.getElementsByTagName('tr');
+
+            for (let i = 0; i < filas.length; i++) {
+                const celdas = filas[i].getElementsByTagName('td');
+                let coincide = false;
+                for (let j = 0; j < celdas.length; j++) {
+                    if (celdas[j]) {
+                        const texto = celdas[j].textContent || celdas[j].innerText;
+                        if (texto.toUpperCase().indexOf(filtro) > -1) {
+                            coincide = true;
+                            break;
+                        }
+                    }
+                }
+                filas[i].style.display = coincide ? '' : 'none';
+            }
+        }
+
+        
+function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const toggleBtn = document.querySelector('.toggle-btn i');
+            const optionNames = document.querySelectorAll('.sidebar h2, .sidebar ul li a span');
+            const icons = document.querySelectorAll('.sidebar ul li a i, .toggle-btn i');
+
+            if (sidebar.classList.contains('collapsed')) {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('collapsed');
+                    toggleBtn.classList.remove('collapsed');
+                    setTimeout(() => {
+                        optionNames.forEach(name => {
+                            name.style.display = 'inline';
+                            setTimeout(() => {
+                                name.style.opacity = '1';
+                            }, 10); // Small delay to trigger opacity transition
+                        });
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 300); // Match the transition duration
+                }, 300); // Match the transition duration
+            } else {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    optionNames.forEach(name => {
+                        name.style.display = 'none';
+                    });
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('collapsed');
+                    toggleBtn.classList.add('collapsed');
+                    setTimeout(() => {
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 10); // Small delay to trigger opacity transition
+                }, 300); // Match the transition duration
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', cargartarea);
     </script>
 

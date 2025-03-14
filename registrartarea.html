@@ -73,12 +73,10 @@
       <label>Fecha límite:</label>
       <input type="date" id="fecha_limite" required>
     </div>
-    <div class="input-group">
+    <div class="input-group" style="display: none;">
       <label>Estado:</label>
       <select id="estado">
-        <option value="Realizada">Realizada</option>
-        <option value="Pendiente">Pendiente</option>
-        <option value="Atrasada">Atrasada</option>
+        <option value="Pendiente" selected>Pendiente</option>
       </select>
     </div>
     <div class="input-group">
@@ -116,6 +114,14 @@
 
     document.addEventListener("DOMContentLoaded", cargarEmpleados);
 
+    // Set today's date as the default value for the due date field and prevent past dates
+    document.addEventListener("DOMContentLoaded", () => {
+      const today = new Date().toISOString().split('T')[0];
+      const fechaLimiteInput = document.getElementById("fecha_limite");
+      fechaLimiteInput.value = today;
+      fechaLimiteInput.min = today;
+    });
+
     // Enviar formulario para registrar una tarea
     document.getElementById("form-registrar-tarea").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -125,7 +131,7 @@
         Descripcion: document.getElementById("descripcion").value,
         Prioridad: document.getElementById("prioridad").value,
         Fecha_limite: document.getElementById("fecha_limite").value,
-        Estado: document.getElementById("estado").value,
+        Estado: "Pendiente", // Set state to "Pendiente" automatically
         Persona_asignada: document.getElementById("personaAsignada").value
       };
 
