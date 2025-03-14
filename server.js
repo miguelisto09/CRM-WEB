@@ -302,7 +302,6 @@ function actualizarTareasAtrasadas() {
   });
 }
 setInterval(actualizarTareasAtrasadas, 300000); 
-// Registro de usuario
 app.post('/usuario', async (req, res) => {
   let { nombre_usuario, contraseña, confirmar_contraseña, rol } = req.body;
 
@@ -316,7 +315,6 @@ app.post('/usuario', async (req, res) => {
 
   rol = rol || 'Empleado';
 
-  // Encriptar la contraseña
   const hashedPassword = await bcrypt.hash(contraseña, 10);
 
   const sql = 'INSERT INTO usuario (nombre_usuario, contraseña, rol) VALUES (?, ?, ?)';
@@ -331,7 +329,6 @@ app.post('/usuario', async (req, res) => {
   });
 });
 
-// Autenticación de usuario (login)
 app.post('/login', (req, res) => {
   const { nombre_usuario, contraseña } = req.body;
 
@@ -352,13 +349,11 @@ app.post('/login', (req, res) => {
 
     const user = results[0];
 
-    // Comparar la contraseña
     const isMatch = await bcrypt.compare(contraseña, user.contraseña);
     if (!isMatch) {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
-    // Generar un token JWT
     const token = jwt.sign({ id: user.id_usuario, nombre_usuario: user.nombre_usuario, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.json({ token });

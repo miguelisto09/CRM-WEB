@@ -100,15 +100,47 @@
             margin-left: 20px;
         }
         .sidebar {
-    width: 250px;
-    background-color: #2c3e50;
-    color: white;
-    height: 100vh;
-    position: fixed;
-    padding: 20px;
-    text-align: center;
-}
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            text-align: center;
+            transition: width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
+        }
 
+        .sidebar.collapsed {
+            width: 60px;
+            padding: 20px 10px;
+        }
+        .sidebar h2, .sidebar ul li a span {
+            transition: opacity 0.3s, width 0.3s; /* Unified transition duration */
+            opacity: 1;
+            width: auto;
+        }
+        .sidebar.collapsed h2, .sidebar.collapsed ul li a span {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        .sidebar.collapsed ul li a {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .sidebar.collapsed ul li a i {
+            transition: opacity 0.3s; /* Add transition for icons */
+            margin-right: 0;
+        }
+
+        .sidebar.collapsed .Cerrarsesion {
+            width: 60px;
+            text-align: center;
+            padding: 10px 0;
+        }
 .sidebar h2 {
     margin: 0;
     font-size: 28px;
@@ -146,18 +178,18 @@
     padding: 20px;
 }
 .Cerrarsesion {
-    position: fixed;
-    bottom: 0;
-    align-items: center;
-     text-align: center;
-    width: 250px;
-    padding: 10px;
-    background-color: #2c3e50;
-    color: white;
-    text-decoration: none;
-    border-radius: 0 0 5px 5px;
-    transition: background-color 0.1s;
-}
+            position: fixed;
+            bottom: 0;
+            align-items: center;
+            text-align: center;
+            width: 250px;
+            padding: 10px;
+            background-color: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 0 0 5px 5px;
+            transition: background-color 0.3s, width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
+        }
         .task-details {
             display: none;
             position: fixed;
@@ -267,22 +299,57 @@
         table tbody td button + button:hover {
             background-color: #c0392b;
         }
-       
+        .toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: right 0.3s, transform 0.3s; /* Unified transition duration */
+            z-index: 1000; /* Ensure the button is always on top */
+            transform: translateY(-50%);
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            right: -20px;
+        }
+
+        .toggle-btn i {
+            transition: transform 0.3s; /* Unified transition duration */
+        }
+        .sidebar.collapsed .toggle-btn i {
+            transform: rotate(180deg);
+        }
+        
+        .sidebar.collapsed ~ .main-content {
+    margin-left: 80px; 
+    transition: margin-left 0.3s; 
+}
     </style>
 </head>
 <body>
     <div class="sidebar" style="background-color: #2c3e50;">
         <h2>Bienvenido usuario</h2>
         <ul>
-            <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
-            <li><a href="Tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
-            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
-            <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
-            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
+            <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+            <li><a href="Tareas.html"><i class="fas fa-tasks"></i> <span>Tareas</span></a></li>
+            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> <span>Empleados</span></a></li>
+            <li><a href="Configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
+            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> <span>Recordatorios</span></a></li>
         </ul>
         <ul>
-            <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
+            <li class="Cerrarsesion"><a href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a></li>
+
         </ul>
+         <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
     </div>
     <div class="main-content">
         <div class="task-table-container">
@@ -416,200 +483,72 @@
 function registrartarea() {
     window.location.href = `registrartarea.html`;
 }
+function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const toggleBtn = document.querySelector('.toggle-btn i');
+            const optionNames = document.querySelectorAll('.sidebar h2, .sidebar ul li a span');
+            const icons = document.querySelectorAll('.sidebar ul li a i, .toggle-btn i');
+
+            if (sidebar.classList.contains('collapsed')) {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('collapsed');
+                    toggleBtn.classList.remove('collapsed');
+                    setTimeout(() => {
+                        optionNames.forEach(name => {
+                            name.style.display = 'inline';
+                            setTimeout(() => {
+                                name.style.opacity = '1';
+                            }, 10); // Small delay to trigger opacity transition
+                        });
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 300); // Match the transition duration
+                }, 300); // Match the transition duration
+            } else {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    optionNames.forEach(name => {
+                        name.style.display = 'none';
+                    });
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('collapsed');
+                    toggleBtn.classList.add('collapsed');
+                    setTimeout(() => {
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 10); 
+                }, 300); 
+            }
+        }
+        function cerrarSesion() {
+    sessionStorage.clear();
+    localStorage.clear();
+
+    window.location.href = "login.html";
+
+    setTimeout(() => {
+        history.pushState(null, null, "login.html");
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    }, 0);
+}
         document.addEventListener('DOMContentLoaded', cargartarea);
     </script>
-
-<!--
-    <script>
-        
-        var modal = document.getElementById('taskModal');
-        var taskForm = document.getElementById('taskForm');
-        var taskTableBody = document.getElementById('taskTableBody');
-        var recentTasks = document.getElementById('recentTasks');
-        var pendingTasks = document.getElementById('pendingTasks');
-        var taskDetails = document.getElementById('taskDetails');
-        var currentTaskIndex = null;
-        var tasks = [];
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-            if (event.target == taskDetails) {
-                taskDetails.style.display = "none";
-            }
-        }
-
-        taskForm.onsubmit = function(event) {
-            event.preventDefault();
-            var dueDate = new Date(taskForm.dueDate.value);
-            var now = new Date();
-            now.setHours(0, 0, 0, 0); 
-            if (dueDate < now) {
-                alert("La fecha de vencimiento no puede ser menor a la fecha actual.");
-                return;
-            }
-            var task = {
-                title: taskForm.title.value,
-                description: taskForm.description.value,
-                assignedTo: taskForm.assignedTo.value,
-                priority: taskForm.priority.value,
-                status: taskForm.status.value,
-                dueDate: taskForm.dueDate.value,
-                comments: [],
-                files: Array.from(taskForm.taskFiles.files)
-            };
-            tasks.push(task);
-            updateTaskTable();
-            updateSidebar();
-            updateChart();
-            modal.style.display = "none";
-            taskForm.reset();
-        }
-
-        function updateTaskTable() {
-            taskTableBody.innerHTML = '';
-            tasks.forEach(function(task, index) {
-                var row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${task.title}</td>
-                    <td>${task.description}</td>
-                    <td>${task.assignedTo}</td>
-                    <td>${task.priority}</td>
-                    <td>${task.status}</td>
-                    <td>${task.dueDate}</td>
-                    <td>
-                        <button class="btn" style="background-color: red;" onclick="deleteTask(event, ${index})">Eliminar</button>
-                    </td>
-                `;
-                row.onclick = function(event) {
-                    if (!event.target.matches('.btn')) {
-                        viewTaskDetails(index);
-                    }
-                };
-                taskTableBody.appendChild(row);
-            });
-        }
-
-        function deleteTask(event, index) {
-            event.stopPropagation();
-            tasks.splice(index, 1);
-            updateTaskTable();
-            updateSidebar();
-            updateChart();
-        }
-
-        function updateSidebar() {
-            recentTasks.innerHTML = '';
-            pendingTasks.innerHTML = '';
-            tasks.slice(-5).forEach(function(task, index) {
-                var item = document.createElement('div');
-                item.className = 'task-item';
-                item.innerText = task.title;
-                item.onclick = function() { viewTaskDetails(index); };
-                recentTasks.appendChild(item);
-            });
-            tasks.filter(task => task.status === 'pending').forEach(function(task, index) {
-                var item = document.createElement('div');
-                item.className = 'task-item';
-                item.innerText = task.title;
-                item.onclick = function() { viewTaskDetails(index); };
-                pendingTasks.appendChild(item);
-            });
-        }
-
-        function viewTaskDetails(index) {
-            currentTaskIndex = index;
-            var task = tasks[index];
-            document.getElementById('taskTitle').innerText = task.title;
-            document.getElementById('taskDescription').innerText = task.description;
-            document.getElementById('taskAssignedTo').innerText = task.assignedTo;
-            document.getElementById('taskPriority').innerText = task.priority;
-            document.getElementById('taskStatus').innerText = task.status;
-            document.getElementById('taskDueDate').innerText = task.dueDate;
-            document.getElementById('taskComments').innerHTML = task.comments.map(comment => `<p>${comment}</p>`).join('');
-            taskDetails.style.display = 'block';
-        }
-
-        function addComment() {
-            var comment = document.getElementById('newComment').value;
-            if (comment) {
-                tasks[currentTaskIndex].comments.push(comment);
-                document.getElementById('newComment').value = '';
-                viewTaskDetails(currentTaskIndex);
-            }
-        }
-
-        function completeTask(index) {
-            tasks[index].status = 'completed';
-            updateTaskTable();
-            updateSidebar();
-            taskDetails.style.display = 'none';
-        }
-
-        function cancelTask() {
-            taskDetails.style.display = 'none';
-        }
-
-        function editTask(index) {
-            var task = tasks[index];
-            document.getElementById('title').value = task.title;
-            document.getElementById('description').value = task.description;
-            document.getElementById('assignedTo').value = task.assignedTo;
-            document.getElementById('priority').value = task.priority;
-            document.getElementById('status').value = task.status;
-            document.getElementById('dueDate').value = task.dueDate;
-            document.getElementById('taskModal').style.display = 'block';
-            deleteTask({ stopPropagation: () => {} }, index);
-        }
-
-        function updateDateTime() {
-            const now = new Date();
-            document.getElementById('datetime').innerText = now.toLocaleString();
-        }
-
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-        updateTaskTable();
-
-        function updateChart() {
-            var ctx = document.getElementById('taskChart').getContext('2d');
-            var dueDates = tasks.map(task => task.dueDate);
-            var taskCounts = dueDates.reduce((acc, date) => {
-                acc[date] = (acc[date] || 0) + 1;
-                return acc;
-            }, {});
-            var labels = Object.keys(taskCounts);
-            var data = Object.values(taskCounts);
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Tareas por Fecha de Vencimiento',
-                        data: data,
-                        borderColor: 'rgba(75, 0, 130, 1)',
-                        backgroundColor: 'rgba(75, 0, 130, 0.2)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'day'
-                            }
-                        },
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-    </script>-->
 </body>
 </html>

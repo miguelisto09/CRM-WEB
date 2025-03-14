@@ -11,8 +11,41 @@ body {
     color: white;
     height: 100vh;
     position: fixed;
+    top: 0;
+    left: 0;
     padding: 20px;
     text-align: center;
+    transition: width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
+}
+
+.sidebar.collapsed {
+    width: 60px;
+    padding: 20px 10px;
+}
+.sidebar h2, .sidebar ul li a span {
+    transition: opacity 0.3s, width 0.3s; /* Unified transition duration */
+    opacity: 1;
+    width: auto;
+}
+.sidebar.collapsed h2, .sidebar.collapsed ul li a span {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+.sidebar.collapsed ul li a {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.sidebar.collapsed ul li a i {
+    transition: opacity 0.3s; /* Add transition for icons */
+    margin-right: 0;
+}
+
+.sidebar.collapsed .Cerrarsesion {
+    width: 60px;
+    text-align: center;
+    padding: 10px 0;
 }
 
 .sidebar h2 {
@@ -47,22 +80,53 @@ body {
     background-color: #34495e;
 }
 
+.toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: -20px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: right 0.3s, transform 0.3s; /* Unified transition duration */
+    z-index: 1000; /* Ensure the button is always on top */
+    transform: translateY(-50%);
+}
+
+.sidebar.collapsed .toggle-btn {
+    right: -20px;
+}
+
+.toggle-btn i {
+    transition: transform 0.3s; /* Unified transition duration */
+}
+
+.sidebar.collapsed .toggle-btn i {
+    transform: rotate(180deg);
+}
+
 .main-content {
     margin-left: 270px;
     padding: 20px;
 }
-.Cerrarsesion{
+.Cerrarsesion {
     position: fixed;
     bottom: 0;
-    width: 250px;
+    align-items: center;
     text-align: center;
+    width: 250px;
     padding: 10px;
     background-color: #2c3e50;
     color: white;
     text-decoration: none;
-    display: block;
     border-radius: 0 0 5px 5px;
-    transition: background-color 0.1s;
+    transition: background-color 0.3s, width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
 }
 .header {
     display: flex;
@@ -149,4 +213,8 @@ body {
     max-height: 200px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-left: 110px;
+}
+.sidebar.collapsed ~ .main-content {
+    margin-left: 80px; 
+    transition: margin-left 0.3s; 
 }

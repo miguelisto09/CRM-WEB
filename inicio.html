@@ -10,16 +10,19 @@
 <body>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="sidebar">
-        <h2>Bienvenido usuario</h2>
-        <ul>
-            <li><a href="inicio.html"><i class="fas fa-home"></i> Inicio</a></li>
-            <li><a href="Tareas.html"><i class="fas fa-tasks"></i> Tareas</a></li>
-            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> Empleados</a></li>
-            <li><a href="Configuracion.html"><i class="fas fa-cog"></i> Configuración</a></li>
-            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> Recordatorios</a></li>
-            <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
-        </ul>
-    </div>
+            <h2>Bienvenido usuario</h2>
+            <ul>
+                <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+                <li><a href="Tareas.html"><i class="fas fa-tasks"></i> <span>Tareas</span></a></li>
+                <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> <span>Empleados</span></a></li>
+                <li><a href="Configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
+                <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> <span>Recordatorios</span></a></li>
+            </ul>
+            <ul>
+                <li class="Cerrarsesion"><a href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a></li>
+            </ul>
+             <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
+        </div>
 
     <div class="main-content">
         <div class="header">
@@ -60,6 +63,7 @@
     </div>
 
     <script>
+
         document.addEventListener("DOMContentLoaded", async () => {
             cargarCumpleanos();
             cargarTareasPendientes();
@@ -135,7 +139,8 @@
                         listaTareasAtrasadas.appendChild(div);
                     });
                 }
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error("Error al cargar las tareas atrasadas:", error);
                 listaTareasAtrasadas.innerHTML = "<p>Error al cargar los datos.</p>";
             }
@@ -173,6 +178,72 @@
             })
             .catch(error => console.error("Error al cargar estadísticas:", error));
         });
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const toggleBtn = document.querySelector('.toggle-btn i');
+            const optionNames = document.querySelectorAll('.sidebar h2, .sidebar ul li a span');
+            const icons = document.querySelectorAll('.sidebar ul li a i, .toggle-btn i');
+
+            if (sidebar.classList.contains('collapsed')) {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('collapsed');
+                    toggleBtn.classList.remove('collapsed');
+                    setTimeout(() => {
+                        optionNames.forEach(name => {
+                            name.style.display = 'inline';
+                            setTimeout(() => {
+                                name.style.opacity = '1';
+                            }, 10); // Small delay to trigger opacity transition
+                        });
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 300); // Match the transition duration
+                }, 300); // Match the transition duration
+            } else {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    optionNames.forEach(name => {
+                        name.style.display = 'none';
+                    });
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('collapsed');
+                    toggleBtn.classList.add('collapsed');
+                    setTimeout(() => {
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 10); 
+                }, 300); 
+            }
+        }
+        function cerrarSesion() {
+    sessionStorage.clear();
+    localStorage.clear();
+
+    window.location.href = "login.html";
+
+    setTimeout(() => {
+        history.pushState(null, null, "login.html");
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    }, 0);
+}
+
     </script>
 </body>
 </html>
