@@ -1,5 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
+
+
 const cors = require('cors');
 const dotenv = require('dotenv');
 
@@ -9,8 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
+const pool = mysql.createPool({  host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'miguelencristo01',
   database: process.env.DB_NAME || 'manejadortareas',
@@ -165,59 +166,46 @@ app.post('/submitTask', upload.single('file'), (req, res) => {
       return res.status(400).json({ error: 'El id de tarea y el id del empleado son obligatorios' });
   }
 
-  const query = 'INSERT INTO envio_tarea (id_tarea, id_empleado, texto_envio, archivo, nombre_archivo, tipo_mime) VALUES (?, ?, ?, ?, ?, ?)';
-  const values = [
-      taskId,
-      employeeId,
-      submissionText || null,
-      file ? file.buffer : null,
-      file ? file.originalname : null,
-      file ? file.mimetype : null
-  ];
+  // Check if employeeId exists in the empleado table
+  pool.query('SELECT id_empleado FROM empleado WHERE id_empleado = ?', [employeeId], (err, results) => {
+    if (err) {
+      console.error('Error al verificar el empleado:', err);
+      return res.status(500).json({ error: 'Error al verificar el empleado', details: err.message });
+    }
 
-  pool.query(query, values, (err, result) => {
+    if (results.length === 0) {
+      return res.status(400).json({ error: 'Empleado no encontrado' });
+    }
+
+    // Check if taskId exists in the tarea table
+    pool.query('SELECT id_tarea FROM tarea WHERE id_tarea = ?', [taskId], (err, results) => {
       if (err) {
-          console.error('Error al guardar la tarea enviada:', err);
-          return res.status(500).json({ error: 'Error al guardar la tarea' });
+        console.error('Error al verificar la tarea:', err);
+        return res.status(500).json({ error: 'Error al verificar la tarea', details: err.message });
       }
 
-      // Mark the task as submitted and update its status to "realizada"
-      const updateTaskQuery = 'UPDATE tarea SET enviada = 1, estado = "realizada" WHERE id_tarea = ?';
-      pool.query(updateTaskQuery, [taskId], (err) => {
+      if (results.length === 0) {
+        return res.status(400).json({ error: 'Tarea no encontrada' });
+      }
+
+      const query = 'INSERT INTO envio_tarea (id_tarea, id_empleado, texto_envio, archivo, nombre_archivo, tipo_mime) VALUES (?, ?, ?, ?, ?, ?)';
+      const values = [
+          taskId,
+          employeeId,
+          submissionText || null,
+          file ? file.buffer : null,
+          file ? file.originalname : null,
+          file ? file.mimetype : null
+      ];
+
+      pool.query(query, values, (err, result) => {
           if (err) {
-              console.error('Error al marcar la tarea como enviada:', err);
-              return res.status(500).json({ error: 'Error al marcar la tarea como enviada' });
+              console.error('Error al guardar la tarea enviada:', err);
+              return res.status(500).json({ error: 'Error al guardar la tarea' });
           }
           res.json({ message: 'Tarea enviada correctamente', id_envio: result.insertId });
       });
-  });
-});
-
-app.get('/envio_tarea', (req, res) => {
-  const { id_tarea, id_empleado } = req.query;
-  const query = 'SELECT * FROM envio_tarea WHERE id_tarea = ? AND id_empleado = ? ORDER BY fecha_envio DESC LIMIT 1';
-  pool.query(query, [id_tarea, id_empleado], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
-    }
-    res.json(results[0]);
-  });
-});
-
-app.get('/descargar_archivo', (req, res) => {
-  const { id_envio } = req.query;
-  const query = 'SELECT archivo, nombre_archivo, tipo_mime FROM envio_tarea WHERE id_envio = ?';
-  pool.query(query, [id_envio], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
-    }
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Archivo no encontrado' });
-    }
-    const file = results[0];
-    res.setHeader('Content-Disposition', `attachment; filename=${file.nombre_archivo}`);
-    res.setHeader('Content-Type', file.tipo_mime);
-    res.send(file.archivo);
+    });
   });
 });
 
@@ -282,7 +270,7 @@ app.get("/tareas-atrasadas", (req, res) => {
   const sql = `
         SELECT id_tarea, nombre_tarea, prioridad, fecha_limite 
         FROM tarea 
-        WHERE estado = 'Atrasado'
+        WHERE estado = 'Atrasada'
         ORDER BY fecha_limite ASC;
     `;
 
@@ -298,7 +286,7 @@ app.get("/estadisticas-tareas", (req, res) => {
   const sql = `
       SELECT 
           SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END) AS pendientes,
-          SUM(CASE WHEN estado = 'Atrasado' THEN 1 ELSE 0 END) AS atrasadas,
+          SUM(CASE WHEN estado = 'Atrasada' THEN 1 ELSE 0 END) AS atrasadas,
           SUM(CASE WHEN estado = 'Realizada' THEN 1 ELSE 0 END) AS realizadas,
           COUNT(*) AS total
       FROM tarea;
@@ -337,35 +325,66 @@ function actualizarTareasAtrasadas() {
   });
 }
 setInterval(actualizarTareasAtrasadas, 300000); 
+app.post('/usuario', async (req, res) => {
+  let { nombre_usuario, contrasenaa, confirmar_contrasena, rol } = req.body;
 
-app.get('/configuracion', (req, res) => {
-  pool.query('SELECT * FROM configuracion WHERE id_usuario = ?', [req.query.id_usuario], (err, results) => {
+  if (!nombre_usuario || !contrasenaa || !confirmar_contrasena) {
+    return res.status(400).json({ error: 'Los campos nombre de usuario, contraseña y confirmar contraseña son obligatorios' });
+  }
+
+  if (contrasena !== confirmar_contrasena) {
+    return res.status(400).json({ error: 'Las contraseñas no coinciden' });
+  }
+
+  rol = rol || 'Empleado';
+
+  const hashedPassword = await bcrypt.hash(contrasena, 10);
+
+  const sql = 'INSERT INTO usuario (nombre_usuario, contrasena, rol) VALUES (?, ?, ?)';
+  const values = [nombre_usuario, hashedPassword, rol];
+
+  pool.query(sql, values, (err, result) => {
     if (err) {
-      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+      console.error('Error al insertar usuario:', err.message);
+      return res.status(500).json({ error: 'Error al insertar usuario', details: err.message });
     }
-    res.json(results[0]);
+    res.status(201).json({ id: result.insertId, nombre_usuario, rol });
   });
 });
 
-app.put('/configuracion', (req, res) => {
-  const { id_usuario, idioma, zona_horaria, formato_fecha_hora, notificaciones, tema, tamano_fuente, modo_interfaz } = req.body;
-  const query = `
-    UPDATE configuracion 
-    SET idioma = ?, zona_horaria = ?, formato_fecha_hora = ?, notificaciones = ?, tema = ?, tamano_fuente = ?, modo_interfaz = ? 
-    WHERE id_usuario = ?
-  `;
-  const values = [idioma || null, zona_horaria || null, formato_fecha_hora || null, notificaciones || null, tema || null, tamano_fuente || null, modo_interfaz || null, id_usuario];
-  
-  pool.query(query, values, (err, result) => {
+app.post('/login', (req, res) => {
+  const { nombre_usuario, contrasena } = req.body;
+
+  if (!nombre_usuario || !contrasena) {
+    return res.status(400).json({ error: 'Los campos nombre de usuario y contraseña son obligatorios' });
+  }
+
+  const sql = 'SELECT * FROM usuario WHERE nombre_usuario = ?';
+  pool.query(sql, [nombre_usuario], async (err, results) => {
     if (err) {
-      return res.status(500).json({ error: 'Error al actualizar configuración', details: err.message });
+      console.error('Error en la consulta:', err.message);
+      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
     }
-    res.json({ message: 'Configuración actualizada correctamente' });
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Usuario no encontrado' });
+    }
+
+    const user = results[0];
+
+    const isMatch = await bcrypt.compare(contrasena, user.contrasena);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Contraseña incorrecta' });
+    }
+
+    const token = jwt.sign({ id: user.id_usuario, nombre_usuario: user.nombre_usuario, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token });
   });
 });
 
 app.get('/usuarios', (req, res) => {
-  pool.query('SELECT id_usuario, Nombre_usuario, Contraseña, Rol FROM usuario', (err, results) => {
+  pool.query('SELECT id_usuario, Nombre_usuario, Rol FROM usuario', (err, results) => {
     if (err) {
       return res.status(500).json({ error: 'Error en la consulta', details: err.message });
     }
@@ -373,45 +392,23 @@ app.get('/usuarios', (req, res) => {
   });
 });
 
-app.put('/configuracion', (req, res) => {
-  const { id_usuario, permisos } = req.body;
-  const query = 'UPDATE configuracion SET permisos = ? WHERE id_usuario = ?';
-  const values = [JSON.stringify(permisos), id_usuario];
-
-  pool.query(query, values, (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al actualizar configuración', details: err.message });
-    }
-    res.json({ message: 'Configuración actualizada correctamente' });
-  });
-});
-
-app.post('/habilitarTarea', (req, res) => {
-  const { id_tarea } = req.body;
-  const query = 'UPDATE tarea SET habilitada = 1 WHERE id_tarea = ?';
-  pool.query(query, [id_tarea], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al habilitar tarea', details: err.message });
-    }
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Tarea no encontrada' });
-    }
-    res.json({ message: 'Tarea habilitada correctamente' });
-  });
-});
-
 app.put('/updateTaskStatus', (req, res) => {
-  const { id_tarea, estado } = req.query;
-  const query = 'UPDATE tarea SET estado = ? WHERE id_tarea = ?';
-  pool.query(query, [estado, id_tarea], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al actualizar el estado de la tarea', details: err.message });
+    const { id_tarea, estado } = req.query;
+    if (!id_tarea || !estado) {
+        return res.status(400).json({ error: 'El id de tarea y el estado son obligatorios' });
     }
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Tarea no encontrada' });
-    }
-    res.json({ message: 'Estado de la tarea actualizado correctamente' });
-  });
+
+    const query = 'UPDATE tarea SET estado = ? WHERE id_tarea = ?';
+    pool.query(query, [estado, id_tarea], (err, result) => {
+        if (err) {
+            console.error('Error al actualizar el estado de la tarea:', err);
+            return res.status(500).json({ error: 'Error al actualizar el estado de la tarea', details: err.message });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Tarea no encontrada' });
+        }
+        res.json({ message: 'Estado de la tarea actualizado correctamente' });
+    });
 });
 
 const PORT = process.env.PORT || 4000;

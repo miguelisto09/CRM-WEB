@@ -158,7 +158,7 @@
             color: white;
             text-decoration: none;
             border-radius: 0 0 5px 5px;
-            transition: background-color 0.1s;
+            transition: background-color 0.3s, width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
         }
 
         .main-content {
@@ -473,33 +473,33 @@
                 grid-template-columns: 1fr;
             }
         }
-
-        .due-today {
-            background-color: #FFA500; /* Orange color */
-        }
+    
+        .sidebar.collapsed ~ .main-content {
+    margin-left: 80px; 
+    transition: margin-left 0.3s; 
+}
     </style>
+
 </head>
 <body>
     
-        <div class="sidebar">
-            <div id="branding">
-                <h2>Bienvenido usuario</h2>
-                <div id="datetime"></div>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
-                    <li><a href="Tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
-                    <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
-                    <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
-                    <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
-                </ul>
-                <ul>
-                    <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
-                </ul>
-                <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
-            </nav>
+    <div class="sidebar">
+        <div id="branding">
+            <h2>Bienvenido usuario</h2>
+            <div id="datetime"></div>
         </div>
+        <ul>
+            <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+            <li><a href="Tareas.html"><i class="fas fa-tasks"></i> <span>Tareas</span></a></li>
+            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> <span>Empleados</span></a></li>
+            <li><a href="Configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
+            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> <span>Recordatorios</span></a></li>
+        </ul>
+            <ul>
+                <li class="Cerrarsesion"><a href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a></li>
+            </ul>
+            <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
+    </div>
 
        
    
@@ -644,13 +644,13 @@
                 if (!task.fecha_limite) return false;
                 var dueDate = new Date(task.fecha_limite);
                 var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-                return dueDateOnly < today && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada;
+                return dueDateOnly < today && task.estado !== 'Completada' && task.estado !== 'Realizada' && !task.enviada;
             }),
             "Para Hoy": tasks.filter(task => {
                 if (!task.fecha_limite) return false;
                 var dueDate = new Date(task.fecha_limite);
                 var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-                return dueDateOnly.getTime() === today.getTime() && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada;
+                return dueDateOnly.getTime() === today.getTime() && task.estado !== 'Completada' && task.estado !== 'Realizada' && !task.enviada;
             }),
             "Para Esta Semana": tasks.filter(task => {
                 if (!task.fecha_limite) return false;
@@ -658,7 +658,7 @@
                 var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
                 var weekFromNow = new Date(today);
                 weekFromNow.setDate(today.getDate() + 7);
-                return dueDateOnly > today && dueDateOnly <= weekFromNow && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada;
+                return dueDateOnly > today && dueDateOnly <= weekFromNow && task.estado !== 'Completada' && task.estado !== 'Realizada' && !task.enviada;
             }),
             "Para la Próxima Semana": tasks.filter(task => {
                 if (!task.fecha_limite) return false;
@@ -668,7 +668,7 @@
                 weekFromNow.setDate(today.getDate() + 7);
                 var twoWeeksFromNow = new Date(today);
                 twoWeeksFromNow.setDate(today.getDate() + 14);
-                return dueDateOnly > weekFromNow && dueDateOnly <= twoWeeksFromNow && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada;
+                return dueDateOnly > weekFromNow && dueDateOnly <= twoWeeksFromNow && task.estado !== 'Completada' && task.estado !== 'Realizada' && !task.enviada;
             }),
             "Dentro de Dos Semanas o Más": tasks.filter(task => {
                 if (!task.fecha_limite) return false;
@@ -676,9 +676,9 @@
                 var dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
                 var twoWeeksFromNow = new Date(today);
                 twoWeeksFromNow.setDate(today.getDate() + 14);
-                return dueDateOnly > twoWeeksFromNow && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada;
+                return dueDateOnly > twoWeeksFromNow && task.estado !== 'Completada' && task.estado !== 'Realizada' && !task.enviada;
             }),
-            "Sin Fecha Límite": tasks.filter(task => !task.fecha_limite && task.estado !== 'Completada' && task.estado !== 'realizada' && !task.enviada)
+            "Sin Fecha Límite": tasks.filter(task => !task.fecha_limite && task.estado !== 'Completada' && task.estado !== 'Realizada' && !task.enviada)
         };
 
         var taskCategories = document.getElementById('taskCategories');
@@ -705,7 +705,7 @@
                     <p class="title">${task.nombre_tarea}</p>
                     <p class="description">${task.descripcion}</p>
                     <p class="due-date ${dueDateClass}"><em>${dueDateText} ${formattedDate}</em></p>
-                    <button class="delete-btn" onclick="confirmDeleteTask(${task.id_tarea})"><i class="fas fa-trash-alt"></i></button>
+                    <button class="delete-btn" onclick="confirmDeleteTask(${task.id_tarea}, event)"><i class="fas fa-trash-alt"></i></button>
                 `;
                 taskDiv.addEventListener('click', function() {
                     openTaskModal(task);
@@ -864,7 +864,8 @@
         });
     }
 
-    function confirmDeleteTask(taskId) {
+    function confirmDeleteTask(taskId, event) {
+        event.stopPropagation(); // Prevent the task from being opened
         if (confirm("¿Desea eliminar esta tarea?")) {
             deleteTask(taskId);
         }
@@ -945,8 +946,20 @@
             closeTaskModal();
         }
     });
-
     window.onload = fetchTasks;
+    function cerrarSesion() {
+    sessionStorage.clear();
+    localStorage.clear();
+
+    window.location.href = "login.html";
+
+    setTimeout(() => {
+        history.pushState(null, null, "login.html");
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    }, 0);
+}
 </script>
     
 </body>

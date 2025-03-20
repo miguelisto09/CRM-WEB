@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configuración de Permisos de Usuario</title>
+    <title>Configuración del Manejador de Tareas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="estilo.css">
     <style>
@@ -107,72 +107,100 @@
             padding: 20px;
             border-right: 1px solid #ddd;
         }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            text-align: center;
+            transition: width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+            padding: 20px 10px;
+        }
+        .sidebar h2, .sidebar ul li a span {
+            transition: opacity 0.3s, width 0.3s; /* Unified transition duration */
+            opacity: 1;
+            width: auto;
+        }
+        .sidebar.collapsed h2, .sidebar.collapsed ul li a span {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        .sidebar.collapsed ul li a {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .sidebar.collapsed ul li a i {
+            transition: opacity 0.3s; /* Add transition for icons */
+            margin-right: 0;
+        }
+
+        .sidebar.collapsed .Cerrarsesion {
+            width: 60px;
+            text-align: center;
+            padding: 10px 0;
+        }
         .config-content {
             width: 75%;
             padding: 20px;
         }
-        .user-list {
-            margin-top: 20px; /* Adjust this value as needed */
-        }
-        .user-list table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .user-list th, .user-list td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        .user-list th {
-            background-color: #f4f4f4;
-        }
-        .user-list tr:hover {
-            background-color: #ddd;
-        }
-        .user-list tr.selected {
-            background-color: #b3d9ff;
-        }
-        .user-actions {
+        .toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            margin-bottom: -30px; /* Adjust this value as needed */
+            justify-content: center;
+            transition: right 0.3s, transform 0.3s; /* Unified transition duration */
+            z-index: 1000; /* Ensure the button is always on top */
+            transform: translateY(-50%);
         }
-        .user-actions button, .user-actions i {
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            margin-left: 10px;
-            font-size: 1.2em;
-            color: #333;
-            transition: color 0.3s, background-color 0.3s;
-            border-radius: 10px;
-            padding: 5px;
+
+        .sidebar.collapsed .toggle-btn {
+            right: -20px;
         }
-        .user-actions button:hover, .user-actions i:hover {
-            color: #007bff;
-            background-color: rgba(0, 0, 0, 0.1);
+
+        .toggle-btn i {
+            transition: transform 0.3s; /* Unified transition duration */
         }
-        .btn-select {
-            font-size: 0.9em;
+
+        .sidebar.collapsed .toggle-btn i {
+            transform: rotate(180deg);
+        }
+        .Cerrarsesion {
+            position: fixed;
+            bottom: 0;
+            align-items: center;
+            text-align: center;
+            width: 250px;
+            padding: 10px;
+            background-color: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 0 0 5px 5px;
+            transition: background-color 0.3s, width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
         }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const links = document.querySelectorAll('.config-sidebar ul li a');
             const sections = document.querySelectorAll('.config-section');
-            const messageBox = document.createElement('div');
-            messageBox.id = 'messageBox';
-            messageBox.style.display = 'none';
-            messageBox.style.position = 'fixed';
-            messageBox.style.top = '10px';
-            messageBox.style.left = '50%';
-            messageBox.style.transform = 'translateX(-50%)';
-            messageBox.style.padding = '10px';
-            messageBox.style.backgroundColor = '#4caf50';
-            messageBox.style.color = '#fff';
-            messageBox.style.borderRadius = '5px';
-            document.body.appendChild(messageBox);
 
             links.forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -189,139 +217,22 @@
                 sections[0].classList.add('active');
             }
 
-            const userList = document.querySelector('.user-list table tbody');
-            let currentUserId = null;
-
             // Fetch and display users
             fetch('/usuarios')
                 .then(response => response.json())
-                .then(users => {
-                    if (users.length === 0) {
-                        console.error('No se encontraron usuarios.');
-                        return;
-                    }
-                    users.forEach(user => {
-                        const userRow = document.createElement('tr');
-                        userRow.dataset.userId = user.id_usuario;
-                        userRow.innerHTML = `
+                .then(data => {
+                    const usersTableBody = document.querySelector('#usersTable tbody');
+                    data.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.id_usuario}</td>
                             <td>${user.Nombre_usuario}</td>
-                            <td>${user.Contraseña}</td>
                             <td>${user.Rol}</td>
                         `;
-                        userList.appendChild(userRow);
-                    });
-
-                    // Add click event to user rows
-                    userList.querySelectorAll('tr').forEach(row => {
-                        row.addEventListener('click', function() {
-                            userList.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
-                            this.classList.add('selected');
-                            currentUserId = this.dataset.userId;
-                            loadUserPermissions(currentUserId);
-                        });
+                        usersTableBody.appendChild(row);
                     });
                 })
-                .catch(error => {
-                    console.error('Error al obtener usuarios:', error);
-                });
-
-            function loadUserPermissions(userId) {
-                fetch(`/configuracion?id_usuario=${userId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Display user permissions or other details if needed
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar permisos del usuario:', error);
-                    });
-            }
-
-            // Save configuration
-            document.querySelector('.config-buttons .btn-save').addEventListener('click', function() {
-                if (!currentUserId) {
-                    showMessage('Seleccione un usuario primero');
-                    return;
-                }
-                const config = {
-                    id_usuario: currentUserId,
-                    // Add other configuration details if needed
-                };
-                fetch('/configuracion', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(config)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    showMessage('Configuración guardada correctamente');
-                })
-                .catch(error => {
-                    console.error('Error al guardar configuración:', error);
-                });
-            });
-
-            function showMessage(message) {
-                messageBox.textContent = message;
-                messageBox.style.display = 'block';
-                setTimeout(() => {
-                    messageBox.style.display = 'none';
-                }, 3000);
-            }
-
-            function toggleSidebar() {
-                const sidebar = document.querySelector('.sidebar');
-                const mainContent = document.querySelector('.main-content');
-                const toggleBtn = document.querySelector('.toggle-btn i');
-                const optionNames = document.querySelectorAll('.sidebar h2, .sidebar ul li a span');
-                const icons = document.querySelectorAll('.sidebar ul li a i, .toggle-btn i');
-
-                if (sidebar.classList.contains('collapsed')) {
-                    optionNames.forEach(name => {
-                        name.style.opacity = '0';
-                    });
-                    icons.forEach(icon => {
-                        icon.style.opacity = '0';
-                    });
-                    setTimeout(() => {
-                        sidebar.classList.remove('collapsed');
-                        mainContent.classList.remove('collapsed');
-                        toggleBtn.classList.remove('collapsed');
-                        setTimeout(() => {
-                            optionNames.forEach(name => {
-                                name.style.display = 'inline';
-                                setTimeout(() => {
-                                    name.style.opacity = '1';
-                                }, 10); // Small delay to trigger opacity transition
-                            });
-                            icons.forEach(icon => {
-                                icon.style.opacity = '1';
-                            });
-                        }, 300); // Match the transition duration
-                    }, 300); // Match the transition duration
-                } else {
-                    optionNames.forEach(name => {
-                        name.style.opacity = '0';
-                    });
-                    icons.forEach(icon => {
-                        icon.style.opacity = '0';
-                    });
-                    setTimeout(() => {
-                        optionNames.forEach(name => {
-                            name.style.display = 'none';
-                        });
-                        sidebar.classList.add('collapsed');
-                        mainContent.classList.add('collapsed');
-                        toggleBtn.classList.add('collapsed');
-                        setTimeout(() => {
-                            icons.forEach(icon => {
-                                icon.style.opacity = '1';
-                            });
-                        }, 10); // Small delay to trigger opacity transition
-                    }, 300); // Match the transition duration
-                }
-            }
+                .catch(error => console.error('Error fetching users:', error));
         });
     </script>
 </head>
@@ -329,60 +240,128 @@
     <div class="sidebar">
         <h2>Bienvenido usuario</h2>
         <ul>
-            <li><a href="inicio.html"><i class="fas fa-home"></i>   Inicio</a></li>
-            <li><a href="tareas.html"><i class="fas fa-tasks"></i>  Tareas</a></li>
-            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i>  Empleados</a></li>
-            <li><a href="Configuracion.html"><i class="fas fa-cog"></i>  Configuración</a></li>
-            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i>  Recordatorios</a></li>
-            <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
+            <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+            <li><a href="Tareas.html"><i class="fas fa-tasks"></i> <span>Tareas</span></a></li>
+            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> <span>Empleados</span></a></li>
+            <li><a href="Configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
+            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> <span>Recordatorios</span></a></li>
         </ul>
-        <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
+        <ul>
+          <li class="Cerrarsesion"><a href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a></li>
+        </ul>
+         <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
     </div>
 
     <div class="main-content">
         <div class="header">
-            <h1>Configuración de Permisos de Usuario</h1>
+            <h1>Configuración del Manejador de Tareas</h1>
         </div>
 
         <div class="config-container">
             <div class="config-sidebar">
                 <ul>
-                    <li><a href="#permissions">Permisos de Usuario</a></li>
+                    <li><a href="#users">Configuración de Usuarios y Permisos</a></li>
+                    <li><a href="#interface">Configuración de la Interfaz</a></li>
                 </ul>
             </div>
 
             <div class="config-content">
-                <div id="permissions" class="config-section active">
-                    <div class="user-actions">
-                        <button class="btn-select"><i class="fas fa-check"></i> Seleccionar</button>
-                        <i class="fas fa-edit"></i>
-                        <i class="fas fa-trash-alt"></i>
-                    </div>
-                    <h2>Permisos de Usuario</h2>
-                    <!-- User permissions or other details will be displayed here -->
-                    <div class="user-list">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nombre de Usuario</th>
-                                    <th>Contraseña</th>
-                                    <th>Rol</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- User list will be populated here -->
-                            </tbody>
-                        </table>
-                    </div>
+                <div id="users" class="config-section">
+                    <h2>2. Configuración de Usuarios y Permisos</h2>
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre de Usuario</th>
+                                <th>Rol</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- User rows will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="interface" class="config-section">
+                    <h2>8. Configuración de la Interfaz</h2>
+                    <label for="fontSize">Tamaño de fuentes y accesibilidad</label>
+                    <select id="fontSize">
+                        <option value="small">Pequeño</option>
+                        <option value="medium">Mediano</option>
+                        <option value="large">Grande</option>
+                    </select>
+                    <label for="iconCustomization">Personalización de iconos y colores</label>
+                    <textarea id="iconCustomization" placeholder="Definir personalización..."></textarea>
+                    <label for="interfaceMode">Modo de interfaz</label>
+                    <select id="interfaceMode">
+                        <option value="compact">Compacto</option>
+                        <option value="expanded">Expandido</option>
+                    </select>
                 </div>
 
                 <div class="config-buttons">
-                    <button class="btn btn-save">✔ Guardar cambios</button>
-                    <button class="btn">❌ Cancelar</button>
-                    <button class="btn">🔄 Restaurar valores predeterminados</button>
+                    <button class="btn"><i class="fas fa-save"></i> Guardar cambios</button>
+                    <button class="btn"><i class="fas fa-remove"></i> Cancelar  </i></button>
+                    <button class="btn"><i class="fas fa-refresh"></i> Restaurar valores predeterminados</button>
+                    <button class="btn"><i class="fas fa-upload"></i> Importar configuración</button>
+                    <button class="btn"><i class="fas fa-download"></i> Exportar configuración</button>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const toggleBtn = document.querySelector('.toggle-btn i');
+            const optionNames = document.querySelectorAll('.sidebar h2, .sidebar ul li a span');
+            const icons = document.querySelectorAll('.sidebar ul li a i, .toggle-btn i');
+
+            if (sidebar.classList.contains('collapsed')) {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('collapsed');
+                    toggleBtn.classList.remove('collapsed');
+                    setTimeout(() => {
+                        optionNames.forEach(name => {
+                            name.style.display = 'inline';
+                            setTimeout(() => {
+                                name.style.opacity = '1';
+                            }, 10); // Small delay to trigger opacity transition
+                        });
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 300); // Match the transition duration
+                }, 300); // Match the transition duration
+            } else {
+                optionNames.forEach(name => {
+                    name.style.opacity = '0';
+                });
+                icons.forEach(icon => {
+                    icon.style.opacity = '0';
+                });
+                setTimeout(() => {
+                    optionNames.forEach(name => {
+                        name.style.display = 'none';
+                    });
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('collapsed');
+                    toggleBtn.classList.add('collapsed');
+                    setTimeout(() => {
+                        icons.forEach(icon => {
+                            icon.style.opacity = '1';
+                        });
+                    }, 10); 
+                }, 300); 
+            }
+        }
+    </script>
 </body>
 </html>

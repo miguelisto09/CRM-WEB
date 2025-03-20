@@ -10,17 +10,19 @@
 <body>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="sidebar">
-        <h2>Bienvenido usuario</h2>
-        <ul>
-            <li><a href="inicio.html"><i class="fas fa-home"></i> Inicio</a></li>
-            <li><a href="Tareas.html"><i class="fas fa-tasks"></i> Tareas</a></li>
-            <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> Empleados</a></li>
-            <li><a href="Configuracion.html"><i class="fas fa-cog"></i> Configuración</a></li>
-            <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> Recordatorios</a></li>
-            <li class="Cerrarsesion"><a href="login.html"><i class="fas fa-sign-out"></i> Cerrar sesión</a></li>
-        </ul>
-        <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
-    </div>
+            <h2>Bienvenido usuario</h2>
+            <ul>
+                <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+                <li><a href="Tareas.html"><i class="fas fa-tasks"></i> <span>Tareas</span></a></li>
+                <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> <span>Empleados</span></a></li>
+                <li><a href="Configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
+                <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> <span>Recordatorios</span></a></li>
+            </ul>
+            <ul>
+                <li class="Cerrarsesion"><a href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a></li>
+            </ul>
+             <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
+        </div>
 
     <div class="main-content">
         <div class="header">
@@ -61,6 +63,7 @@
     </div>
 
     <script>
+
         document.addEventListener("DOMContentLoaded", async () => {
             cargarCumpleanos();
             cargarTareasPendientes();
@@ -136,7 +139,8 @@
                         listaTareasAtrasadas.appendChild(div);
                     });
                 }
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error("Error al cargar las tareas atrasadas:", error);
                 listaTareasAtrasadas.innerHTML = "<p>Error al cargar los datos.</p>";
             }
@@ -147,6 +151,33 @@
             return new Date(fecha).toLocaleDateString("es-ES", opciones);
         }
 
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("http://localhost:4000/estadisticas-tareas")
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById("graficoTareas").getContext("2d");
+
+                new Chart(ctx, {
+                    type: "doughnut",
+                    data: {
+                        labels: ["Pendientes", "Atrasadas", "Realizadas"],
+                        datasets: [{
+                            data: [data.pendientes, data.atrasadas, data.realizadas],
+                            backgroundColor: ["#f39c12", "#e74c3c", "#2ecc71"]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: "bottom"
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error("Error al cargar estadísticas:", error));
+        });
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             const mainContent = document.querySelector('.main-content');
@@ -195,38 +226,24 @@
                         icons.forEach(icon => {
                             icon.style.opacity = '1';
                         });
-                    }, 10); // Small delay to trigger opacity transition
-                }, 300); // Match the transition duration
+                    }, 10); 
+                }, 300); 
             }
         }
+        function cerrarSesion() {
+    sessionStorage.clear();
+    localStorage.clear();
 
-        document.addEventListener("DOMContentLoaded", function () {
-            fetch("http://localhost:4000/estadisticas-tareas")
-            .then(response => response.json())
-            .then(data => {
-                const ctx = document.getElementById("graficoTareas").getContext("2d");
+    window.location.href = "login.html";
 
-                new Chart(ctx, {
-                    type: "doughnut",
-                    data: {
-                        labels: ["Pendientes", "Atrasadas", "Realizadas"],
-                        datasets: [{
-                            data: [data.pendientes, data.atrasadas, data.realizadas],
-                            backgroundColor: ["#f39c12", "#e74c3c", "#2ecc71"]
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: "bottom"
-                            }
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error("Error al cargar estadísticas:", error));
-        });
+    setTimeout(() => {
+        history.pushState(null, null, "login.html");
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    }, 0);
+}
+
     </script>
 </body>
 </html>
