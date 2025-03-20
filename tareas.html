@@ -333,6 +333,70 @@
     margin-left: 80px; 
     transition: margin-left 0.3s; 
 }
+.accesibilidad-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .menu-accesibilidad {
+            position: fixed;
+            top: 10%;
+            right: 20px;
+            background: white;
+            width: 150px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .menu-accesibilidad button {
+            width: 100%;
+            height: 20%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            background: #f0f0f0;
+        }
+        .menu-accesibilidad button i {
+            margin-right: 10px;
+        }
+        .alto-contraste {
+            background-color: black;
+            color: rgb(255, 255, 255);
+        }
+        .alto-contraste .task-table :hover {
+            background-color: black;
+            color: white;
+        }
+        .resaltar-enlaces a {
+            background: rgb(255, 0, 0);
+            color: black;
+        }
+        .ocultar-imagenes img {
+            display: none;
+        }
+        .menu-accesibilidad header {
+            font-size: 20px;
+            margin-bottom: 10px;
+            background-color: #2c3e50;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -344,6 +408,16 @@
             <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> <span>Empleados</span></a></li>
             <li><a href="Configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
             <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> <span>Recordatorios</span></a></li>
+            <button class="accesibilidad-btn" onclick="toggleMenu()"><i class="fa-solid fa-universal-access"></i></button>
+    <div class="menu-accesibilidad" id="menuAccesibilidad">
+        <header>Accesibilidad</header>
+        <button onclick="toggleContraste()"><i class="fa fa-adjust" aria-hidden="true"></i> Contraste</button>
+        <button onclick="toggleResaltarEnlaces()"><i class="fa fa-link" aria-hidden="true"></i> Resaltar Enlaces</button>
+        <button onclick="toggleTextoGrande()"><i class="fa fa-text-height"></i> Texto Grande</button>
+        <button onclick="toggleEspaciadoTexto()"><i class="fa fa-text-width"></i> Espaciado de Texto</button>
+        <button onclick="toggleAnimaciones()"><i class="fas fa-pause"></i> Pausar Animaciones</button>
+        <button onclick="toggleOcultarImagenes()"><i class="fas fa-eye-slash"></i> Ocultar Imágenes</button>
+    </div>
         </ul>
         <ul>
             <li class="Cerrarsesion"><a href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a></li>
@@ -372,46 +446,6 @@
             <div class="chart-container">
                 <canvas id="taskChart"></canvas>
             </div>
-        </div>
-    </div>
-
-    <div id="taskModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="document.getElementById('taskModal').style.display='none'">&times;</span>
-            <h2>Crear Nueva Tarea</h2>
-            <form id="taskForm">
-                <label for="title">Título</label>
-                <input type="text" id="title" name="title" required><br><br>
-                <label for="description">Descripción</label>
-                <textarea id="description" name="description" required></textarea><br><br>
-                <label for="assignedTo">Asignado a</label>
-                <input type="text" id="assignedTo" name="assignedTo" required><br><br>
-                <label for="priority">Prioridad</label>
-                <select id="priority" name="priority">
-                    <option value="low">Baja</option>
-                    <option value="medium">Media</option>
-                    <option value="high">Alta</option>
-                    <option value="critical">Crítica</option>
-                    <option value="urgent">Urgente</option> 
-                    <option value="veryLow">Muy Baja</option> 
-                </select><br><br>
-                <label for="status">Estado</label>
-                <select id="status" name="status">
-                    <option value="pending">Pendiente</option>
-                    <option value="inProgress">En Progreso</option>
-                    <option value="completed">Completada</option>
-                    <option value="cancelled">Cancelada</option>
-                    <option value="onHold">En Espera</option> 
-                    <option value="deferred">Diferida</option>
-                </select><br><br>
-                <label for="dueDate">Fecha de Vencimiento</label>
-                <input type="date" id="dueDate" name="dueDate" required><br><br>
-                <div class="file-upload">
-                    <label for="taskFiles">Subir Documentos</label>
-                    <input type="file" id="taskFiles" name="taskFiles" multiple>
-                </div>
-                <button type="submit" class="btn">Guardar Tarea</button>
-            </form>
         </div>
     </div>
 
@@ -548,6 +582,30 @@ function toggleSidebar() {
         };
     }, 0);
 }
+function toggleMenu() {
+            let menu = document.getElementById('menuAccesibilidad');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+        function toggleContraste() {
+            document.body.classList.toggle('alto-contraste');
+        }
+        function toggleResaltarEnlaces() {
+            document.body.classList.toggle('resaltar-enlaces');
+        }
+        function toggleTextoGrande() {
+            document.body.style.fontSize = document.body.style.fontSize === '1.5em' ? '' : '1.5em';
+        }
+        function toggleEspaciadoTexto() {
+            document.body.style.letterSpacing = document.body.style.letterSpacing === '2px' ? '' : '2px';
+        }
+        function toggleAnimaciones() {
+            let style = document.createElement('style');
+            style.innerHTML = '* { animation: none !important; transition: none !important; }';
+            document.head.appendChild(style);
+        }
+        function toggleOcultarImagenes() {
+            document.body.classList.toggle('ocultar-imagenes');
+        }
         document.addEventListener('DOMContentLoaded', cargartarea);
     </script>
 </body>
