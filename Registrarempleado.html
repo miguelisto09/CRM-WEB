@@ -303,11 +303,129 @@
                 white-space: nowrap;
             }
         }
+        .accesibilidad-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.menu-accesibilidad {
+    position: fixed;
+    top: 10%;
+    right: 20px;
+    background: white;
+    width: 150px;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+}
+
+.menu-accesibilidad button {
+    width: 100%;
+    height: 20%;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    background: #f0f0f0;
+}
+.menu-accesibilidad button i {
+    margin-right: 10px;
+}
+.alto-contraste {
+    background-color: black;
+    color: rgb(10, 10, 10);
+}
+.alto-contraste .task-table :hover {
+    background-color: black;
+    color: white;
+}
+.resaltar-enlaces a {
+    background: rgb(255, 0, 0);
+    color: black;
+}
+.alto-contraste .widget
+{
+    background-color: black;
+    color: white;
+}
+.alto-contraste .header
+{
+    background-color: black;
+    color: white;
+}
+.alto-contraste .sidebar
+{
+    background-color: black;
+    color: white;
+}
+.alto-contraste .sidebar .Cerrarsesion
+{
+    background-color:  rgb(63, 62, 62);
+    color: white;
+    width: 230px;
+}
+.alto-contraste .toggle-btn
+{
+    background-color: rgb(63, 62, 62);
+    color: white;
+}
+.alto-contraste .main-content .quick-actions button
+{
+    background-color: rgb(63, 62, 62);
+    color: white;
+}
+.alto-contraste .sidebar .accesibilidad-btn
+{
+    background-color: rgb(63, 62, 62);
+    color: white;
+}
+.alto-contraste .sidebar .menu-accesibilidad .header
+{
+    background-color: rgb(63, 62, 62);
+    color: white;
+    width: 120px;
+}
+.sidebar .menu-accesibilidad .header
+{
+    color: white;
+    width: 120px;
+}
+.ocultar-imagenes img {
+    display: none;
+}
+.menu-accesibilidad header {
+    font-size: 20px;
+    margin-bottom: 10px;
+    background-color: #2c3e50;
+    width: 100%;
+}
+.alto-contraste .main-content .Registro {	
+    background-color: rgb(63, 62, 62);
+    color: white;
+}
+.alto-contraste .main-content  thead {
+    background-color: rgb(63, 62, 62);  
+}
     </style>
 </head>
 
 <body>
-    <div class="sidebar" style="background-color: #2c3e50;">
+    <div class="sidebar">
         <h2>Bienvenido usuario</h2>
         <ul>
             <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
@@ -315,6 +433,16 @@
             <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> <span>Empleados</span></a></li>
             <li><a href="Configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
             <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> <span>Recordatorios</span></a></li>
+            <button class="accesibilidad-btn" onclick="toggleMenu()"><i class="fa-solid fa-universal-access"></i></button>
+            <div class="menu-accesibilidad" id="menuAccesibilidad">
+                <header class="header">Accesibilidad</header>
+                <button onclick="toggleContraste()"><i class="fa fa-adjust" aria-hidden="true"></i> Contraste</button>
+                <button onclick="toggleResaltarEnlaces()"><i class="fa fa-link" aria-hidden="true"></i> Resaltar Enlaces</button>
+                <button onclick="toggleTextoGrande()"><i class="fa fa-text-height"></i> Texto Grande</button>
+                <button onclick="toggleEspaciadoTexto()"><i class="fa fa-text-width"></i> Espaciado de Texto</button>
+                <button onclick="toggleAnimaciones()"><i class="fas fa-pause"></i> Pausar Animaciones</button>
+                <button onclick="toggleOcultarImagenes()"><i class="fas fa-eye-slash"></i> Ocultar Imágenes</button>
+            </div>
         </ul>
         <ul>
             <li class="Cerrarsesion"><a href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a></li>
@@ -495,7 +623,30 @@
             history.go(1);
         };
     }, 0);
-}
+}function toggleMenu() {
+            let menu = document.getElementById('menuAccesibilidad');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+        function toggleContraste() {
+            document.body.classList.toggle('alto-contraste');
+        }
+        function toggleResaltarEnlaces() {
+            document.body.classList.toggle('resaltar-enlaces');
+        }
+        function toggleTextoGrande() {
+            document.body.style.fontSize = document.body.style.fontSize === '1.5em' ? '' : '1.5em';
+        }
+        function toggleEspaciadoTexto() {
+            document.body.style.letterSpacing = document.body.style.letterSpacing === '2px' ? '' : '2px';
+        }
+        function toggleAnimaciones() {
+            let style = document.createElement('style');
+            style.innerHTML = '* { animation: none !important; transition: none !important; }';
+            document.head.appendChild(style);
+        }
+        function toggleOcultarImagenes() {
+            document.body.classList.toggle('ocultar-imagenes');
+        }
         document.addEventListener('DOMContentLoaded', cargarEmpleados);
     </script>
 </body>

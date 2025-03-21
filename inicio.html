@@ -17,6 +17,16 @@
                 <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> <span>Empleados</span></a></li>
                 <li><a href="Configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
                 <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> <span>Recordatorios</span></a></li>
+                <button class="accesibilidad-btn" onclick="toggleMenu()"><i class="fa-solid fa-universal-access"></i></button>
+                <div class="menu-accesibilidad" id="menuAccesibilidad">
+                    <header class="header">Accesibilidad</header>
+                    <button onclick="toggleContraste()"><i class="fa fa-adjust" aria-hidden="true"></i> Contraste</button>
+                    <button onclick="toggleResaltarEnlaces()"><i class="fa fa-link" aria-hidden="true"></i> Resaltar Enlaces</button>
+                    <button onclick="toggleTextoGrande()"><i class="fa fa-text-height"></i> Texto Grande</button>
+                    <button onclick="toggleEspaciadoTexto()"><i class="fa fa-text-width"></i> Espaciado de Texto</button>
+                    <button onclick="toggleAnimaciones()"><i class="fas fa-pause"></i> Pausar Animaciones</button>
+                    <button onclick="toggleOcultarImagenes()"><i class="fas fa-eye-slash"></i> Ocultar Imágenes</button>
+                </div>
             </ul>
             <ul>
                 <li class="Cerrarsesion"><a href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a></li>
@@ -229,6 +239,30 @@
                     }, 10); 
                 }, 300); 
             }
+        }
+        function toggleMenu() {
+            let menu = document.getElementById('menuAccesibilidad');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+        function toggleContraste() {
+            document.body.classList.toggle('alto-contraste');
+        }
+        function toggleResaltarEnlaces() {
+            document.body.classList.toggle('resaltar-enlaces');
+        }
+        function toggleTextoGrande() {
+            document.body.style.fontSize = document.body.style.fontSize === '1.5em' ? '' : '1.5em';
+        }
+        function toggleEspaciadoTexto() {
+            document.body.style.letterSpacing = document.body.style.letterSpacing === '2px' ? '' : '2px';
+        }
+        function toggleAnimaciones() {
+            let style = document.createElement('style');
+            style.innerHTML = '* { animation: none !important; transition: none !important; }';
+            document.head.appendChild(style);
+        }
+        function toggleOcultarImagenes() {
+            document.body.classList.toggle('ocultar-imagenes');
         }
         function cerrarSesion() {
     sessionStorage.clear();

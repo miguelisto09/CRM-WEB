@@ -152,6 +152,27 @@ app.put('/tarea/:id', (req, res) => {
   });
 });
 
+app.put('/tarea/:id/completada', (req, res) => {
+  const { id } = req.params;
+
+  if (isNaN(id)) {
+      return res.status(400).json({ error: 'ID inválido' });
+  }
+
+  const query = 'UPDATE tarea SET estado = "realizada" WHERE id_tarea = ?';
+
+  pool.query(query, [id], (err, result) => {
+      if (err) {
+          console.error("❌ Error al actualizar tarea:", err);
+          return res.status(500).json({ error: 'Error al actualizar tarea', details: err.message });
+      }
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ error: 'Tarea no encontrada' });
+      }
+      res.json({ message: '✅ Tarea marcada como realizada correctamente' });
+  });
+});
+
 const multer = require('multer');
 
 // Configurar Multer para almacenar archivos en memoria
@@ -329,6 +350,7 @@ app.post('/usuario', async (req, res) => {
   });
 });
 
+
 app.post('/login', (req, res) => {
   const { nombre_usuario, contraseña } = req.body;
 
@@ -359,6 +381,44 @@ app.post('/login', (req, res) => {
     res.json({ token });
   });
 });
+app.get('/usuarios', (req, res) => {
+  pool.query('SELECT * FROM usuario', (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error en la consulta', details: err.message });
+    }
+    res.json(results);
+  });
+});
+app.put('/actuzalirusuario/:id', async (req, res) => {
+  const { id_usuario } = req.params;
+  const { nombre_usuario, rol, contraseña } = req.body;
+
+  if (!nombre_usuario || !rol) {
+      return res.status(400).json({ error: 'El nombre de usuario y el rol son obligatorios' });
+  }
+
+  let sql, values;
+
+  if (contraseña) {
+      const hashedPassword = await bcrypt.hash(contraseña, 10);
+      sql = 'UPDATE usuario SET nombre_usuario = ?, contraseña = ?, rol = ? WHERE id_usuario = ?';
+      values = [nombre_usuario, hashedPassword, rol, id_usuario];
+  } else {
+      sql = 'UPDATE usuario SET nombre_usuario = ?, rol = ? WHERE id_usuario = ?';
+      values = [nombre_usuario, rol, id_usuario];
+  }
+
+  // Ejecutar la consulta
+  pool.query(sql, values, (err, result) => {
+      if (err) {
+          console.error('Error al actualizar usuario:', err.message);
+          return res.status(500).json({ error: 'Error al actualizar usuario', details: err.message });
+    }
+
+      res.status(200).json({ success: true, message: 'Usuario actualizado correctamente' });
+  });
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);

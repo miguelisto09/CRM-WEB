@@ -96,6 +96,7 @@
         }
         .config-section.active {
             display: block;
+            width: 900px;
         }
         .config-container {
             display: flex;
@@ -196,6 +197,183 @@
             border-radius: 0 0 5px 5px;
             transition: background-color 0.3s, width 0.3s, padding 0.3s, opacity 0.3s; /* Unified transition duration */
         }
+        
+        .accesibilidad-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.menu-accesibilidad {
+    position: fixed;
+    top: 10%;
+    right: 20px;
+    background: white;
+    width: 150px;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+}
+
+.menu-accesibilidad button {
+    width: 100%;
+    height: 20%;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    background: #f0f0f0;
+}
+.menu-accesibilidad button i {
+    margin-right: 10px;
+}
+.alto-contraste {
+    background-color: black;
+    color: rgb(10, 10, 10);
+}
+.alto-contraste .task-table :hover {
+    background-color: black;
+    color: white;
+}
+.resaltar-enlaces a {
+    background: rgb(255, 0, 0);
+    color: black;
+}
+.alto-contraste .widget
+{
+    background-color: black;
+    color: white;
+}
+.alto-contraste .header
+{
+    background-color: black;
+    color: white;
+}
+.alto-contraste .sidebar
+{
+    background-color: black;
+    color: white;
+}
+.alto-contraste .sidebar .Cerrarsesion
+{
+    background-color:  rgb(63, 62, 62);
+    color: white;
+    width: 230px;
+}
+.alto-contraste .toggle-btn
+{
+    background-color: rgb(63, 62, 62);
+    color: white;
+}
+.alto-contraste .main-content .quick-actions button
+{
+    background-color: rgb(63, 62, 62);
+    color: white;
+}
+.alto-contraste .sidebar .accesibilidad-btn
+{
+    background-color: rgb(63, 62, 62);
+    color: white;
+}
+.alto-contraste .sidebar .menu-accesibilidad .header
+{
+    background-color: rgb(63, 62, 62);
+    color: white;
+    width: 120px;
+}
+.sidebar .menu-accesibilidad .header
+{
+    color: white;
+    width: 120px;
+}
+.ocultar-imagenes img {
+    display: none;
+}
+.menu-accesibilidad header {
+    font-size: 20px;
+    margin-bottom: 10px;
+    background-color: #2c3e50;
+    width: 100%;
+}
+.alto-contraste .main-content .Registro {	
+    background-color: rgb(63, 62, 62);
+    color: white;
+}
+.alto-contraste .main-content  thead {
+    background-color: rgb(63, 62, 62);  
+}
+.alto-contraste .config-section {
+    background-color: rgb(63, 62, 62);
+    color: white;
+}
+.alto-contraste .config-sidebar {
+    background-color: rgb(63, 62, 62);  
+}
+.alto-contraste .config-sidebar ul li a {
+    color: white;
+}
+.alto-contraste .config-buttons .btn {
+    background-color: rgb(63, 62, 62);
+    color: white;
+}
+.config-content {
+        font-family: Arial, sans-serif;
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        background: #fff;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #2c3e50;
+        color: white;
+        font-family: 'Franklin Gothic Medium';
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tbody tr:hover {
+        background-color: #ddd;
+    }
+    .main-content .header {
+        background-color: #2c3e50;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        width: 1200px;
+    }	
+
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -216,7 +394,26 @@
             if (sections.length > 0) {
                 sections[0].classList.add('active');
             }
+
+            // Fetch and display users
+            fetch('/usuarios')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Fetched users:', data); // Debugging line
+                    const usersTableBody = document.querySelector('#usersTable tbody');
+                    data.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.id_usuario}</td>
+                            <td>${user.nombre_usuario}</td>
+                            <td>${user.rol}</td>
+                        `;
+                        usersTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching users:', error));
         });
+        
     </script>
 </head>
 <body>
@@ -228,6 +425,16 @@
             <li><a href="Registrarempleado.html"><i class="fas fa-users"></i> <span>Empleados</span></a></li>
             <li><a href="Configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
             <li><a href="Recordatorio.html"><i class="fas fa-bell"></i> <span>Recordatorios</span></a></li>
+            <button class="accesibilidad-btn" onclick="toggleMenu()"><i class="fa-solid fa-universal-access"></i></button>
+            <div class="menu-accesibilidad" id="menuAccesibilidad">
+                <header class="header">Accesibilidad</header>
+                <button onclick="toggleContraste()"><i class="fa fa-adjust" aria-hidden="true"></i> Contraste</button>
+                <button onclick="toggleResaltarEnlaces()"><i class="fa fa-link" aria-hidden="true"></i> Resaltar Enlaces</button>
+                <button onclick="toggleTextoGrande()"><i class="fa fa-text-height"></i> Texto Grande</button>
+                <button onclick="toggleEspaciadoTexto()"><i class="fa fa-text-width"></i> Espaciado de Texto</button>
+                <button onclick="toggleAnimaciones()"><i class="fas fa-pause"></i> Pausar Animaciones</button>
+                <button onclick="toggleOcultarImagenes()"><i class="fas fa-eye-slash"></i> Ocultar Imágenes</button>
+            </div>
         </ul>
         <ul>
           <li class="Cerrarsesion"><a href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a></li>
@@ -243,161 +450,27 @@
         <div class="config-container">
             <div class="config-sidebar">
                 <ul>
-                    <li><a href="#general">Configuración General</a></li>
                     <li><a href="#users">Configuración de Usuarios y Permisos</a></li>
-                    <li><a href="#tasks">Configuración de Tareas</a></li>
-                    <li><a href="#notifications">Configuración de Notificaciones</a></li>
-                    <li><a href="#reports">Configuración de Reportes</a></li>
-                    <li><a href="#integrations">Integraciones</a></li>
-                    <li><a href="#security">Seguridad y Privacidad</a></li>
                     <li><a href="#interface">Configuración de la Interfaz</a></li>
-                    <li><a href="#backup">Configuración de Copias de Seguridad</a></li>
                 </ul>
             </div>
 
             <div class="config-content">
-                <div id="general" class="config-section">
-                    <h2>1. Configuración General</h2>
-                    <label for="language">Idioma</label>
-                    <select id="language">
-                        <option value="es">Español</option>
-                        <option value="en">Inglés</option>
-                    </select>
-                    <label for="timezone">Zona horaria</label>
-                    <select id="timezone">
-                        <option value="gmt-5">GMT-5</option>
-                        <option value="gmt-6">GMT-6</option>
-                    </select>
-                    <label for="datetimeFormat">Formato de fecha y hora</label>
-                    <select id="datetimeFormat">
-                        <option value="dd/mm/yyyy">DD/MM/AAAA</option>
-                        <option value="mm/dd/yyyy">MM/DD/AAAA</option>
-                    </select>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="notifications">
-                        <label for="notifications">Notificaciones</label>
-                    </div>
-                    <label for="theme">Tema</label>
-                    <select id="theme">
-                        <option value="light">Modo claro</option>
-                        <option value="dark">Modo oscuro</option>
-                    </select>
-                </div>
-
                 <div id="users" class="config-section">
                     <h2>2. Configuración de Usuarios y Permisos</h2>
-                    <button class="btn">Agregar Usuario</button>
-                    <button class="btn">Modificar Usuario</button>
-                    <button class="btn">Eliminar Usuario</button>
-                    <label for="roles">Roles y permisos</label>
-                    <select id="roles">
-                        <option value="admin">Administrador</option>
-                        <option value="supervisor">Supervisor</option>
-                        <option value="employee">Empleado</option>
-                    </select>
-                    <label for="password">Cambio de contraseña</label>
-                    <input type="password" id="password">
-                    <label for="authOptions">Opciones de autenticación</label>
-                    <select id="authOptions">
-                        <option value="password">Contraseña</option>
-                        <option value="2fa">Autenticación en dos pasos</option>
-                        <option value="google">Inicio de sesión con Google</option>
-                        <option value="microsoft">Inicio de sesión con Microsoft</option>
-                    </select>
-                </div>
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre de Usuario</th>
+                                <th>Rol</th>
+                                <th>Contraseña</th>
+                            </tr>
+                        </thead>
 
-                <div id="tasks" class="config-section">
-                    <h2>3. Configuración de Tareas</h2>
-                    <label for="taskTypes">Tipos de tareas</label>
-                    <input type="text" id="taskTypes" placeholder="Urgente, Normal, Baja prioridad">
-                    <label for="taskStates">Estados de tarea personalizados</label>
-                    <input type="text" id="taskStates" placeholder="Pendiente, En progreso, Completada, Cancelada">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="timeLimit">
-                        <label for="timeLimit">Habilitar límite de tiempo por tarea</label>
-                    </div>
-                    <label for="taskAssignment">Asignación automática de tareas</label>
-                    <select id="taskAssignment">
-                        <option value="algorithm">Algoritmo de distribución</option>
-                        <option value="manual">Manual</option>
-                    </select>
-                    <label for="taskTemplates">Plantillas de tareas recurrentes</label>
-                    <textarea id="taskTemplates" placeholder="Definir plantillas..."></textarea>
-                </div>
-
-                <div id="notifications" class="config-section">
-                    <h2>4. Configuración de Notificaciones</h2>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="emailNotifications">
-                        <label for="emailNotifications">Notificaciones por email</label>
-                    </div>
-                    <label for="appNotifications">Notificaciones en la app</label>
-                    <select id="appNotifications">
-                        <option value="sound">Sonido</option>
-                        <option value="banner">Banner</option>
-                        <option value="popup">Emergente</option>
-                    </select>
-                    <label for="notificationFrequency">Frecuencia de notificaciones</label>
-                    <select id="notificationFrequency">
-                        <option value="immediate">Inmediato</option>
-                        <option value="30min">Cada 30 min</option>
-                        <option value="hourly">Cada hora</option>
-                        <option value="daily">Diario</option>
-                    </select>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="urgentNotifications">
-                        <label for="urgentNotifications">Notificaciones para tareas urgentes</label>
-                    </div>
-                </div>
-
-                <div id="reports" class="config-section">
-                    <h2>5. Configuración de Reportes</h2>
-                    <label for="reportFormat">Formato de reportes</label>
-                    <select id="reportFormat">
-                        <option value="pdf">PDF</option>
-                        <option value="excel">Excel</option>
-                        <option value="csv">CSV</option>
-                    </select>
-                    <label for="reportFrequency">Frecuencia de generación de reportes</label>
-                    <select id="reportFrequency">
-                        <option value="daily">Diario</option>
-                        <option value="weekly">Semanal</option>
-                        <option value="monthly">Mensual</option>
-                    </select>
-                    <label for="reportFilters">Filtros por usuario, departamento o estado de tarea</label>
-                    <textarea id="reportFilters" placeholder="Definir filtros..."></textarea>
-                </div>
-
-                <div id="integrations" class="config-section">
-                    <h2>6. Integraciones</h2>
-                    <label for="emailIntegration">Integración con correo corporativo</label>
-                    <select id="emailIntegration">
-                        <option value="outlook">Outlook</option>
-                        <option value="gmail">Gmail</option>
-                    </select>
-                    <label for="toolsIntegration">Integración con herramientas externas</label>
-                    <select id="toolsIntegration">
-                        <option value="trello">Trello</option>
-                        <option value="asana">Asana</option>
-                        <option value="slack">Slack</option>
-                        <option value="teams">Microsoft Teams</option>
-                    </select>
-                    <label for="apiIntegration">API y Webhooks</label>
-                    <textarea id="apiIntegration" placeholder="Configuración avanzada..."></textarea>
-                </div>
-
-                <div id="security" class="config-section">
-                    <h2>7. Seguridad y Privacidad</h2>
-                    <label for="accessPolicy">Política de acceso</label>
-                    <select id="accessPolicy">
-                        <option value="timeout">Tiempo de inactividad antes de cierre de sesión</option>
-                    </select>
-                    <label for="changeHistory">Historial de cambios en tareas</label>
-                    <textarea id="changeHistory" placeholder="Registro de auditoría..."></textarea>
-                    <label for="deviceAccess">Acceso desde dispositivos específicos</label>
-                    <textarea id="deviceAccess" placeholder="Lista de IPs permitidas..."></textarea>
-                    <label for="dataBackup">Respaldo y recuperación de datos</label>
-                    <textarea id="dataBackup" placeholder="Opciones de respaldo..."></textarea>
+                        <tbody id="usersTableBody">
+                        </tbody>
+                    </table>
                 </div>
 
                 <div id="interface" class="config-section">
@@ -417,26 +490,8 @@
                     </select>
                 </div>
 
-                <div id="backup" class="config-section">
-                    <h2>9. Configuración de Copias de Seguridad</h2>
-                    <label for="backupFrequency">Frecuencia de respaldos</label>
-                    <select id="backupFrequency">
-                        <option value="daily">Automático diario</option>
-                        <option value="weekly">Automático semanal</option>
-                        <option value="monthly">Automático mensual</option>
-                    </select>
-                    <label for="backupLocation">Ubicación del respaldo</label>
-                    <select id="backupLocation">
-                        <option value="cloud">Nube</option>
-                        <option value="local">Local</option>
-                        <option value="externalServer">Servidor externo</option>
-                    </select>
-                    <label for="restoreOptions">Opciones de restauración</label>
-                    <textarea id="restoreOptions" placeholder="Lista de copias disponibles con opción de restaurar..."></textarea>
-                </div>
-
                 <div class="config-buttons">
-                    <button class="btn"><i class="fas fa-save"></i> Guardar cambios</button>
+                    <button class="btn" id="saveChangesBtn"><i class="fas fa-save"></i> Guardar cambios</button>
                     <button class="btn"><i class="fas fa-remove"></i> Cancelar  </i></button>
                     <button class="btn"><i class="fas fa-refresh"></i> Restaurar valores predeterminados</button>
                     <button class="btn"><i class="fas fa-upload"></i> Importar configuración</button>
@@ -446,6 +501,29 @@
         </div>
     </div>
     <script>
+         async function cargarUsuario() {
+            try {
+                const response = await fetch('http://localhost:4000/usuarios');
+                const usuarios = await response.json();
+                const tabla = document.getElementById('usersTableBody');
+                tabla.innerHTML = '';
+    
+                usuarios.forEach(usuario => {  
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${usuario.id_usuario}</td>
+                <td>${usuario.Nombre_usuario}</td>
+                <td>${usuario.Rol || 'N/A'}</td>
+                <td>${usuario.contraseña}</td> 
+                       
+                    `;
+                    tabla.appendChild(fila);
+                });
+            } catch (error) {
+                console.error('Error al cargar usarios:', error);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', cargarUsuario);
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             const mainContent = document.querySelector('.main-content');
@@ -498,6 +576,56 @@
                 }, 300); 
             }
         }
+        document.addEventListener("DOMContentLoaded", function() {
+        const table = document.getElementById("usersTable");
+
+        table.addEventListener("click", function(event) {
+            let cell = event.target;
+
+            if (cell.tagName === "TD" && !cell.classList.contains("no-edit")) {
+                cell.setAttribute("contenteditable", "true");
+                cell.focus();
+
+                cell.addEventListener("blur", function() {
+                    cell.removeAttribute("contenteditable");
+                }, { once: true });
+            }
+        });
+
+        document.querySelectorAll(".no-edit").forEach(td => {
+            td.setAttribute("contenteditable", "false");
+        });
+    });
+        function toggleMenu() {
+            let menu = document.getElementById('menuAccesibilidad');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+        function toggleContraste() {
+            document.body.classList.toggle('alto-contraste');
+        }
+        function toggleResaltarEnlaces() {
+            document.body.classList.toggle('resaltar-enlaces');
+        }
+        function toggleTextoGrande() {
+            document.body.style.fontSize = document.body.style.fontSize === '1.5em' ? '' : '1.5em';
+        }
+        function toggleEspaciadoTexto() {
+            document.body.style.letterSpacing = document.body.style.letterSpacing === '2px' ? '' : '2px';
+        }
+        function toggleAnimaciones() {
+            let style = document.createElement('style');
+            style.innerHTML = '* { animation: none !important; transition: none !important; }';
+            document.head.appendChild(style);
+        }
+        function toggleOcultarImagenes() {
+            document.body.classList.toggle('ocultar-imagenes');
+        }
+
+
+
+window.onload = cargarUsuarios;
+
+
     </script>
 </body>
-</html> 
+</html>
